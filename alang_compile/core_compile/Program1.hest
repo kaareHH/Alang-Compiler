@@ -1,0 +1,7 @@
+Start{
+    Time is 1337;
+    Output stue as 15;
+
+    On stue at 1500;
+    Off stue at 1600;
+}
