@@ -1,13 +1,15 @@
+using core_compile;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 namespace test
 {
     [TestClass]
-    public class UnitTest1
+    public class ParserTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public void parse()
         {
         }
+
+
     }
 }
