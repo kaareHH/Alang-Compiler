@@ -1,17 +1,20 @@
 using System;
 
-internal class SyntaxFacts
+namespace ACompiler
 {
-    internal static SyntaxKind GetKeyWordKind(string text)
+    internal class SyntaxFacts
     {
-        switch (text)
+        internal static SyntaxKind GetKeyWordKind(string text)
         {
-            case "true":
-                return SyntaxKind.TrueKeyword;
-            case "false":
-                return SyntaxKind.FalseKeyword;
-            default:
-                return SyntaxKind.IdentifierToken;
+            switch (text)
+            {
+                case "true":
+                    return SyntaxKind.TrueKeyword;
+                case "false":
+                    return SyntaxKind.FalseKeyword;
+                default:
+                    return SyntaxKind.IdentifierToken;
+            }
         }
     }
 }
