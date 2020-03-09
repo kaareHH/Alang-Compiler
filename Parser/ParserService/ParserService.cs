@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.IO;
+using ParserService.Lexer;
+using ParserService.Lexer.Tokens;
 
 namespace ParserService
 {
@@ -8,11 +10,23 @@ namespace ParserService
     {
         static void Main(string[] args)
         {
-            string fullFilePath = Path.GetFullPath(args[0]);
+            string fullFilePath = Path.GetFullPath("../../../TestFiles/test1.good");
             Console.WriteLine("Compiling: " + fullFilePath);
 
-            var FileBody = StringBuffer.FromFilePath(fullFilePath);
+            var charStream = new CharStream(new StreamReader(fullFilePath));
+            Console.WriteLine("lol");
+            var factory = new TokenStream(charStream);
 
+            int amountOfTokens = 0;
+            do
+            {
+
+                Console.WriteLine(factory.Advance());
+                amountOfTokens++;
+            } while (!(factory.Peek() is EndOfFileToken));
+
+
+            Console.WriteLine("Tokens: @{amountOfTokens}");
         }
     }
 }
