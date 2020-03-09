@@ -10,7 +10,7 @@ namespace ParserService
     {
         static void Main(string[] args)
         {
-            string fullFilePath = Path.GetFullPath("../../../TestFiles/test1.good");
+            string fullFilePath = Path.GetFullPath(args[1]);
             Console.WriteLine("Compiling: " + fullFilePath);
 
             var charStream = new CharStream(new StreamReader(fullFilePath));
