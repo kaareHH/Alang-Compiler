@@ -19,8 +19,6 @@ namespace core_compile
             {
                 Console.WriteLine(item.TokenType.ToString());
             }
-
-            Console.WriteLine("Hello World!");
         }
     }
 }

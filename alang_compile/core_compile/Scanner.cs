@@ -10,7 +10,7 @@ namespace core_compile
         public int line = 1;
         public int pos = 0;
         public List<Token> tokens { get; private set; } = new List<Token>();
-        List<string> ExpectedCases = new List<string>();
+        public List<string> ExpectedCases = new List<string>();
 
         public Scanner(char[] inputStream)
         {
@@ -24,20 +24,22 @@ namespace core_compile
 
             string word = "";
 
-            for (; pos < inputStream.Length; pos++)
+            for (int index = 0; index < inputStream.Length; index++)
             {
-                if (Char.IsDigit(inputStream[pos]) && !word.Any(c => char.IsLetter(c))) //! Avoid reading a3
+                pos++;
+
+                if (Char.IsDigit(inputStream[index]) && !word.Any(c => char.IsLetter(c))) //! Avoid reading a3
                 {
-                    TokensToReturn.Add(FindIntLiteral(inputStream));
+                    TokensToReturn.Add(FindIntLiteral(inputStream, index, out index));
                     word = "";
                 }
-                else if (Char.IsLetter(inputStream[pos]))
+                else if (Char.IsLetter(inputStream[index]))
                 {
-                    word = CreateWord(inputStream);
+                    word = CreateWord(inputStream, index, out index);
                 }
                 else
                 {
-                    word += inputStream[pos];
+                    word += inputStream[index];
                 }
 
                 switch (word)
@@ -50,79 +52,79 @@ namespace core_compile
                     */
 
                     case "output":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        // IsExpected(word, ExpectedCases);
+                        //  ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_OUTPUTPIN, word));
                         word = "";
                         break;
 
                     case "input":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        // IsExpected(word, ExpectedCases);
+                        // ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_INPUTPIN, word));
                         word = "";
                         break;
 
                     case "on":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        // IsExpected(word, ExpectedCases);
+                        //ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_ON, word));
                         word = "";
                         break;
 
                     case "off":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        // IsExpected(word, ExpectedCases);
+                        // ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_OFF, word));
                         word = "";
                         break;
 
                     case "toggle":
-                        IsExpected(word, ExpectedCases);
+                        // IsExpected(word, ExpectedCases);
                         Console.WriteLine("pos er + " + pos);
-                        ExpectedCases = Expect(word);
+                        // ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_TOGGLE, word));
                         word = "";
                         break;
 
                     case "+":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        //  IsExpected(word, ExpectedCases);
+                        // ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_PLUS, word));
                         word = "";
                         break;
 
                     case "-":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        // IsExpected(word, ExpectedCases);
+                        // ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_MINUS, word));
                         word = "";
                         break;
 
                     case "*":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        // IsExpected(word, ExpectedCases);
+                        //  ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_MULTIPLY, word));
                         word = "";
                         break;
 
                     case "/":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        //IsExpected(word, ExpectedCases);
+                        // ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_DIVIDE, word));
                         word = "";
                         break;
 
                     case "=":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        // IsExpected(word, ExpectedCases);
+                        //ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_EQUAL, word));
                         word = "";
                         break;
 
                     case "if":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        //IsExpected(word, ExpectedCases);
+                        // ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_IF, word));
                         word = "";
                         break;
@@ -133,8 +135,8 @@ namespace core_compile
                         break;
 
                     case "repeat":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        // IsExpected(word, ExpectedCases);
+                        // ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_REPEAT, word));
                         word = "";
                         break;
@@ -145,31 +147,31 @@ namespace core_compile
                         break;
 
 
-                    case "times":                        
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                    case "times":
+                        // IsExpected(word, ExpectedCases);
+                        // ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_TIMES, word));
                         word = "";
                         break;
 
                     case "then":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        // IsExpected(word, ExpectedCases);
+                        // ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_THEN, word));
                         word = "";
                         break;
 
-                    /*
-                case "{":
-                    TokensToReturn.Add(new Token(TokenType.T_BEGINSCOPE, word));
-                    word = "";
-                    break;
+                        /*
+                    case "{":
+                        TokensToReturn.Add(new Token(TokenType.T_BEGINSCOPE, word));
+                        word = "";
+                        break;
 
-                case "}":
-                    TokensToReturn.Add(new Token(TokenType.T_ENDSCOPE, word));
-                    word = "";
-                    break;
-                    */
+                    case "}":
+                        TokensToReturn.Add(new Token(TokenType.T_ENDSCOPE, word));
+                        word = "";
+                        break;
+                        */
 
                     case "(":
                         TokensToReturn.Add(new Token(TokenType.T_PARANBEGIN, word));
@@ -182,26 +184,26 @@ namespace core_compile
                         break;
 
                     case "int":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        //  IsExpected(word, ExpectedCases);
+                        // ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_INTDCL, word));
                         word = "";
-                        pos++; //! increment i to evaluate next character
-                        TokensToReturn.AddRange(FindIdentifier(inputStream));
+                        index++; //! increment i to evaluate next character
+                        TokensToReturn.AddRange(FindIdentifier(inputStream, index, out index));
                         break;
 
                     case "pin":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        // IsExpected(word, ExpectedCases);
+                        // ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_PINDCL, word));
                         word = "";
-                        pos++; //! increment i to evaluate next character
-                        TokensToReturn.AddRange(FindIdentifier(inputStream));
+                        index++; //! increment i to evaluate next character
+                        TokensToReturn.AddRange(FindIdentifier(inputStream, index, out index));
                         break;
 
                     case ";":
-                        IsExpected(word, ExpectedCases);
-                        ExpectedCases = Expect(word);
+                        //IsExpected(word, ExpectedCases);
+                        // ExpectedCases = Expect(word);
                         TokensToReturn.Add(new Token(TokenType.T_SEMICOLON, word));
                         word = "";
                         break;
@@ -213,6 +215,7 @@ namespace core_compile
 
                     case "\n":
                         line++;
+                        pos = 0;
                         TokensToReturn.Add(new Token(TokenType.T_WHITESPACE, word));
                         word = "";
                         break;
@@ -231,11 +234,18 @@ namespace core_compile
                         break;
                 }
 
-                if (!string.IsNullOrEmpty(word))
+                if (!string.IsNullOrEmpty(word) && !(char.IsPunctuation(inputStream[index]) || char.IsSymbol(inputStream[index]) || char.IsControl(inputStream[index])))
                 {
-                    IsExpected("id", ExpectedCases);
-                    ExpectedCases = Expect("id");
+                    //IsExpected("id", ExpectedCases);
+                    //ExpectedCases = Expect("id");
                     TokensToReturn.Add(new Token(TokenType.T_ID, word));
+                    word = "";
+                
+                }
+
+                else if (!string.IsNullOrEmpty(word) && (char.IsPunctuation(inputStream[index]) || char.IsSymbol(inputStream[index])))
+                { 
+                    TokensToReturn.Add(new Token(TokenType.T_BADTOKEN, inputStream[index].ToString()));
                     word = "";
                 }
             }
@@ -243,74 +253,86 @@ namespace core_compile
             return TokensToReturn;
         }
 
-        private string CreateWord(char[] inputStream)
+        private string CreateWord(char[] inputStream, int index, out int newIndex)
         {
             string word = "";
-            while (Char.IsLetterOrDigit(inputStream[pos]))
+            while (Char.IsLetterOrDigit(inputStream[index]))
             {
-                word += inputStream[pos];
+                word += inputStream[index];
                 pos++;
+                index++;
             }
 
             pos--;
+            newIndex = index;
+            newIndex--;
             return word;
 
         }
 
-        private Token FindIntLiteral(char[] inputStream)
+        private Token FindIntLiteral(char[] inputStream, int index, out int newIndex)
         {
             int intlit = 0;
             string number = "";
-            while (char.IsNumber(inputStream[pos]))
+            while (char.IsNumber(inputStream[index]))
             {
-                number += inputStream[pos].ToString();
+                number += inputStream[index].ToString();
                 pos++;
-
+                index++;
             }
 
             //! decrease pos by 1 to avoid skipping a character
+
             pos--;
+            newIndex = index;
+            newIndex--;
 
             intlit = Int32.Parse(number);
             Token token = new Token(TokenType.T_INTLIT, number);
-            IsExpected("intlit", ExpectedCases);
-            ExpectedCases = Expect("intlit");
-
+            // IsExpected("intlit", ExpectedCases);
+            // ExpectedCases = Expect("intlit");
 
             return token;
         }
 
-        private List<Token> FindIdentifier(char[] inputStream)
+        private List<Token> FindIdentifier(char[] inputStream, int index, out int newIndex)
         {
             string identifier = "";
             List<Token> tokens = new List<Token>();
 
-            while (char.IsSeparator(inputStream[pos]))
+            while (char.IsSeparator(inputStream[index]))
             {
                 tokens.Add(new Token(TokenType.T_WHITESPACE, " "));
                 pos++;
+                index++;
             }
 
-            while (!char.IsSeparator(inputStream[pos]) && !char.IsPunctuation(inputStream[pos]) && !char.IsSymbol(inputStream[pos]) && !char.IsNumber(inputStream[pos]))
+            if (char.IsLetter(inputStream[index]))
             {
-                identifier += inputStream[pos];
-                pos++;
+                while (!char.IsSeparator(inputStream[index]) && !char.IsPunctuation(inputStream[index]) && !char.IsSymbol(inputStream[index]))
+                {
+                    identifier += inputStream[index];
+                    pos++;
+                    index++;
+                }
             }
 
             //! decrease pos by 1 to avoid skipping a character
             pos--;
+            newIndex = index;
+            newIndex--;
 
             if (identifier != "")
             {
                 tokens.Add(new Token(TokenType.T_ID, identifier));
-                IsExpected("id", ExpectedCases);
-                ExpectedCases = Expect("id");
+                // IsExpected("id", ExpectedCases);
+                // ExpectedCases = Expect("id");
             }
-
 
             return tokens;
         }
 
+        /*
         private List<string> Expect(string current)
         {
             List<string> expectedStrings = new List<string>();
@@ -321,7 +343,7 @@ namespace core_compile
                     expectedStrings.Add("intlit");
                     break;
                 
-                    /*
+                    
                 case "output":
 
                     break;
@@ -329,7 +351,7 @@ namespace core_compile
                 case "input":
 
                     break;
-                    */
+                    
 
                 case "on":
                     expectedStrings.Add("id");
@@ -396,7 +418,7 @@ namespace core_compile
                     expectedStrings.Add("toggle");
                     break;
 
-                    /*
+                    
                 case "(":
 
                     break;
@@ -404,7 +426,7 @@ namespace core_compile
                 case ")":
 
                     break;
-                    */
+                    
 
                 case "int":
                     expectedStrings.Add("id");
@@ -459,5 +481,6 @@ namespace core_compile
                 Console.WriteLine();
             }
         }
+        */
     }
 }
