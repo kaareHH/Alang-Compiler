@@ -1,0 +1,149 @@
+
+        private List<string> Expect(string current)
+        {
+            List<string> expectedStrings = new List<string>();
+            switch (current)
+            {
+                case "=":
+                    expectedStrings.Add("id");
+                    expectedStrings.Add("intlit");
+                    break;
+                
+                    
+                case "output":
+
+                    break;
+
+                case "input":
+
+                    break;
+                    
+
+                case "on":
+                    expectedStrings.Add("id");
+                    break;
+
+                case "off":
+                    expectedStrings.Add("id");
+                    break;
+
+                case "toggle":
+                    expectedStrings.Add("id");
+                    break;
+
+                case "+":
+                    expectedStrings.Add("intlit");
+                    expectedStrings.Add("id");
+
+                    break;
+
+                case "-":
+                    expectedStrings.Add("intlit");
+                    expectedStrings.Add("id");
+                    break;
+
+                case "*":
+                    expectedStrings.Add("intlit");
+                    expectedStrings.Add("id");
+                    break;
+
+                case "/":
+                    expectedStrings.Add("intlit");
+                    expectedStrings.Add("id");
+                    break;
+
+                case "if":
+                    expectedStrings.Add("intlit");
+                    expectedStrings.Add("id");
+                    break;
+
+                case "endif":
+
+                    break;
+
+                case "repeat":
+                    expectedStrings.Add("intlit");
+                    expectedStrings.Add("id");
+                    break;
+
+                case "endrepeat":
+
+                    break;
+
+                case "times":
+                    expectedStrings.Add("on");
+                    expectedStrings.Add("off");                    
+                    expectedStrings.Add("id");
+                    expectedStrings.Add("toggle");
+                    break;
+
+                case "then":
+                    expectedStrings.Add("on");
+                    expectedStrings.Add("off");
+                    expectedStrings.Add("id");
+                    expectedStrings.Add("toggle");
+                    break;
+
+                    
+                case "(":
+
+                    break;
+
+                case ")":
+
+                    break;
+                    
+
+                case "int":
+                    expectedStrings.Add("id");
+                    break;
+
+                case "pin":
+                    expectedStrings.Add("id");
+                    break;
+
+                case "id":
+                    expectedStrings.Add("+");
+                    expectedStrings.Add("-");
+                    expectedStrings.Add("*");
+                    expectedStrings.Add("/");
+                    expectedStrings.Add("=");
+                    expectedStrings.Add("times");
+                    expectedStrings.Add("then");
+                    expectedStrings.Add(";");
+                    break;
+
+                case "intlit":
+                    expectedStrings.Add("+");
+                    expectedStrings.Add("-");
+                    expectedStrings.Add("*");
+                    expectedStrings.Add("/");
+                    expectedStrings.Add(";");
+                    expectedStrings.Add("times");
+                    expectedStrings.Add("then");
+
+                    break;
+
+                case ";":
+                    break;
+
+                default:
+                    break;
+
+            }
+
+            return expectedStrings;
+        }
+
+        private void IsExpected(string word, List<string> expectedCases)
+        {
+            if (!expectedCases.Contains(word) && expectedCases.Count > 0)
+            {
+                Console.Write("Error on line {0}, position {1}. Expected: ", line, pos);
+                foreach (var item in expectedCases)
+                {
+                    Console.Write(" " + item);              
+                }
+                Console.WriteLine();
+            }
+        }

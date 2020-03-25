@@ -7,7 +7,7 @@ namespace core_compile
     {
         static void Main(string[] args)
         {
-            char[] inputFile = System.IO.File.ReadAllText(@"D:\github\p4-compiler\alang_compile\core_compile\inputFile.txt").ToCharArray();
+            char[] inputFile = System.IO.File.ReadAllText("inputFile.txt").ToCharArray();
 
             List<Token> tokens = new List<Token>();
 
