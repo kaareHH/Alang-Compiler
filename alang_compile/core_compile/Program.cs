@@ -7,7 +7,10 @@ namespace core_compile
     {
         static void Main(string[] args)
         {
-            char[] inputFile = System.IO.File.ReadAllText("inputFile.txt").ToCharArray();
+            var ged = Environment.CurrentDirectory;
+            string directory = ged.Remove(ged.IndexOf("bin"), ged.Length - ged.IndexOf("bin")) + "inputFile.txt";
+
+            char[] inputFile = System.IO.File.ReadAllText(directory).ToCharArray();
 
             List<Token> tokens = new List<Token>();
 
