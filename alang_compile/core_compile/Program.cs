@@ -64,8 +64,12 @@ namespace core_compile
         }
         static void Main(string[] args)
         {
-            string inputString = System.IO.File.ReadAllText(@"C:\Users\kaspe\Source\Repos\p4-compiler\alang_compile\core_compile\Program1.hest");
-
+            //string inputString = System.IO.File.ReadAllText(@"C:\Users\kaspe\Source\Repos\p4-compiler\alang_compile\core_compile\Program1.hest");
+            string inputString = "" ;
+            var test = Environment. CurrentDirectory;
+            var ged = test.IndexOf("bin");
+            var directory = test.Remove(ged, test.Length - ged) + "Program1.hest";
+            inputString = System.IO.File.ReadAllText(directory);
             var result = Scan(inputString);
             foreach (var item in result)
             {
