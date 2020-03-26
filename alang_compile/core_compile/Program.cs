@@ -1,27 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace core_compile
 {
     class Program
     {
-        public class Token
+        public class Tree
         {
-            public Token(TokenEnum tokenEnum)
+            public string Name { get; set; }
+            public Token Token { get; set; }
+            public Tree Parent { get; set; }
+            public List<Tree> Children { get; set; }
+
+
+            public Tree()
             {
-                Name = tokenEnum;
+                Children = new List<Tree>();
             }
-            public Token(TokenEnum tokenEnum, string value)
+            public void AddChild(Tree Child)
             {
-                Value = value;
-                Name = tokenEnum;
+                Child.Parent = this;
+                this.Children.Add(Child);
             }
-            TokenEnum Name;
-            string Value;
         }
 
-        public enum TokenEnum
+        public class Token
+        {
+            public Token(TokenType tokenType)
+            {
+                TokenType = tokenType;
+                Value = string.Empty;
+            }
+            public Token(TokenType tokenType, string value)
+            {
+                Value = value;
+                TokenType = tokenType;
+            }
+
+            public TokenType TokenType { get; set; }
+            public string Value { get; set; }
+        }
+
+        public enum TokenType
         {
             T_START,
             T_TIME,
@@ -34,18 +56,23 @@ namespace core_compile
             T_SCOPESTART,
             T_SCOPEEND,
             T_INTLIT,
-            T_ENDOFLINE,
+            T_STRINGLIT,
             T_IDENTIFIER,
+            T_ENDOFLINE,
             T_OUTPUT,
-
+            T_INPUT,
         }
         static void Main(string[] args)
         {
             string inputString = System.IO.File.ReadAllText(@"C:\Users\kaspe\Source\Repos\p4-compiler\alang_compile\core_compile\Program1.hest");
 
+            var result = Scan(inputString);
+            foreach (var item in result)
+            {
+                Console.WriteLine(item.TokenType + " - " + item.Value);
+            }
 
 
-            Scan(inputString);
 
 
             Console.WriteLine(inputString);
@@ -56,14 +83,97 @@ namespace core_compile
 
         public static List<Token> Scan(string InputString)
         {
+            var returnTokenList = new List<Token>();
+            var temp = InputString;
+            var stringTrimed = InputString.Replace("\r", string.Empty).Replace("\n", string.Empty);
+            var tempArray = InputString.Replace("\r", string.Empty).Replace("\n", string.Empty).Split(' ').ToList();
+            var tesad = Regex.Match(InputString, @"\S[A-z]*[0-9]*");
+
+            List<string> returnList = new List<string>(tempArray);
+            foreach (var item in tempArray)
+            {
+                if (item.Length <= 0)
+                    returnList.Remove(item);
+            }
+            string match = "";
+            int counter = stringTrimed.Length;
+            int i = 0;
+            while (counter > i)
+            {
+                match += stringTrimed[i++].ToString().ToLower().Trim();
+                if (char.IsDigit(match.Trim().FirstOrDefault()))
+                {
+                    while (char.IsDigit(stringTrimed[i]))
+                    {
+                        match += stringTrimed[i++].ToString().ToLower().Trim();
+                    }
+                    returnTokenList.Add(new Token(TokenType.T_INTLIT, match));
+                    match = "";
+                }
+                if (char.IsLetter(match.Trim().FirstOrDefault()))
+                {
+                    while (char.IsLetterOrDigit(stringTrimed[i]))
+                    {
+                        match += stringTrimed[i++].ToString().ToLower().Trim();
+                    }
+                }
+
+                switch (match.Trim())
+                {
+                    case "start":
+                        returnTokenList.Add(new Token(TokenType.T_START, match));
+                        match = "";
+                        break;
+                    case "{":
+                        returnTokenList.Add(new Token(TokenType.T_SCOPESTART, match));
+                        match = "";
+                        break;
+                    case "}":
+                        returnTokenList.Add(new Token(TokenType.T_SCOPEEND, match));
+                        match = "";
+                        break;
+                    case "time":
+                        returnTokenList.Add(new Token(TokenType.T_TIME, match));
+                        match = "";
+                        break;
+                    case "is":
+                        returnTokenList.Add(new Token(TokenType.T_IS, match));
+                        match = "";
+                        break;
+                    case "as":
+                        returnTokenList.Add(new Token(TokenType.T_AS, match));
+                        match = "";
+                        break;
+                    case ";":
+                        returnTokenList.Add(new Token(TokenType.T_ENDOFLINE, match));
+                        match = "";
+                        break;
+                    case "output":
+                        returnTokenList.Add(new Token(TokenType.T_OUTPUT, match));
+                        match = "";
+                        break;
+                    case "on":
+                        returnTokenList.Add(new Token(TokenType.T_ON, match));
+                        match = "";
+                        break;
+                    case "off":
+                        returnTokenList.Add(new Token(TokenType.T_OFF, match));
+                        match = "";
+                        break;
+                    default:
+                        break;
+                }
+                if (match.Trim() != string.Empty)
+                {
+                    returnTokenList.Add(new Token(TokenType.T_IDENTIFIER, match));
+                    match = "";
+                }
+            }
 
 
 
 
-
-
-
-            return new List<Token>();
+            return returnTokenList;
 
 
 
