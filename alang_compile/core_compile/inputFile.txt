@@ -1,13 +1,1 @@
-﻿int torben = 10;
-pin lampe = 12;
-
-repeat 2 times
-    torben = torben * torben;
-endrepeat
-
-if torben - 1 then
-    on lampe
-endif
-if torben - 2 then
-   off lampe
-endif 
+﻿int torben = 10 + 10 + 10;
