@@ -10,17 +10,16 @@ namespace core_compile
         public Parse(List<Token> _tokenStream)
         {
             this.tokenStream = _tokenStream;
-            Declerations(tokenStream.FirstOrDefault());
+            Declerations();
         }
 
-        public void Declerations(Token token)
+        public void Declerations()
         {
             Node node = new Node();
-            node = Decleration(token);
-
+            node = Decleration(tokenStream.FirstOrDefault());
+            
+            //Declerations();
             InterpretAST(node);
-
-            //Declerations(token);
 
         }
 
@@ -48,7 +47,7 @@ namespace core_compile
             node.left = MakeLeaf(token.TokenValue, ConvertType(token));
 
             // Get the next token
-            token = GetNext(token);
+            token = GetNext();
 
             // Set the next token as the root of the small part of the AST.
             node.op = token.TokenValue;
@@ -67,40 +66,41 @@ namespace core_compile
             Node node = new Node();
 
             // Ensure an EQUAL follows the ID
-            if(Expect(token, TokenType.T_EQUAL))
+            if(Expect(TokenType.T_EQUAL))
             {
-                token = GetNext(token);
+                token = GetNext();
+            
                 
                 // Ensure an ID or INTLIT follows the EQUAL
-                if(Expect(token, TokenType.T_ID) || Expect(token, TokenType.T_INTLIT)) 
+                if(Expect(TokenType.T_ID) || Expect(TokenType.T_INTLIT)) 
                 {
-                    token = GetNext(token);
+                    token = GetNext();
 
                     // Check if the decleration ends with a predicate.
-                    if(Expect(token, TokenType.T_SEMICOLON))
+                    if(Expect(TokenType.T_SEMICOLON))
                     {
                         node = MakeLeaf(token.TokenValue, ConvertType(token));
                     }
                     // Check if the decleration consists of an expresiion
-                    else if(Expect(token, TokenType.T_PLUS) || Expect(token, TokenType.T_MINUS) || Expect(token, TokenType.T_MULTIPLY) || Expect(token, TokenType.T_DIVIDE)) 
+                    else if(Expect(TokenType.T_PLUS) || Expect(TokenType.T_MINUS) || Expect(TokenType.T_MULTIPLY) || Expect(TokenType.T_DIVIDE)) 
                     {
                     
                         node = ArthExpr(token);
                     }
                     else 
                     {
-                        System.Console.WriteLine("Expected either a SEMICOLON or an ArthExpr after " + token.TokenType);
+                        System.Console.WriteLine("Expected either a SEMICOLON or an ArthExpr after " + token.TokenValue);
                     }
                 }
                 else
                 {
-                    System.Console.WriteLine("Expected either ID or INTLIT after " + token.TokenType);
+                    System.Console.WriteLine("Expected either ID or INTLIT after " + token.TokenValue);
                 }
                 
             }
             else
             {
-                System.Console.WriteLine("Expected EQUAL after " + token.TokenType);
+                System.Console.WriteLine("Expected EQUAL after " + token.TokenValue);
             }
             
             return node;
@@ -108,26 +108,58 @@ namespace core_compile
 
         private Node ArthExpr(Token token)
         {
-           
-            if(Expect(token, TokenType.T_SEMICOLON) == false)
+            Node n = new Node();
+            Node left = new Node();
+            Node right = new Node();
+            Token prevToken = token;
+            if(token.TokenType == TokenType.T_ID || token.TokenType == TokenType.T_INTLIT)
             {
-                Node n = new Node();
-                Node left = new Node();
-                Node right = new Node();
-
-                System.Console.WriteLine("Making left child " + token.TokenValue + " next token is: " + GetNext(token).TokenValue);
+                // Make ID or INTLIT to left child
                 left = MakeLeaf(token.TokenValue, ConvertType(token));
+                if(Expect(TokenType.T_SEMICOLON))
+                {
+                    return left;
+                }
 
-                token = GetNext(token);
+                 // Next token is the operator
+                if(Expect(TokenType.T_PLUS) || Expect(TokenType.T_MINUS) || Expect(TokenType.T_MULTIPLY) || Expect(TokenType.T_DIVIDE))
+                {
+                   token = GetNext(); 
+                }
+                else
+                {
+                    System.Console.WriteLine("Expected + - * / after " + token.TokenValue);
+                    return null;
+                }
+
+
+                
+                // Save the operator
+                prevToken = token;
+
+                // Next token is ID OR INTLIT which will be evaluated to left child again.
+                token = GetNext();
+
         
                 right = ArthExpr(token);
-
-                System.Console.WriteLine("Making n: operant" + token.TokenValue);
-                n = MakeNode(token.TokenValue, left, right, ConvertType(token));
+                n = MakeNode(prevToken.TokenValue, left, right, ConvertType(token));
                 return n;
             }
+            else 
+            {
+                System.Console.WriteLine("Expected ID or INTLIT after " + prevToken.TokenValue);
+                return null;
+            }
 
-            return null;
+        }
+        private Node Left(Token token)
+        {
+            Node node = new Node();
+
+            MakeLeaf(token.TokenValue, ConvertType(token));
+            token = GetNext();
+
+            return node;
         }
 
         public void Statements()
@@ -135,22 +167,23 @@ namespace core_compile
             System.Console.WriteLine("Not implemented");
         }
 
-        private Token GetNext(Token token)
+        private Token GetNext()
         {
-            // Get the current token
-            Token currentToken = token;
-
-            // Remove the current token to get the next
-            tokenStream.Remove(token);
-
+            // Remove first token in List
+            tokenStream.Remove(tokenStream.FirstOrDefault());
             // Return the new first token
             return tokenStream.FirstOrDefault();
 
         }
 
-         private bool Expect(Token token, TokenType type)
+         private bool Expect(TokenType type)
         {
-            Token nextToken = GetNext(token);
+            List<Token> tmpList = new List<Token>();
+            tmpList.AddRange(tokenStream);
+             
+            tmpList.Remove(tmpList.FirstOrDefault());
+
+            Token nextToken = tmpList.FirstOrDefault();
 
             if(nextToken.TokenType == type)
                 return true;

@@ -1,1 +1,2 @@
-﻿int torben = 1 + 2 ; 
+﻿int torben = 1 + 2;
+int kaare = 3 + 2;
