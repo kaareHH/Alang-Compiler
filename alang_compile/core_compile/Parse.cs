@@ -11,6 +11,7 @@ namespace core_compile
         {
             this.tokenStream = _tokenStream;
             Declerations();
+            Statements();
         }
 
         public void Declerations()
@@ -77,6 +78,9 @@ namespace core_compile
                     if(Expect(TokenType.T_SEMICOLON))
                     {
                         node = MakeLeaf(token.TokenValue, ConvertType(token));
+                        // Skip semicolon
+                        token = GetNext();
+                        token = GetNext();
                     }
                     // Check if the decleration consists of an expresiion
                     else if(Expect(TokenType.T_PLUS) || Expect(TokenType.T_MINUS) || Expect(TokenType.T_MULTIPLY) || Expect(TokenType.T_DIVIDE)) 
@@ -113,7 +117,7 @@ namespace core_compile
                 left = MakeLeaf(token.TokenValue, ConvertType(token));
                 if(Expect(TokenType.T_SEMICOLON))
                 {
-                    //Accept the semicolon
+                    //Skip the semicolon
                     token = GetNext();
                     token = GetNext();
                     //System.Console.WriteLine("hello world" + token.TokenType);
@@ -147,7 +151,82 @@ namespace core_compile
 
         public void Statements()
         {
-            System.Console.WriteLine("Not implemented");
+           Node node = new Node();
+           node = Statement(tokenStream.FirstOrDefault());
+
+           InterpretAST(node);
+
+           if(tokenStream.Count > 0)
+            Statements();
+        }
+
+        private Node Statement(Token token)
+        {
+            Node node = new Node();
+
+            if(token.TokenType == TokenType.T_IF)
+            {
+
+            }
+            else if(token.TokenType == TokenType.T_REPEAT)
+            {
+
+            }
+            else if(token.TokenType == TokenType.T_TOGGLE)
+            {
+                if(Expect(TokenType.T_ID))
+                {
+                    // Set prevToken to TOGGLE
+                    Token prevToken = token;
+                    // Fetch the ID
+                    token = GetNext();
+                    if(Expect(TokenType.T_SEMICOLON))
+                    {
+                        // Create the node where the root is ID and child is TOGGLE
+                        node = MakeUnary(token.TokenValue, MakeLeaf(prevToken.TokenValue, ConvertType(prevToken)), ConvertType(token));
+                        // Skip the semicolon
+                        token = GetNext();
+                        token = GetNext();
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("Expected semicolon in the end of toggle statement");
+                        return null;
+                    }
+                        
+                }
+                else
+                {
+                    System.Console.WriteLine("Expected ID after " + token.TokenType);
+                    return null;
+                }
+                    
+            }
+            else if(token.TokenType == TokenType.T_ID)
+            {
+                if(Expect(TokenType.T_EQUAL))
+                {
+                    Token prevToken = token;
+                    //Skip the equal
+                    token = GetNext();
+                    token = GetNext();
+                    
+                    System.Console.WriteLine("Hejsa " + token.TokenValue);
+                    node = MakeUnary(prevToken.TokenValue, ArthExpr(token), ConvertType(prevToken));
+                }
+                else
+                {
+                    System.Console.WriteLine("Expected EQUAL after " + token.TokenValue);
+                    return null;
+                }
+            }
+            else
+            {
+                System.Console.WriteLine("Invalid token in statement " + token.TokenType);
+                return null;
+            }
+
+            return node;
         }
 
         private Token GetNext()
@@ -207,6 +286,10 @@ namespace core_compile
 
                 case TokenType.T_DIVIDE:
                 nodeType = NodeType.N_DIVIDE;
+                break;
+
+                case TokenType.T_TOGGLE:
+                nodeType = NodeType.N_TOGGLE;
                 break;
 
                 default:

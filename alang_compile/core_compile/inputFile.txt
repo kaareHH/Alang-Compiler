@@ -2,7 +2,5 @@
 int kaare = 3 + 2;
 pin martin = 13;
 
-torben = torben + kaare
-if 
-repeat
+torben = torben + kaare;
 toggle martin;
