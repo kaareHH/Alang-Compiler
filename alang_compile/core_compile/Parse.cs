@@ -17,10 +17,16 @@ namespace core_compile
         {
             Node node = new Node();
             node = Decleration(tokenStream.FirstOrDefault());
-            
-            //Declerations();
+
             InterpretAST(node);
 
+            if(tokenStream.Count() > 0 && 
+              (tokenStream.FirstOrDefault().TokenType == TokenType.T_INTDCL || 
+               tokenStream.FirstOrDefault().TokenType == TokenType.T_PINDCL))
+                Declerations();
+            else
+                // return the part of the AST containing all the declerations
+                System.Console.WriteLine("No more declerations to read");
         }
 
         private void InterpretAST(Node node)
@@ -42,40 +48,31 @@ namespace core_compile
         private Node Decleration(Token token)
         {
             Node node = new Node();
-
             // Make INTDCL/PINDCL to leftmost child
             node.left = MakeLeaf(token.TokenValue, ConvertType(token));
-
             // Get the next token
             token = GetNext();
-
             // Set the next token as the root of the small part of the AST.
             node.op = token.TokenValue;
             node.type = ConvertType(token);
-
             // Evaluate right child
             node.right = EvalRight(token);
 
             return node;
             
-
         }
 
         private Node EvalRight(Token token)
         {
             Node node = new Node();
-
             // Ensure an EQUAL follows the ID
             if(Expect(TokenType.T_EQUAL))
             {
                 token = GetNext();
-            
-                
                 // Ensure an ID or INTLIT follows the EQUAL
                 if(Expect(TokenType.T_ID) || Expect(TokenType.T_INTLIT)) 
                 {
                     token = GetNext();
-
                     // Check if the decleration ends with a predicate.
                     if(Expect(TokenType.T_SEMICOLON))
                     {
@@ -84,7 +81,6 @@ namespace core_compile
                     // Check if the decleration consists of an expresiion
                     else if(Expect(TokenType.T_PLUS) || Expect(TokenType.T_MINUS) || Expect(TokenType.T_MULTIPLY) || Expect(TokenType.T_DIVIDE)) 
                     {
-                    
                         node = ArthExpr(token);
                     }
                     else 
@@ -96,7 +92,6 @@ namespace core_compile
                 {
                     System.Console.WriteLine("Expected either ID or INTLIT after " + token.TokenValue);
                 }
-                
             }
             else
             {
@@ -118,9 +113,12 @@ namespace core_compile
                 left = MakeLeaf(token.TokenValue, ConvertType(token));
                 if(Expect(TokenType.T_SEMICOLON))
                 {
+                    //Accept the semicolon
+                    token = GetNext();
+                    token = GetNext();
+                    //System.Console.WriteLine("hello world" + token.TokenType);
                     return left;
                 }
-
                  // Next token is the operator
                 if(Expect(TokenType.T_PLUS) || Expect(TokenType.T_MINUS) || Expect(TokenType.T_MULTIPLY) || Expect(TokenType.T_DIVIDE))
                 {
@@ -131,16 +129,10 @@ namespace core_compile
                     System.Console.WriteLine("Expected + - * / after " + token.TokenValue);
                     return null;
                 }
-
-
-                
                 // Save the operator
                 prevToken = token;
-
                 // Next token is ID OR INTLIT which will be evaluated to left child again.
                 token = GetNext();
-
-        
                 right = ArthExpr(token);
                 n = MakeNode(prevToken.TokenValue, left, right, ConvertType(token));
                 return n;
@@ -151,15 +143,6 @@ namespace core_compile
                 return null;
             }
 
-        }
-        private Node Left(Token token)
-        {
-            Node node = new Node();
-
-            MakeLeaf(token.TokenValue, ConvertType(token));
-            token = GetNext();
-
-            return node;
         }
 
         public void Statements()
@@ -180,14 +163,10 @@ namespace core_compile
         {
             List<Token> tmpList = new List<Token>();
             tmpList.AddRange(tokenStream);
-             
             tmpList.Remove(tmpList.FirstOrDefault());
-
             Token nextToken = tmpList.FirstOrDefault();
-
             if(nextToken.TokenType == type)
                 return true;
-
             else
                 return false;
         }
@@ -196,8 +175,6 @@ namespace core_compile
         private NodeType ConvertType(Token token)
         {
             NodeType nodeType = NodeType.N_BADNODE;
-            
-
             switch(token.TokenType)
             {
                 case TokenType.T_INTDCL:
@@ -236,18 +213,12 @@ namespace core_compile
                 System.Console.WriteLine("Unknown token type");
                 break;
             }
-
             return nodeType;
         }
 
-
-
-
         private Node MakeNode(string op, Node left, Node right, NodeType type)
         {
-
             Node node = new Node(op, left, right, type);
-
             return node;
         }
 
@@ -264,8 +235,5 @@ namespace core_compile
         {
             return MakeNode(op, left, null, type);
         }
-
-
-
     }
 }
