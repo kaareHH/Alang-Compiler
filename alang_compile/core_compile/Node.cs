@@ -14,6 +14,11 @@ namespace core_compile
             this.right = _right;
             this.type = _type;
         }
+
+        public Node()
+        {
+
+        }
     }
 
 

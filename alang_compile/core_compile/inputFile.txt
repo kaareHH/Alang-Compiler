@@ -1,1 +1,1 @@
-﻿int torben = 10 + 10 + 10;
+﻿int torben = 1 + 2 ; 

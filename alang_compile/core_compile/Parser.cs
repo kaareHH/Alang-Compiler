@@ -9,7 +9,6 @@ namespace core_compile
     {
         List<Token> tokenStream;
         Token currentToken;
-        Token prevToken;
 
         public Parser(List<Token> _tokenStream)
         {
@@ -25,9 +24,6 @@ namespace core_compile
         {
             // Get the current token
             Token currentToken = token;
-
-            // Set the previous token
-            prevToken = token;
 
             // Remove the current token to get the next
             tokenStream.Remove(token);
@@ -68,7 +64,7 @@ namespace core_compile
 
         private Node Dcl(Token token)
         {
-            prevToken = token;
+            Token prevToken = token;
             if(token.TokenType == TokenType.T_INTDCL || token.TokenType == TokenType.T_PINDCL)
             {
                 if(Expect(token, TokenType.T_ID))
