@@ -43,6 +43,11 @@ namespace core_compile
                     word = CreateWord(inputStream, index, out index);
                 }
                 // Special characters etc.
+                else if((inputStream[index] == '!' || inputStream[index] == '=' || 
+                         inputStream[index] == '<' || inputStream[index] == '>'))
+                {
+                    word = findOperator(inputStream, index, out index);
+                }
                 else
                 {
                     word += inputStream[index];
@@ -106,6 +111,35 @@ namespace core_compile
                         TokensToReturn.Add(new Token(TokenType.T_EQUAL, word));
                         word = "";
                         break;
+
+
+
+                    case "==":
+                        TokensToReturn.Add(new Token(TokenType.T_EQUALEQUAL, word));
+                        word = "";
+                        break;
+                    case ">=":
+                        TokensToReturn.Add(new Token(TokenType.T_GREATEREQUAL, word));
+                        word = "";
+                        break;
+                    case "<=":
+                        TokensToReturn.Add(new Token(TokenType.T_LESSEQUAL, word));
+                        word = "";
+                        break;
+                    case "!=":
+                        TokensToReturn.Add(new Token(TokenType.T_NOTEQUAL, word));
+                        word = "";
+                        break;
+                    case ">":
+                        TokensToReturn.Add(new Token(TokenType.T_GREATER, word));
+                        word = "";
+                        break;
+                    case "<":
+                        TokensToReturn.Add(new Token(TokenType.T_LESS, word));
+                        word = "";
+                        break;
+
+
 
                     case "if":
                         TokensToReturn.Add(new Token(TokenType.T_IF, word));
@@ -222,7 +256,24 @@ namespace core_compile
 
             return TokensToReturn;
         }
-        
+
+        private string findOperator(char[] inputStream, int index, out int newIndex)
+        {
+            string word = "";
+            while(inputStream[index] == '!' || inputStream[index] == '=' || 
+                  inputStream[index] == '<' || inputStream[index] == '>')
+            {
+                word += inputStream[index];
+                index++;
+                pos++;
+            }
+            pos--;
+            newIndex = index;
+            newIndex--;
+
+            return word;
+        }
+
         /// <summary>
         /// Creates a word from the inputstream, consisting of letters and/or digits.
         /// The first character of the word is allways a letter.

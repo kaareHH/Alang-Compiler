@@ -1,6 +1,14 @@
-﻿int torben = 1 + 2;
-int kaare = 3 + 2;
-pin martin = 13;
+﻿int torben = 3;
+int kaare = 13;
+int carsten = 4;
+pin martin = 11;
 
-torben = torben + kaare;
+torben = carsten + kaare;
+
 toggle martin;
+
+if(carsten > kaare - torben)
+    torben = 3;
+    kaare = 4; 
+    hej = 4; 
+    ok = 2 + 5; 

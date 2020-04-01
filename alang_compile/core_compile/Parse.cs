@@ -7,27 +7,44 @@ namespace core_compile
     public class Parse
     {
         List<Token> tokenStream = new List<Token>();
+        List<Node> stmtsNode = new List<Node>();
+        List<Node> dclsNode = new List<Node>();
         public Parse(List<Token> _tokenStream)
         {
             this.tokenStream = _tokenStream;
-            Declerations();
-            Statements();
+            CreateAST();
         }
 
-        public void Declerations()
+        public void CreateAST()
         {
             Node node = new Node();
-            node = Decleration(tokenStream.FirstOrDefault());
+            node.op = "start";
+            node.type = NodeType.N_START;
 
-            InterpretAST(node);
+            node.children.AddRange(Declerations(dclsNode));
+            node.children.AddRange(Statements(stmtsNode));
+
+            System.Console.WriteLine("Start has " + node.children.Count() + " children");
+            foreach (var n in node.children)
+            {
+                InterpretAST(n);
+                
+            }
+        }
+
+        public List<Node> Declerations(List<Node> dclsNode)
+        {
+            dclsNode.Add(Decleration(tokenStream.FirstOrDefault()));
 
             if(tokenStream.Count() > 0 && 
               (tokenStream.FirstOrDefault().TokenType == TokenType.T_INTDCL || 
                tokenStream.FirstOrDefault().TokenType == TokenType.T_PINDCL))
-                Declerations();
-            else
-                // return the part of the AST containing all the declerations
-                System.Console.WriteLine("No more declerations to read");
+               {
+                   Declerations(dclsNode);
+               }
+               
+            
+            return dclsNode;
         }
 
         private void InterpretAST(Node node)
@@ -43,6 +60,19 @@ namespace core_compile
             {
                 System.Console.WriteLine("Root: " + node.op + ", right: " + node.right.op);
                 InterpretAST(node.right);
+            }
+            if(node.children.Count > 0)
+            {
+                System.Console.WriteLine();
+                System.Console.WriteLine("Root: " + node.op + ", has the following stmt children:");
+                System.Console.WriteLine();
+                foreach (var childNode in node.children)
+                {
+
+                    InterpretAST(childNode);
+                    
+                }
+                
             }
         }
 
@@ -115,12 +145,11 @@ namespace core_compile
             {
                 // Make ID or INTLIT to left child
                 left = MakeLeaf(token.TokenValue, ConvertType(token));
-                if(Expect(TokenType.T_SEMICOLON))
+                if(Expect(TokenType.T_SEMICOLON) || Expect(TokenType.T_PARANEND))
                 {
-                    //Skip the semicolon
+                    //Skip the semicolon or paranthesis
                     token = GetNext();
                     token = GetNext();
-                    //System.Console.WriteLine("hello world" + token.TokenType);
                     return left;
                 }
                  // Next token is the operator
@@ -149,15 +178,17 @@ namespace core_compile
 
         }
 
-        public void Statements()
+        public List<Node> Statements(List<Node> stmtsNode)
         {
-           Node node = new Node();
-           node = Statement(tokenStream.FirstOrDefault());
 
-           InterpretAST(node);
+           stmtsNode.Add(Statement(tokenStream.FirstOrDefault()));
 
-           if(tokenStream.Count > 0)
-            Statements();
+           if(tokenStream.Count > 0 && tokenStream.FirstOrDefault().TokenType != TokenType.T_WHITESPACE)
+           {
+               Statements(stmtsNode);
+           }
+
+            return stmtsNode;
         }
 
         private Node Statement(Token token)
@@ -166,7 +197,12 @@ namespace core_compile
 
             if(token.TokenType == TokenType.T_IF)
             {
+                node.left = EvalCond(token);
+                node.op = token.TokenValue;
+                node.type = ConvertType(token);
 
+                node.children = Statements(node.children);
+             
             }
             else if(token.TokenType == TokenType.T_REPEAT)
             {
@@ -210,8 +246,6 @@ namespace core_compile
                     //Skip the equal
                     token = GetNext();
                     token = GetNext();
-                    
-                    System.Console.WriteLine("Hejsa " + token.TokenValue);
                     node = MakeUnary(prevToken.TokenValue, ArthExpr(token), ConvertType(prevToken));
                 }
                 else
@@ -224,6 +258,59 @@ namespace core_compile
             {
                 System.Console.WriteLine("Invalid token in statement " + token.TokenType);
                 return null;
+            }
+
+            return node;
+        }
+
+        private Node EvalCond(Token token)
+        {
+            Node node = new Node();
+
+            if(Expect(TokenType.T_PARANBEGIN))
+            {
+                token = GetNext();
+                if(Expect(TokenType.T_ID) || Expect(TokenType.T_INTLIT))
+                {
+                    token = GetNext();
+
+                    if(Expect(TokenType.T_LESSEQUAL) || Expect(TokenType.T_GREATEREQUAL) || Expect(TokenType.T_EQUALEQUAL) ||
+                       Expect(TokenType.T_NOTEQUAL) || Expect(TokenType.T_LESS) || Expect(TokenType.T_GREATER))
+                    {
+                        Token prevToken = token;
+
+                        token = GetNext();
+                        node.left = MakeLeaf(prevToken.TokenValue, ConvertType(prevToken));
+
+                        node.op = token.TokenValue;
+                        node.type = ConvertType(token);
+
+                        token = GetNext();
+                        
+                        if(Expect(TokenType.T_PLUS) || Expect(TokenType.T_MINUS) || 
+                           Expect(TokenType.T_MULTIPLY) || Expect(TokenType.T_DIVIDE))
+                           {
+                                node.right = ArthExpr(token);
+                           }
+                                
+                        else
+                        {
+                            if(Expect(TokenType.T_PARANEND))
+                            {
+                                node.right = MakeLeaf(token.TokenValue, ConvertType(token));
+                                // Skip parenthesis
+                                token = GetNext();
+                                token = GetNext();
+                            }
+                            else
+                            {
+                                System.Console.WriteLine("Expected end-paranthesis after " + token.TokenValue);
+                                return null;
+                            }
+                                
+                        }     
+                    }
+                }
             }
 
             return node;
@@ -291,6 +378,36 @@ namespace core_compile
                 case TokenType.T_TOGGLE:
                 nodeType = NodeType.N_TOGGLE;
                 break;
+
+                case TokenType.T_EQUALEQUAL:
+                nodeType = NodeType.N_EQUALEQUAL;
+                break;
+
+                case TokenType.T_NOTEQUAL:
+                nodeType = NodeType.N_NOTEQUAL;
+                break;
+
+                case TokenType.T_GREATER:
+                nodeType = NodeType.N_GREATER;
+                break;
+
+                case TokenType.T_LESS:
+                nodeType = NodeType.N_LESS;
+                break;
+
+                case TokenType.T_GREATEREQUAL:
+                nodeType = NodeType.N_GREATEREQUAL;
+                break;
+
+                case TokenType.T_LESSEQUAL:
+                nodeType = NodeType.N_LESSEQUAL;
+                break;
+
+                case TokenType.T_IF:
+                nodeType = NodeType.N_IF;
+                break;
+
+
 
                 default:
                 System.Console.WriteLine("Unknown token type");

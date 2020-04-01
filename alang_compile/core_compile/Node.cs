@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace core_compile
 {
     public class Node
@@ -6,6 +8,7 @@ namespace core_compile
         public Node left {get; set;}
         public Node right {get; set;}
         public NodeType type {get; set;}
+        public List<Node> children = new List<Node>();
 
         public Node(string _op, Node _left, Node _right, NodeType _type)
         {
@@ -29,7 +32,10 @@ namespace core_compile
         N_PLUS, N_MINUS, N_MULTIPLY, N_DIVIDE, N_EQUAL, 
         N_IF, N_ENDIF, N_REPEAT, N_ENDREPEAT, N_TIMES, N_THEN, 
         N_PARANBEGIN, N_PARANEND, N_WHITESPACE,
-        N_BADNODE
+        N_NOTEQUAL, N_EQUALEQUAL, N_GREATER, N_LESS, N_GREATEREQUAL, N_LESSEQUAL,
+        N_BADNODE,
+        N_START
+
 
     }
 
