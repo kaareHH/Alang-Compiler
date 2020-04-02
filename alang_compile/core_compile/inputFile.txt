@@ -1,14 +1,16 @@
-﻿int torben = 3;
-int kaare = 13;
-int carsten = 4;
-pin martin = 11;
+﻿int hej = 1;
+int ok = 3 + 3 + 4;
+pin martin = 13;
 
-torben = carsten + kaare;
+
+torben = 3 + 3;
 
 toggle martin;
 
-if(carsten > kaare - torben)
+repeat 10 times
     torben = 3;
-    kaare = 4; 
-    hej = 4; 
-    ok = 2 + 5; 
+endrepeat 
+
+if(3 > 2) then
+    kaare = 4;
+endif 

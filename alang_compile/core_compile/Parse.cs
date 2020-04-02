@@ -1,3 +1,4 @@
+using System.Runtime.ConstrainedExecution;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,16 @@ namespace core_compile
         List<Token> tokenStream = new List<Token>();
         List<Node> stmtsNode = new List<Node>();
         List<Node> dclsNode = new List<Node>();
+
+        public Node AST = new Node();
+
         public Parse(List<Token> _tokenStream)
         {
             this.tokenStream = _tokenStream;
-            CreateAST();
+            AST = CreateAST();
         }
 
-        public void CreateAST()
+        public Node CreateAST()
         {
             Node node = new Node();
             node.op = "start";
@@ -24,18 +28,17 @@ namespace core_compile
             node.children.AddRange(Declerations(dclsNode));
             node.children.AddRange(Statements(stmtsNode));
 
-            System.Console.WriteLine("Start has " + node.children.Count() + " children");
-            foreach (var n in node.children)
-            {
-                InterpretAST(n);
-                
-            }
+            return node;
         }
 
         public List<Node> Declerations(List<Node> dclsNode)
         {
-            dclsNode.Add(Decleration(tokenStream.FirstOrDefault()));
-
+            if(tokenStream.FirstOrDefault().TokenType == TokenType.T_INTDCL || 
+               tokenStream.FirstOrDefault().TokenType == TokenType.T_PINDCL)
+            {
+                dclsNode.Add(Decleration(tokenStream.FirstOrDefault()));
+            }
+                
             if(tokenStream.Count() > 0 && 
               (tokenStream.FirstOrDefault().TokenType == TokenType.T_INTDCL || 
                tokenStream.FirstOrDefault().TokenType == TokenType.T_PINDCL))
@@ -47,47 +50,33 @@ namespace core_compile
             return dclsNode;
         }
 
-        private void InterpretAST(Node node)
-        {
-            System.Console.WriteLine("\n");
-
-            if(node.left != null)
-            {
-                System.Console.WriteLine("Root: " + node.op + ", left: " + node.left.op);
-                InterpretAST(node.left);
-            }
-            if(node.right != null)
-            {
-                System.Console.WriteLine("Root: " + node.op + ", right: " + node.right.op);
-                InterpretAST(node.right);
-            }
-            if(node.children.Count > 0)
-            {
-                System.Console.WriteLine();
-                System.Console.WriteLine("Root: " + node.op + ", has the following stmt children:");
-                System.Console.WriteLine();
-                foreach (var childNode in node.children)
-                {
-
-                    InterpretAST(childNode);
-                    
-                }
-                
-            }
-        }
-
         private Node Decleration(Token token)
         {
             Node node = new Node();
+            
             // Make INTDCL/PINDCL to leftmost child
             node.left = MakeLeaf(token.TokenValue, ConvertType(token));
+            
             // Get the next token
             token = GetNext();
+            
             // Set the next token as the root of the small part of the AST.
             node.op = token.TokenValue;
             node.type = ConvertType(token);
-            // Evaluate right child
-            node.right = EvalRight(token);
+            
+            // Ensure an EQUAL follows the ID
+            if(Expect(TokenType.T_EQUAL))
+            {
+                token = GetNext();
+                // Evaluate right child
+                node.right = EvalRight(token);
+            }
+             else
+            {
+                System.Console.WriteLine("Expected EQUAL after " + token.TokenValue);
+                token = GetNext();
+                return null;
+            }
 
             return node;
             
@@ -96,42 +85,45 @@ namespace core_compile
         private Node EvalRight(Token token)
         {
             Node node = new Node();
-            // Ensure an EQUAL follows the ID
-            if(Expect(TokenType.T_EQUAL))
+
+            // Ensure right side of expression starts with ID or INTLIT
+            if(Expect(TokenType.T_ID) || Expect(TokenType.T_INTLIT)) 
             {
+                // Accept the token
                 token = GetNext();
-                // Ensure an ID or INTLIT follows the EQUAL
-                if(Expect(TokenType.T_ID) || Expect(TokenType.T_INTLIT)) 
+
+                // Check if the decleration ends with a predicate.
+                if(Expect(TokenType.T_SEMICOLON))
                 {
+                    node = MakeLeaf(token.TokenValue, ConvertType(token));
+
+                    // Skip semicolon
                     token = GetNext();
-                    // Check if the decleration ends with a predicate.
-                    if(Expect(TokenType.T_SEMICOLON))
-                    {
-                        node = MakeLeaf(token.TokenValue, ConvertType(token));
-                        // Skip semicolon
-                        token = GetNext();
-                        token = GetNext();
-                    }
-                    // Check if the decleration consists of an expresiion
-                    else if(Expect(TokenType.T_PLUS) || Expect(TokenType.T_MINUS) || Expect(TokenType.T_MULTIPLY) || Expect(TokenType.T_DIVIDE)) 
-                    {
-                        node = ArthExpr(token);
-                    }
-                    else 
-                    {
-                        System.Console.WriteLine("Expected either a SEMICOLON or an ArthExpr after " + token.TokenValue);
-                    }
+                    token = GetNext();
                 }
-                else
+
+                // Check if the decleration consists of an expression
+                else if(Expect(TokenType.T_PLUS) || Expect(TokenType.T_MINUS) || Expect(TokenType.T_MULTIPLY) || Expect(TokenType.T_DIVIDE)) 
                 {
-                    System.Console.WriteLine("Expected either ID or INTLIT after " + token.TokenValue);
+                    node = ArthExpr(token);
+                }
+
+                else 
+                {
+                    System.Console.WriteLine("Expected either a SEMICOLON or an ArthExpr after " + token.TokenValue);
+                    token = GetNext();
+                    return null;
                 }
             }
+
             else
             {
-                System.Console.WriteLine("Expected EQUAL after " + token.TokenValue);
+                System.Console.WriteLine("Expected either ID or INTLIT after " + token.TokenValue);
+                token = GetNext();
+                return null;
             }
-            
+
+        
             return node;
         }
 
@@ -141,10 +133,12 @@ namespace core_compile
             Node left = new Node();
             Node right = new Node();
             Token prevToken = token;
+
             if(token.TokenType == TokenType.T_ID || token.TokenType == TokenType.T_INTLIT)
             {
                 // Make ID or INTLIT to left child
                 left = MakeLeaf(token.TokenValue, ConvertType(token));
+
                 if(Expect(TokenType.T_SEMICOLON) || Expect(TokenType.T_PARANEND))
                 {
                     //Skip the semicolon or paranthesis
@@ -152,6 +146,7 @@ namespace core_compile
                     token = GetNext();
                     return left;
                 }
+
                  // Next token is the operator
                 if(Expect(TokenType.T_PLUS) || Expect(TokenType.T_MINUS) || Expect(TokenType.T_MULTIPLY) || Expect(TokenType.T_DIVIDE))
                 {
@@ -160,30 +155,39 @@ namespace core_compile
                 else
                 {
                     System.Console.WriteLine("Expected + - * / after " + token.TokenValue);
+                    token = GetNext();
                     return null;
                 }
+
                 // Save the operator
                 prevToken = token;
+                
                 // Next token is ID OR INTLIT which will be evaluated to left child again.
                 token = GetNext();
                 right = ArthExpr(token);
                 n = MakeNode(prevToken.TokenValue, left, right, ConvertType(token));
+                
                 return n;
             }
             else 
             {
                 System.Console.WriteLine("Expected ID or INTLIT after " + prevToken.TokenValue);
+                token = GetNext();
                 return null;
             }
-
         }
 
         public List<Node> Statements(List<Node> stmtsNode)
         {
+            if(tokenStream.Count() > 0 && tokenStream.FirstOrDefault().TokenType != TokenType.T_WHITESPACE)
+            {
+                stmtsNode.Add(Statement(tokenStream.FirstOrDefault()));
+            }
 
-           stmtsNode.Add(Statement(tokenStream.FirstOrDefault()));
-
-           if(tokenStream.Count > 0 && tokenStream.FirstOrDefault().TokenType != TokenType.T_WHITESPACE)
+           if(tokenStream.Count > 0 && 
+              tokenStream.FirstOrDefault().TokenType != TokenType.T_WHITESPACE &&
+              tokenStream.FirstOrDefault().TokenType != TokenType.T_ENDIF && 
+              tokenStream.FirstOrDefault().TokenType != TokenType.T_ENDREPEAT)
            {
                Statements(stmtsNode);
            }
@@ -195,68 +199,190 @@ namespace core_compile
         {
             Node node = new Node();
 
-            if(token.TokenType == TokenType.T_IF)
+            switch (token.TokenType)
             {
-                node.left = EvalCond(token);
-                node.op = token.TokenValue;
-                node.type = ConvertType(token);
+                case TokenType.T_IF:
+                    node = EvalIf(token);
+                    break;
+                
+                case TokenType.T_REPEAT:
+                    node = EvalRepeat(token);
+                    break;
+
+                case TokenType.T_TOGGLE:
+                    node = EvalToggle(token);
+                    break;
+                
+                case TokenType.T_ID:
+                    node = EvalAssign(token);
+                    break;
+                
+                default:
+                    System.Console.WriteLine("Invalid token in statement " + token.TokenType);
+                    token = GetNext();
+                    return null;
+            }
+
+            return node;
+        }
+
+        private Node EvalIf(Token token)
+        {
+            Node node = new Node();
+            
+            node.left = EvalCond(token);
+            node.op = token.TokenValue;
+            node.type = ConvertType(token);
+
+            if(Expect(TokenType.T_THEN))
+            {
+                // Skip THEN
+                token = GetNext();
+                token = GetNext();
 
                 node.children = Statements(node.children);
-             
+                
+                // Update token to the token after the statements
+                token = tokenStream.FirstOrDefault();
             }
-            else if(token.TokenType == TokenType.T_REPEAT)
+            else
             {
+                System.Console.WriteLine("Expected THEN after " + token.TokenValue);
+                token = GetNext();
+                return null;
+            }
 
-            }
-            else if(token.TokenType == TokenType.T_TOGGLE)
+            if(token.TokenType  == TokenType.T_ENDIF)
             {
-                if(Expect(TokenType.T_ID))
+                // Get ENDIF
+                token = GetNext();
+            }
+            else
+            {
+                System.Console.WriteLine("Expected ENDIF after " + token.TokenValue);
+                token = GetNext();
+                return null;
+            }
+
+            return node;
+        }
+
+        private Node EvalRepeat(Token token)
+        {
+            Node node = new Node();
+
+            if(Expect(TokenType.T_ID) || Expect(TokenType.T_INTLIT))
+            {
+                // Set repeat as root
+                node.op = token.TokenValue;
+                node.type = ConvertType(token);
+                
+                // Fetch the following intlit or id
+                token = GetNext();
+
+                // Set the intlit or id as leftchild (leaf) in this case
+                node.left = MakeLeaf(token.TokenValue, ConvertType(token));
+                
+                if(Expect(TokenType.T_TIMES))
                 {
-                    // Set prevToken to TOGGLE
-                    Token prevToken = token;
-                    // Fetch the ID
+                    // Skip the times token
                     token = GetNext();
-                    if(Expect(TokenType.T_SEMICOLON))
-                    {
-                        // Create the node where the root is ID and child is TOGGLE
-                        node = MakeUnary(token.TokenValue, MakeLeaf(prevToken.TokenValue, ConvertType(prevToken)), ConvertType(token));
-                        // Skip the semicolon
-                        token = GetNext();
-                        token = GetNext();
-                    }
-                    else
-                    {
-                        System.Console.WriteLine("Expected semicolon in the end of toggle statement");
-                        return null;
-                    }
-                        
+                    token = GetNext();
+
+                    // Evaluate the statements
+                    node.children = Statements(node.children);
+
+                    // Update token to the first token after the statements
+                    token = tokenStream.FirstOrDefault();
+
                 }
                 else
                 {
-                    System.Console.WriteLine("Expected ID after " + token.TokenType);
+                    System.Console.WriteLine("Expected TIMES after " + token.TokenValue);
+                    token = GetNext();
+                    return null;
+                }
+                
+                // Ensure repeat ends with ENDREPEAT
+                if(token.TokenType == TokenType.T_ENDREPEAT)
+                {
+                    // Skip ENDREPEAT
+                    token = GetNext();
+                }
+                else
+                {
+                    System.Console.WriteLine("Expected ENDREPEAT after " + token.TokenValue);
+                    token = GetNext();
+                    return null;
+                }
+                
+            }
+            else
+            {
+                System.Console.WriteLine("Expected INTLIT or ID after " + token.TokenValue);
+                token = GetNext();
+                return null;
+            }
+
+            return node;
+        }
+
+        private Node EvalToggle(Token token)
+        {
+            Node node = new Node();
+
+            if(Expect(TokenType.T_ID))
+            {
+                // Set prevToken to TOGGLE
+                Token prevToken = token;
+
+                // Fetch the ID
+                token = GetNext();
+
+                if(Expect(TokenType.T_SEMICOLON))
+                {
+                    // Create the node where the root is ID and child is TOGGLE
+                    node = MakeUnary(token.TokenValue, MakeLeaf(prevToken.TokenValue, ConvertType(prevToken)), ConvertType(token));
+                    // Skip the semicolon
+                    token = GetNext();
+                    token = GetNext();
+                }
+                else
+                {
+                    System.Console.WriteLine("Expected semicolon in the end of toggle statement");
+                    token = GetNext();
                     return null;
                 }
                     
             }
-            else if(token.TokenType == TokenType.T_ID)
+            else
             {
-                if(Expect(TokenType.T_EQUAL))
-                {
-                    Token prevToken = token;
-                    //Skip the equal
-                    token = GetNext();
-                    token = GetNext();
-                    node = MakeUnary(prevToken.TokenValue, ArthExpr(token), ConvertType(prevToken));
-                }
-                else
-                {
-                    System.Console.WriteLine("Expected EQUAL after " + token.TokenValue);
-                    return null;
-                }
+                System.Console.WriteLine("Expected ID after " + token.TokenType);
+                token = GetNext();
+                return null;
+            }
+
+            return node;
+        }
+
+        private Node EvalAssign(Token token)
+        {
+            Node node = new Node();
+
+            if(Expect(TokenType.T_EQUAL))
+            {
+                Token prevToken = token;
+
+                //Skip the equal
+                token = GetNext();
+                token = GetNext();
+
+                node = MakeUnary(prevToken.TokenValue, ArthExpr(token), ConvertType(prevToken));
             }
             else
             {
-                System.Console.WriteLine("Invalid token in statement " + token.TokenType);
+                System.Console.WriteLine("Expected EQUAL after " + token.TokenValue);
+                token = GetNext();
                 return null;
             }
 
@@ -298,13 +424,14 @@ namespace core_compile
                             if(Expect(TokenType.T_PARANEND))
                             {
                                 node.right = MakeLeaf(token.TokenValue, ConvertType(token));
-                                // Skip parenthesis
+                                // Get parenthesis
                                 token = GetNext();
-                                token = GetNext();
+                                
                             }
                             else
                             {
                                 System.Console.WriteLine("Expected end-paranthesis after " + token.TokenValue);
+                                token = GetNext();
                                 return null;
                             }
                                 
@@ -325,19 +452,21 @@ namespace core_compile
 
         }
 
-         private bool Expect(TokenType type)
+        private bool Expect(TokenType type)
         {
             List<Token> tmpList = new List<Token>();
+
             tmpList.AddRange(tokenStream);
             tmpList.Remove(tmpList.FirstOrDefault());
+
             Token nextToken = tmpList.FirstOrDefault();
+
             if(nextToken.TokenType == type)
                 return true;
             else
                 return false;
         }
         
-
         private NodeType ConvertType(Token token)
         {
             NodeType nodeType = NodeType.N_BADNODE;
@@ -407,7 +536,17 @@ namespace core_compile
                 nodeType = NodeType.N_IF;
                 break;
 
+                case TokenType.T_ENDIF:
+                nodeType = NodeType.N_ENDIF;
+                break;
 
+                case TokenType.T_REPEAT:
+                nodeType = NodeType.N_REPEAT;
+                break;
+
+                case TokenType.T_ENDREPEAT:
+                nodeType = NodeType.N_ENDREPEAT;
+                break;
 
                 default:
                 System.Console.WriteLine("Unknown token type");
@@ -422,15 +561,11 @@ namespace core_compile
             return node;
         }
 
-        /// <summary>
-        ///  Creates a Leaf in the AST
-        /// </summary>
         private Node MakeLeaf(string op, NodeType type) 
         {
             return MakeNode(op, null, null, type);
         }
 
-        // Makes a Node with only one child
         private Node MakeUnary(string op, Node left, NodeType type)
         {
             return MakeNode(op, left, null, type);
