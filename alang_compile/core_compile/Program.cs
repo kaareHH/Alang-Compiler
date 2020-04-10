@@ -6,7 +6,7 @@ namespace core_compile
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Hello does this works");
         }
     }
 }
