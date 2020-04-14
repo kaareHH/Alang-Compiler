@@ -33,8 +33,8 @@ namespace core_compile
                 {
                     var smh = new PrettyPrintAstVisitor().Visit((StartNode)ast);
                     GenerateCode(concreteSyntaxTree);
-                    CompileCCode("test.c");
-                    RunCode();
+                    //CompileCCode("test.c");
+                    //RunCode();
                 }
             }
             catch (Exception ex)
