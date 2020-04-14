@@ -1,0 +1,14 @@
+int torben = 10;
+pin lampe = 12;
+
+repeat 2 times
+    torben = torben * torben;
+    on lampe
+endrepeat
+
+if torben - 1 then
+    on lampe
+endif
+if torben - 2 then
+    off lampe
+endif
