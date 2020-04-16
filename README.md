@@ -7,4 +7,4 @@ Our project for 4. Semester at Software AAU
 | Name | Number | Email |
 |------|--------|-------|
 |Anders Aaen Springbrog|26184196|asprin18@student.aau.dk|
-|Kasper Winkler Andersen|26184196|kwink18@student.aau.dk|
+|Kasper Stenholt Winkler |28156070|kwink18@student.aau.dk|
