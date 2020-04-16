@@ -10,3 +10,4 @@ Our project for 4. Semester at Software AAU
 |Kasper Stenholt Winkler |28156070|kwink18@student.aau.dk|
 |Kaare Holland Hattel |26158482|khatte18@student.aau.dk|
 |Martin Kaldahl Andersen |29705689|martan18@student.aau.dk|
+|Mai-Britt Lerche Laursen |26816118|malaur18@student.aau.dk|
