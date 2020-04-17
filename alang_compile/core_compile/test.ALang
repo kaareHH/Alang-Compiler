@@ -1,0 +1,6 @@
+number lol1 = 1;
+
+function level2 ->| void
+   number lol2 = lol + 1;
+   number lol3 = 1;
+endfunciton

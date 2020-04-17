@@ -8,5 +8,7 @@ namespace core_compile
     {
         public string type;
         public string name;
+
+        public List<Node> children = new List<Node>();
     }
 }

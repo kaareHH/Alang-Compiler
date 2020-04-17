@@ -17,6 +17,9 @@ namespace core_compile
             gordon.Add(asd.name, asd);
 
             Console.WriteLine(((Symbol)gordon[asd.name]).name);
+            node astroot;
+
+            SymbolTable symbolTable = new SymbolTable(astroot);
 
        }
     }

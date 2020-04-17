@@ -1,4 +1,7 @@
-﻿using System;
+﻿using System.Reflection.Metadata;
+using System.Net.Mail;
+using System.Data;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -8,44 +11,46 @@ namespace core_compile
 {
     class SymbolTable
     {
-        public SymbolTable parent;
-        public SymbolTable child;
+        private SymbolTable parent;
+        private SymbolTable currentTable = new SymbolTable();
+    
+        private Hashtable hashtable = new Hashtable();
 
-        Hashtable hashTable = new Hashtable();
+        public Hashtable Table {get => currentTable.hashtable;}
 
-        public SymbolTable(Node astRoot)
+        private SymbolTable (SymbolTable parent)
         {
-            ProcessNode(astRoot);
+            this.parent = parent;
         }
 
-        public SymbolTable()
+        private SymbolTable() { }
+
+
+        public static SymbolTable BuildFromAstRoot(Node AstRoot)
         {
+            var currentTable = new SymbolTable();
+            currentTable.ProcessNode(AstRoot);
+
+            return currentTable;
 
         }
 
         private void ProcessNode(Node node)
         {
-            Symbol symbol;
-
+            Symbol newSymbol = ConvertNodeToSymbol(node);
             switch (node.type)
             {
-                case "block":
-                    
-                    child = new SymbolTable();
+                case "Block":
+                    OpenScope();
                     break;
 
                 case "Dcl":
-                    this.Insert(node.name, node.type);
+                    Insert(newSymbol);
                     break;
 
                 case "Ref":
-                    symbol = this.LookUp(node.name);
-                    if (symbol == null)
-                    {
-                        Console.WriteLine("Undeclared symbol: " + node.name);
-                        throw new Exception();
-                    }
-
+                    if (!LookUp(newSymbol))
+                        throw new SymbolDoNotExistException(newSymbol);
                     break;
 
                 default:
@@ -57,63 +62,83 @@ namespace core_compile
                 ProcessNode(child);
             }
 
-            if (node.type == block)
+            if (node.type == "Block")
             {
-                table = table.parent;
-            }
-
-        }
-
-
-        public Symbol LookUp(string name)
-        {
-            Symbol sym = new Symbol();
-            sym = (Symbol)hashTable[name];
-
-            if (sym.name == name)
-                return sym;
-
-            else
-            {
-                sym = SearchParent(name, parent);
-
-                if (sym == null)
-                    throw new Exception("Undeclared variable: " + name);
-                
-                return sym;
+                CloseScope();
             }
         }
 
-        private Symbol SearchParent(string name, SymbolTable table)
+
+        private Symbol ConvertNodeToSymbol(Node node)
         {
-            Symbol sym = new Symbol();
-            sym = (Symbol)table.hashTable[name];
-
-            if (sym.name == null)
-            {
-                if (table.parent == null)
-                    return null;
-                    
-                else
-                    return SearchParent(name, table.parent);
-            }
-
-            else
-                return sym;
+            return new Symbol(node.name, node.type);
         }
 
-        public void Insert(string name, string type)
+        public bool LookUp(Symbol symbol)
         {
-            Symbol oldSym = new Symbol();
-            Symbol newSym = new Symbol(name, type);
+            for (SymbolTable currentTable = this.currentTable; currentTable != null ; currentTable = currentTable.parent)
+            {
+                if (ContainsSymbol(symbol))
+                    return true;
+            }
 
-            oldSym = LookUp(name);
+            return false;
+        }
 
-            if (oldSym != null)
-                throw new Exception("Symbol already exists: " + name);
+        
+        public Symbol Get(string name)
+        {
+            for (SymbolTable currentTable = this; currentTable != null ; currentTable = currentTable.parent)
+            {
+                if (ContainsSymbolByName(name))
+                    return GetSymbolFromHashTable(name);
+            }
+
+            throw new SymbolDoNotExistException();
+        }
+
+        public void Insert(Symbol newsymbol)
+        {         
+            if(ContainsSymbol(newsymbol))
+                throw new SymbelExistException();
             
-            if (oldSym == null)
-                hashTable.Add(newSym.name, newSym);
+            AddSymbolToTable(newsymbol);    
         }
+
+        private void AddSymbolToTable(Symbol symbol)
+        {
+            Table.Add(symbol.name, symbol.type);
+        }
+
+        public SymbolTable MakeChildFromThis()
+        {
+            return new SymbolTable(this);
+        }    
+
+        public void OpenScope()
+        {
+            currentTable = MakeChildFromThis();
+        }
+        
+        public void CloseScope()
+        {
+            currentTable = parent;
+        }
+
+        private bool ContainsSymbol(Symbol symbol)
+        {
+            return Table.Contains(symbol.name);
+        }
+
+        private bool ContainsSymbolByName(string name)
+        {
+            return Table.Contains(name);
+        }
+
+        private Symbol GetSymbolFromHashTable(string name)
+        {
+            return (Symbol)Table[name];
+        }
+
     }
 }
