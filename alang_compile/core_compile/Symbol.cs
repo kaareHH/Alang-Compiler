@@ -8,14 +8,13 @@ namespace core_compile
     {        
         public string name;
         public string type;
-        public int scopeLevel;
 
-        public Symbol(string name, string type, int scopeLevel)
+        public Symbol(string name, string type)
         {
             this.name = name;
             this.type = type;
-            this.scopeLevel = scopeLevel;
         }
+
         public Symbol()
         {
 

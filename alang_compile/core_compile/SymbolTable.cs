@@ -7,34 +7,39 @@ using System.Linq;
 namespace core_compile
 {
     class SymbolTable
-    {        
-        int currentScopeLevel;
+    {
+        public SymbolTable parent;
+        public SymbolTable child;
 
         Hashtable hashTable = new Hashtable();
 
-        // HØRER TIL I VISITOR???
-        /* 
         public SymbolTable(Node astRoot)
         {
             ProcessNode(astRoot);
         }
 
-        public void ProcessNode(node)
+        public SymbolTable()
         {
-            string symbol;
+
+        }
+
+        private void ProcessNode(Node node)
+        {
+            Symbol symbol;
 
             switch (node.type)
             {
                 case "block":
-                    OpenScope();
+                    
+                    child = new SymbolTable();
                     break;
 
                 case "Dcl":
-                    EnterSymbol(node.name, node.type);
+                    this.Insert(node.name, node.type);
                     break;
 
                 case "Ref":
-                    symbol = RetriveSymbol(node.name);
+                    symbol = this.LookUp(node.name);
                     if (symbol == null)
                     {
                         Console.WriteLine("Undeclared symbol: " + node.name);
@@ -54,47 +59,61 @@ namespace core_compile
 
             if (node.type == block)
             {
-                CloseScope();
+                table = table.parent;
             }
 
         }
-        */
 
-        private Symbol LookUp(string name)
+
+        public Symbol LookUp(string name)
         {
             Symbol sym = new Symbol();
-
             sym = (Symbol)hashTable[name];
 
             if (sym.name == name)
                 return sym;
 
             else
-                throw new Exception("Undeclared variable: " + name);
+            {
+                sym = SearchParent(name, parent);
+
+                if (sym == null)
+                    throw new Exception("Undeclared variable: " + name);
+                
+                return sym;
+            }
         }
 
-        private void Insert(string name, string type)
+        private Symbol SearchParent(string name, SymbolTable table)
+        {
+            Symbol sym = new Symbol();
+            sym = (Symbol)table.hashTable[name];
+
+            if (sym.name == null)
+            {
+                if (table.parent == null)
+                    return null;
+                    
+                else
+                    return SearchParent(name, table.parent);
+            }
+
+            else
+                return sym;
+        }
+
+        public void Insert(string name, string type)
         {
             Symbol oldSym = new Symbol();
-            Symbol newSym = new Symbol(name, type, currentScopeLevel);
+            Symbol newSym = new Symbol(name, type);
 
             oldSym = LookUp(name);
 
-            if (oldSym != null && oldSym.scopeLevel == currentScopeLevel)
+            if (oldSym != null)
                 throw new Exception("Symbol already exists: " + name);
             
             if (oldSym == null)
                 hashTable.Add(newSym.name, newSym);
-        }
-
-        private void OpenScope()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void CloseScope()
-        {
-            throw new NotImplementedException();
         }
     }
 }

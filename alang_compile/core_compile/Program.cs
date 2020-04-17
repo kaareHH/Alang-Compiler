@@ -6,18 +6,18 @@ using System.Linq;
 namespace core_compile
 {
     class Program
-    {
+    {            
         static void Main(string[] args)
         {
             Hashtable gordon = new Hashtable();
 
-            Symbol asd = new Symbol("berit", "int", 5);
+            Symbol asd = new Symbol("berit", "int");
             Symbol hej = new Symbol();
 
             gordon.Add(asd.name, asd);
 
             Console.WriteLine(((Symbol)gordon[asd.name]).name);
-        }
 
+       }
     }
 }
