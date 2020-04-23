@@ -42,6 +42,16 @@ public interface IALangListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitStart([NotNull] ALangParser.StartContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.imports"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterImports([NotNull] ALangParser.ImportsContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.imports"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitImports([NotNull] ALangParser.ImportsContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.commands"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -61,6 +71,26 @@ public interface IALangListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitCommand([NotNull] ALangParser.CommandContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.dcl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDcl([NotNull] ALangParser.DclContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.dcl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDcl([NotNull] ALangParser.DclContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExpression([NotNull] ALangParser.ExpressionContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExpression([NotNull] ALangParser.ExpressionContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.function"/>.
 	/// </summary>
@@ -92,16 +122,6 @@ public interface IALangListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitParam([NotNull] ALangParser.ParamContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.inputparams"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterInputparams([NotNull] ALangParser.InputparamsContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.inputparams"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitInputparams([NotNull] ALangParser.InputparamsContext context);
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.codeblock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -122,36 +142,6 @@ public interface IALangListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitCode([NotNull] ALangParser.CodeContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.imports"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterImports([NotNull] ALangParser.ImportsContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.imports"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitImports([NotNull] ALangParser.ImportsContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.dcl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterDcl([NotNull] ALangParser.DclContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.dcl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitDcl([NotNull] ALangParser.DclContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.udtryk"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterUdtryk([NotNull] ALangParser.UdtrykContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.udtryk"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitUdtryk([NotNull] ALangParser.UdtrykContext context);
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.stmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -161,26 +151,6 @@ public interface IALangListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitStmt([NotNull] ALangParser.StmtContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.functioncall"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterFunctioncall([NotNull] ALangParser.FunctioncallContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.functioncall"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitFunctioncall([NotNull] ALangParser.FunctioncallContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.returnstmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterReturnstmt([NotNull] ALangParser.ReturnstmtContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.returnstmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitReturnstmt([NotNull] ALangParser.ReturnstmtContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.assignstmt"/>.
 	/// </summary>
@@ -192,16 +162,6 @@ public interface IALangListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitAssignstmt([NotNull] ALangParser.AssignstmtContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.arithmeticexpr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterArithmeticexpr([NotNull] ALangParser.ArithmeticexprContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.arithmeticexpr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitArithmeticexpr([NotNull] ALangParser.ArithmeticexprContext context);
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.ifstmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -211,6 +171,66 @@ public interface IALangListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitIfstmt([NotNull] ALangParser.IfstmtContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRepeatstmt([NotNull] ALangParser.RepeatstmtContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRepeatstmt([NotNull] ALangParser.RepeatstmtContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.outputstmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterOutputstmt([NotNull] ALangParser.OutputstmtContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.outputstmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitOutputstmt([NotNull] ALangParser.OutputstmtContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.returnstmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterReturnstmt([NotNull] ALangParser.ReturnstmtContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.returnstmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitReturnstmt([NotNull] ALangParser.ReturnstmtContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.functioncall"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterFunctioncall([NotNull] ALangParser.FunctioncallContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.functioncall"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitFunctioncall([NotNull] ALangParser.FunctioncallContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.inputparams"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterInputparams([NotNull] ALangParser.InputparamsContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.inputparams"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitInputparams([NotNull] ALangParser.InputparamsContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.arithmeticexpr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterArithmeticexpr([NotNull] ALangParser.ArithmeticexprContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.arithmeticexpr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitArithmeticexpr([NotNull] ALangParser.ArithmeticexprContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.condition"/>.
 	/// </summary>
@@ -241,26 +261,6 @@ public interface IALangListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitLogicexpr([NotNull] ALangParser.LogicexprContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterRepeatstmt([NotNull] ALangParser.RepeatstmtContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitRepeatstmt([NotNull] ALangParser.RepeatstmtContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.outputstmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterOutputstmt([NotNull] ALangParser.OutputstmtContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.outputstmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitOutputstmt([NotNull] ALangParser.OutputstmtContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.value"/>.
 	/// </summary>

@@ -39,6 +39,12 @@ public interface IALangVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStart([NotNull] ALangParser.StartContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.imports"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitImports([NotNull] ALangParser.ImportsContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="ALangParser.commands"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -50,6 +56,18 @@ public interface IALangVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitCommand([NotNull] ALangParser.CommandContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.dcl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDcl([NotNull] ALangParser.DclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExpression([NotNull] ALangParser.ExpressionContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ALangParser.function"/>.
 	/// </summary>
@@ -69,12 +87,6 @@ public interface IALangVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitParam([NotNull] ALangParser.ParamContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ALangParser.inputparams"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitInputparams([NotNull] ALangParser.InputparamsContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="ALangParser.codeblock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -87,41 +99,11 @@ public interface IALangVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitCode([NotNull] ALangParser.CodeContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ALangParser.imports"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitImports([NotNull] ALangParser.ImportsContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ALangParser.dcl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitDcl([NotNull] ALangParser.DclContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ALangParser.udtryk"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitUdtryk([NotNull] ALangParser.UdtrykContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="ALangParser.stmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitStmt([NotNull] ALangParser.StmtContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ALangParser.functioncall"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitFunctioncall([NotNull] ALangParser.FunctioncallContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ALangParser.returnstmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitReturnstmt([NotNull] ALangParser.ReturnstmtContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ALangParser.assignstmt"/>.
 	/// </summary>
@@ -129,17 +111,47 @@ public interface IALangVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitAssignstmt([NotNull] ALangParser.AssignstmtContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ALangParser.arithmeticexpr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitArithmeticexpr([NotNull] ALangParser.ArithmeticexprContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="ALangParser.ifstmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitIfstmt([NotNull] ALangParser.IfstmtContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRepeatstmt([NotNull] ALangParser.RepeatstmtContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.outputstmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitOutputstmt([NotNull] ALangParser.OutputstmtContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.returnstmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitReturnstmt([NotNull] ALangParser.ReturnstmtContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.functioncall"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitFunctioncall([NotNull] ALangParser.FunctioncallContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.inputparams"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitInputparams([NotNull] ALangParser.InputparamsContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.arithmeticexpr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArithmeticexpr([NotNull] ALangParser.ArithmeticexprContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ALangParser.condition"/>.
 	/// </summary>
@@ -158,18 +170,6 @@ public interface IALangVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitLogicexpr([NotNull] ALangParser.LogicexprContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitRepeatstmt([NotNull] ALangParser.RepeatstmtContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ALangParser.outputstmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitOutputstmt([NotNull] ALangParser.OutputstmtContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ALangParser.value"/>.
 	/// </summary>
