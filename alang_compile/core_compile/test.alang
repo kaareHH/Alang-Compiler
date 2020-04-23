@@ -1,27 +1,28 @@
-﻿import lolleren; // finder lolleren.alang i mappen 
+﻿import std.alang; # finder lolleren.alang i mappen 
 
-function setup | void
+function setup -> | void
     pin bedroomLight = 12;
     pin kitchenLight = 11;
     pin livingRoomLight = 13;
     pin coffeMachine = 10;
+    bool IsMorning = false;
+    bool IsNoon = false;
+    bool IsEvening = false;
+    bool IsNight = false;
 endfunction
 
 
-bool IsMorning = false;
-bool IsNoon = false;
-bool IsEvening = false;
-bool IsNight = false;
 
-function loop | void
+
+function loop -> | void
     everyHour ->;
 
    # Define when each state is reached during the day
    if TIME >= 07:45 && TIME < 12:00 then
       IsMorning = true;
-   else if TIME >= 1200 && < 1600 then
+   else if TIME >= 12:00 && TIME < 16:00 then
       IsNoon = true;
-   else if TIME >= 1600 && < 2200 then
+   else if TIME >= 16:00 && TIME < 22:00 then
       IsEvening = true;
    else
       IsNight = true;
@@ -35,19 +36,17 @@ function loop | void
    # Make sure all light is turned off when Im at work
    if IsNoon || IsNight then
       OFF -> bedroomLight;
-      Off -> kitchenLight;
-      Off -> livingRoomLight;
+      OFF -> kitchenLight;
+      OFF -> livingRoomLight;
    endif
-endloop
+endfunction
 
 function MorningRoutine ->| void
       ON -> coffeMachine;
     
       if TIME >= 07:30 then
-         repeat 10 times
             TOOGLE -> bedroomLight; 
             WAIT -> 00:00:10;
-         endrepeat
       endif
 endfunction
 
@@ -57,6 +56,6 @@ function everyHour ->| void
         TimePassed += TIME % 01:00;
     else
         # kør noget kode
-        TimePassed = 0:00;
+        TimePassed = 00:00;
     endif
-endfunction
+endfunction 
