@@ -13,4 +13,16 @@
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="AntlrGen\AntlrGen\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="AntlrGen\AntlrGen\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="AntlrGen\AntlrGen\**" />
+  </ItemGroup>
+
 </Project>

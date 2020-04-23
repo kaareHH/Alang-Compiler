@@ -4,6 +4,9 @@ grammar ALang;
  */
 start               : imports commands EOF
                     ;
+                    
+imports             : ('import' ALANGFILENAME ';')*
+                    ;
 
 commands            : command*
                     ;
@@ -11,7 +14,16 @@ commands            : command*
 command             : dcl
                     | function
                     ;
+                    
+dcl                 : TYPE ID '=' expression ';'
+                    | TYPE ID ';'
+                    ;
 
+expression          : arithmeticexpr
+                    | logicexpr
+                    | predexpr
+                    ;
+                    
 function            : 'function' ID '->' params '|' TYPE codeblock 'endfunction'
                     ;
 
@@ -21,28 +33,13 @@ params              : (param(',' param)*)?
 param               : TYPE ID
                     ;
 
-inputparams         : (value(',' value)*)?
-                    ;
-
 codeblock           : code*
                     ;
 
 code                : dcl
                     | stmt
                     ;
-
-imports             : ('import' ALANGFILENAME ';')*
-                    ;
-
-dcl                 : TYPE ID '=' udtryk ';'
-                    | TYPE ID ';'
-                    ;
-
-udtryk              : arithmeticexpr
-                    | logicexpr
-                    | predexpr
-                    ;
-
+                    
 stmt                : assignstmt
                     | ifstmt
                     | repeatstmt
@@ -51,25 +48,32 @@ stmt                : assignstmt
                     | functioncall
                     ;
 
-functioncall        : ID '->' inputparams ';'
-                    ;
-
-returnstmt          : 'return' udtryk ';'
-                    ;
-
-assignstmt          : ID '=' udtryk ';'
-                    | ID '+=' udtryk ';'
-                    ;
-
-arithmeticexpr      : arithmeticexpr OPERATOR arithmeticexpr
-                    | value
-                    | '(' arithmeticexpr ')'
+assignstmt          : ID '=' expression ';'
+                    | ID '+=' expression ';'
                     ;
 
 ifstmt              : 'if' condition 'then' codeblock 'endif'
                     | 'if' condition 'then' codeblock 'else' codeblock 'endif'
                     | 'if' condition 'then' codeblock ('else if' condition 'then' codeblock)+ 'endif'
                     | 'if' condition 'then' codeblock ('else if' condition 'then' codeblock)+ 'else' codeblock 'endif'
+                    ;
+                    
+repeatstmt: REPEAT value TIMES codeblock ENDREPEAT;
+
+outputstmt: TOGGLE ID ENDTERM;
+
+returnstmt          : 'return' expression ';'
+                    ;
+                    
+functioncall        : ID '->' inputparams ';'
+                    ;
+                    
+inputparams         : (value(',' value)*)?
+                    ;
+
+arithmeticexpr      : arithmeticexpr OPERATOR arithmeticexpr
+                    | value
+                    | '(' arithmeticexpr ')'
                     ;
 
 condition           : predexpr
@@ -82,7 +86,6 @@ predexpr            : ID PREDOPERATOR TIME
                     | arithmeticexpr PREDOPERATOR arithmeticexpr
                     ;
 
-
 logicexpr           : ID BOOLOPERATOR ID
                     | BOOLEAN BOOLOPERATOR BOOLEAN
                     | predexpr BOOLOPERATOR predexpr
@@ -92,18 +95,9 @@ logicexpr           : ID BOOLOPERATOR ID
                     ;
 
 
-
-repeatstmt: REPEAT value TIMES codeblock ENDREPEAT;
-
-outputstmt: TOGGLE ID ENDTERM;
-
 value: ID | INTEGERS | PIN | TIME;
 
 state : '(' ID (',' ID)* ')';
-
-
-
-
 
 //TERMINALS
 ENDIF: 'endif';
