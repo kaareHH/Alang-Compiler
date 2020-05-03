@@ -1,4 +1,7 @@
-﻿import std.alang; # finder lolleren.alang i mappen 
+﻿import std.alang; # finder lolleren.alang i mappen
+import string.alang;
+
+number mads = 2;
 
 function setup -> | void
     pin bedroomLight = 12;
@@ -55,4 +58,4 @@ function everyHour ->| void
         # kør noget kode
         TimePassed = 00:00;
     endif
-endfunction 
+endfunction
