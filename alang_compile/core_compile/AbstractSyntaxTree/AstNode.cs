@@ -33,14 +33,14 @@ namespace core_compile.AbstractSyntaxTree
                 return;
             }
 
-            if (this.LeftMostChild != null)
+            if (LeftMostChild != null)
             {
-                this.LeftMostChild.MakeSiblings(y);
+                LeftMostChild.MakeSiblings(y);
             }
             else
             {
                 var ySibs = y.LeftMostSibling;
-                this.LeftMostChild = ySibs;
+                LeftMostChild = ySibs;
                 while (ySibs != null)
                 {
                     ySibs.Parent = this;
@@ -82,8 +82,16 @@ namespace core_compile.AbstractSyntaxTree
 
         public void AddLocationFromContext(ParserRuleContext context)
         {
-            this.Start = new Location(context.Start.Line, context.Start.Column);
-            this.Stop = new Location(context.Stop.Line, context.Stop.Column);
+            if (context.Start != null && context.Stop != null)
+            {
+                Start = new Location(context.Start.Line, context.Start.Column);
+                Stop = new Location(context.Stop.Line, context.Stop.Column);
+            }
+            else
+            {
+                Start = new Location(1, 0);
+                Stop = new Location(1, 0);
+            }
         }
     }
 }

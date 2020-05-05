@@ -1,8 +1,6 @@
-using System;
 namespace core_compile.AbstractSyntaxTree
 {
-    public enum AlangType
+    public class ExpressionNode : AstNode
     {
-        Integer
     }
 }

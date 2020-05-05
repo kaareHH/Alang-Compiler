@@ -6,6 +6,7 @@ using core_compile.AbstractSyntaxTree;
 using System.Text.RegularExpressions;
 using System;
 using System.IO;
+using ValueType = core_compile.AbstractSyntaxTree.ValueType;
 
 namespace CompilerTests
 {
@@ -50,13 +51,32 @@ namespace CompilerTests
         }
 
         [Test]
+        public void EmptyAstRootHasNullNodeChildren()
+        {
+            var ast = TestHelpers.MakeAstRoot("");
+            Assert.IsNotNull(ast.GetChildren());
+            Assert.IsInstanceOf(typeof(NullNode), ast.GetChildren());
+            Assert.IsInstanceOf(typeof(NullNode), ast.GetChildren().RightSibling);
+        }
+
+        [Test]
+        public void DeclarationNodeHasCorrectTypeAndId()
+        {
+            var ast = TestHelpers.MakeAstRoot("number max = 10;");
+
+            Assert.That(ast.GetChildren(), Is.TypeOf(typeof(NullNode)));
+            Assert.That(ast.GetChildren().RightSibling, Is.TypeOf(typeof(DeclarationNode)));
+            Assert.That(((DeclarationNode) ast.GetChildren().RightSibling).Identifier, Is.EqualTo("max"));
+            Assert.That(((DeclarationNode) ast.GetChildren().RightSibling).Value.Value, Is.EqualTo(10));
+        }
+        
+        [Test]
         public void ImportsShouldHaveCorrectPath()
         {
             Assert.AreEqual("std.alang", ((ImportNode)(astRoot.GetChildren())).Path);
             Assert.AreEqual("string.alang", ((ImportNode)astRoot.GetChildren().RightSibling).Path);
         }
-
-
+        
         [Test]
         public void AstRootHasCorrectChildren()
         {
@@ -71,8 +91,8 @@ namespace CompilerTests
         [Test]
         public void DeclarationShouldHaveTypeAndIdentifier()
         {
-            var dclnode = new DeclarationNode(AlangType.Integer, "Torben");
-            Assert.AreEqual(AlangType.Integer, dclnode.Type);
+            var dclnode = new DeclarationNode("Torben");
+            Assert.AreEqual(ValueType.Integer, dclnode.ValueKind);
             Assert.AreEqual("Torben", dclnode.Identifier);
         }
 

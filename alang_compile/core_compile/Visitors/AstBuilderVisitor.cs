@@ -25,6 +25,10 @@ namespace core_compile.Visitors
         // TODO: Add location to import nodes
         public override AstNode VisitImports(ALangParser.ImportsContext context)
         {
+            if (context.GetText() == "")
+            {
+                return new NullNode();
+            }
             const int first = 0;
             ImportNode result = new ImportNode();
             result.AddLocationFromContext(context);
