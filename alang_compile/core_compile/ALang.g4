@@ -2,102 +2,75 @@ grammar ALang;
 /*
  *  Parser Rules
  */
-start               : imports commands EOF
-                    ;
-                    
-imports             : ('import' ALANGFILENAME ';')*
+start               : commands EOF
                     ;
 
-commands            : command*
-                    ;
-
-command             : dcl
-                    | function
+commands            : dcl commands
+                    | function commands
+                    | imports commands
+                    |
                     ;
                     
-dcl                 : TYPE ID '=' expression ';'
+dcl                 : TYPE ID '=' primaryExpression ';'
                     | TYPE ID ';'
                     ;
 
-expression          : arithmeticexpr
-                    | logicexpr
-                    | predexpr
-                    ;
-                    
-function            : 'function' ID '->' params '|' TYPE codeblock 'endfunction'
+function            : 'function' ID '->' params '|' TYPE stmts 'endfunction'
                     ;
 
-params              : (param(',' param)*)?
+imports             : 'import' ALANGFILENAME ';'
+                    ;
+
+primaryExpression   : expression OPALL primaryExpression
+                    | expression
+                    ;
+                    
+expression          : value
+                    | '(' primaryExpression ')'
+                    ;
+                    
+params              : param
+                    | param ',' params
+                    |
                     ;
 
 param               : TYPE ID
                     ;
 
-codeblock           : code*
-                    ;
-
-code                : dcl
-                    | stmt
-                    ;
-                    
-stmt                : assignstmt
-                    | ifstmt
-                    | repeatstmt
-                    | outputstmt
-                    | returnstmt
-                    | functioncall
-                    ;
-
-assignstmt          : ID '=' expression ';'
-                    | ID '+=' expression ';'
-                    ;
-
-ifstmt              : 'if' condition 'then' codeblock 'endif'
-                    | 'if' condition 'then' codeblock 'else' codeblock 'endif'
-                    | 'if' condition 'then' codeblock ('else if' condition 'then' codeblock)+ 'endif'
-                    | 'if' condition 'then' codeblock ('else if' condition 'then' codeblock)+ 'else' codeblock 'endif'
+stmts               : dcl stmts
+                    | ifstmt stmts
+                    | repeatstmt stmts
+                    | outputstmt stmts
+                    | returnstmt stmts
+                    | functioncall stmts
+                    | assignstmt stmts
+                    |
                     ;
                     
-repeatstmt: REPEAT value TIMES codeblock ENDREPEAT;
 
-outputstmt: TOGGLE ID ENDTERM;
+assignstmt          : ID '=' primaryExpression ';'
+                    ;
 
-returnstmt          : 'return' expression ';'
+ifstmt              : 'if' primaryExpression 'then' stmts ('else if' primaryExpression 'then' stmts)* 'endif'
+                    | 'if' primaryExpression 'then' stmts ('else if' primaryExpression 'then' stmts)* 'else' stmts 'endif'
+                    ;
+                    
+repeatstmt:         'repeat' value 'times' stmts 'endrepeat';
+
+outputstmt:         'toggle' ID ';';
+
+returnstmt          : 'return' primaryExpression ';'
                     ;
                     
 functioncall        : ID '->' inputparams ';'
                     ;
                     
-inputparams         : (value(',' value)*)?
+inputparams         : value
+                    | value ',' inputparams
+                    |
                     ;
 
-arithmeticexpr      : arithmeticexpr OPERATOR arithmeticexpr
-                    | value
-                    | '(' arithmeticexpr ')'
-                    ;
-
-condition           : predexpr
-                    | logicexpr
-                    | BOOLEAN
-                    | ID
-                    ;
-
-predexpr            : ID PREDOPERATOR TIME
-                    | arithmeticexpr PREDOPERATOR arithmeticexpr
-                    ;
-
-logicexpr           : ID BOOLOPERATOR ID
-                    | BOOLEAN BOOLOPERATOR BOOLEAN
-                    | predexpr BOOLOPERATOR predexpr
-                    | '('logicexpr')' BOOLOPERATOR '('logicexpr')'
-                    | BOOLEAN
-                    | '('logicexpr')'
-                    ;
-
-
-value: ID | INTEGERS | PIN | TIME;
-
-state : '(' ID (',' ID)* ')';
+value: ID | INTEGERS | PIN | TIME | BOOLEAN | FLOAT;
 
 //TERMINALS
 ENDIF: 'endif';
@@ -125,7 +98,6 @@ TYPE: 'void'
     | 'time'
     ;
 
-INCLUDE  : 'include ' ;
 LPAREN : '(' ;
 RPAREN : ')' ;
 COMMA : ',' ;
@@ -133,25 +105,25 @@ COMMA : ',' ;
 ASSIGNOPERATOR: '=';
 
 // OPERATORS
-OPERATOR: ('+' | '-' | '*' | '/' | '%');
-BOOLOPERATOR: '&&' | '||' | '^';
-PREDOPERATOR: '==' | '>=' | '<=' | '>' | '<' | '!=';
+
+OPALL: OPERATOR | BOOLOPERATOR | PREDOPERATOR;
+fragment OPERATOR: ('+' | '-' | '*' | '/' | '%');
+fragment BOOLOPERATOR: '&&' | '||' | '^';
+fragment PREDOPERATOR: '==' | '>=' | '<=' | '>' | '<' | '!=';
 
 // DATA TYPES
 BOOLEAN: 'true' | 'false';
 
 INTEGERS: '0' | DIGITS;
 fragment DIGITS: '1' ..'9' '0' ..'9'*;
-
 PIN: '0' ..'9' | '1' '0' ..'3';
-
 TOGGLE: 'on' | 'off';
-
 TIME                :  NUM NUM ':' NUM NUM
                     |  NUM NUM ':' NUM NUM ':' NUM NUM
                     ;
-
 fragment NUM        : '0'..'9';
+FLOAT: NUM* '.' NUM+ ;
+
 // IDENTIFIERS
 ID: (LOWERCASE | UPPERCASE)+;
 fragment UPPERCASE: [A-Z];
