@@ -57,7 +57,9 @@ ifstmt              : 'if' primaryExpression 'then' stmts ('else if' primaryExpr
                     
 repeatstmt:         'repeat' value 'times' stmts 'endrepeat';
 
-outputstmt:         'toggle' ID ';';
+outputstmt:         'toggle' ID ';'
+                    | ID ONOFF ';'
+                    ;
 
 returnstmt          : 'return' primaryExpression ';'
                     ;
@@ -92,7 +94,8 @@ TIMES: 'times';
 THEN: 'then';
 
 TYPE: 'void'
-    | 'number'
+    | 'int'
+    | 'float'
     | 'pin'
     | 'bool'
     | 'time'
@@ -117,7 +120,7 @@ BOOLEAN: 'true' | 'false';
 INTEGERS: '0' | DIGITS;
 fragment DIGITS: '1' ..'9' '0' ..'9'*;
 PIN: '0' ..'9' | '1' '0' ..'3';
-TOGGLE: 'on' | 'off';
+ONOFF: 'ON' | 'OFF';
 TIME                :  NUM NUM ':' NUM NUM
                     |  NUM NUM ':' NUM NUM ':' NUM NUM
                     ;

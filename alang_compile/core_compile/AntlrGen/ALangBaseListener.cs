@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from /home/mads/dev/aau/p4-compiler/alang_compile/core_compile/ALang.g4 by ANTLR 4.8
+// Generated from C:/Users/aaspr.DESKTOP-G6R73JT/OneDrive/Desktop/pomo/p4/alang_compile/core_compile\ALang.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -48,18 +48,6 @@ public partial class ALangBaseListener : IALangListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStart([NotNull] ALangParser.StartContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.imports"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterImports([NotNull] ALangParser.ImportsContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.imports"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitImports([NotNull] ALangParser.ImportsContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.commands"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -71,18 +59,6 @@ public partial class ALangBaseListener : IALangListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitCommands([NotNull] ALangParser.CommandsContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.command"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterCommand([NotNull] ALangParser.CommandContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.command"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitCommand([NotNull] ALangParser.CommandContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.dcl"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -96,18 +72,6 @@ public partial class ALangBaseListener : IALangListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitDcl([NotNull] ALangParser.DclContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExpression([NotNull] ALangParser.ExpressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExpression([NotNull] ALangParser.ExpressionContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.function"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -119,6 +83,42 @@ public partial class ALangBaseListener : IALangListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitFunction([NotNull] ALangParser.FunctionContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.imports"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterImports([NotNull] ALangParser.ImportsContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.imports"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitImports([NotNull] ALangParser.ImportsContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.primaryExpression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterPrimaryExpression([NotNull] ALangParser.PrimaryExpressionContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.primaryExpression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitPrimaryExpression([NotNull] ALangParser.PrimaryExpressionContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.expression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExpression([NotNull] ALangParser.ExpressionContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.expression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExpression([NotNull] ALangParser.ExpressionContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.params"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -144,41 +144,17 @@ public partial class ALangBaseListener : IALangListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitParam([NotNull] ALangParser.ParamContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.codeblock"/>.
+	/// Enter a parse tree produced by <see cref="ALangParser.stmts"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterCodeblock([NotNull] ALangParser.CodeblockContext context) { }
+	public virtual void EnterStmts([NotNull] ALangParser.StmtsContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.codeblock"/>.
+	/// Exit a parse tree produced by <see cref="ALangParser.stmts"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitCodeblock([NotNull] ALangParser.CodeblockContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.code"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterCode([NotNull] ALangParser.CodeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.code"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitCode([NotNull] ALangParser.CodeContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.stmt"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStmt([NotNull] ALangParser.StmtContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.stmt"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStmt([NotNull] ALangParser.StmtContext context) { }
+	public virtual void ExitStmts([NotNull] ALangParser.StmtsContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.assignstmt"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -264,54 +240,6 @@ public partial class ALangBaseListener : IALangListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitInputparams([NotNull] ALangParser.InputparamsContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.arithmeticexpr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterArithmeticexpr([NotNull] ALangParser.ArithmeticexprContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.arithmeticexpr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitArithmeticexpr([NotNull] ALangParser.ArithmeticexprContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.condition"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterCondition([NotNull] ALangParser.ConditionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.condition"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitCondition([NotNull] ALangParser.ConditionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.predexpr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPredexpr([NotNull] ALangParser.PredexprContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.predexpr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPredexpr([NotNull] ALangParser.PredexprContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.logicexpr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterLogicexpr([NotNull] ALangParser.LogicexprContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.logicexpr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitLogicexpr([NotNull] ALangParser.LogicexprContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.value"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -323,18 +251,6 @@ public partial class ALangBaseListener : IALangListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitValue([NotNull] ALangParser.ValueContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.state"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterState([NotNull] ALangParser.StateContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.state"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitState([NotNull] ALangParser.StateContext context) { }
 
 	/// <inheritdoc/>
 	/// <remarks>The default implementation does nothing.</remarks>

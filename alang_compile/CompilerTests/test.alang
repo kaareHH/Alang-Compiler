@@ -1,7 +1,7 @@
 ﻿import std.alang; # finder lolleren.alang i mappen
 import string.alang;
 
-number mads = 2;
+int mads = 2;
 
 function setup -> | void
     pin bedroomLight = 12;
@@ -35,14 +35,14 @@ function loop -> | void
 
    # Make sure all light is turned off when Im at work
    if IsNoon || IsNight then
-      OFF -> bedroomLight;
-      OFF -> kitchenLight;
-      OFF -> livingRoomLight;
+      bedroomLight OFF;
+      kitchenLight OFF;
+      livingRoomLight OFF;
    endif
 endfunction
 
 function MorningRoutine ->| void
-      ON -> coffeMachine;
+      coffeMachine ON;
     
       if TIME >= 07:30 then
             TOOGLE -> bedroomLight; 
@@ -51,9 +51,11 @@ function MorningRoutine ->| void
 endfunction
 
 time TimePassed = 00:00;
+
 function everyHour ->| void
+    int someVariable = 69;
     if TimePassed < 01:00 then
-        TimePassed += TIME % 01:00;
+        TimePassed = TimePassed + TIME % 01:00;
     else
         # kør noget kode
         TimePassed = 00:00;
