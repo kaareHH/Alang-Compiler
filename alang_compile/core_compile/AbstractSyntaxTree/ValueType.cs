@@ -1,16 +1,57 @@
 using System;
+using AntlrGen;
+
 namespace core_compile.AbstractSyntaxTree
 {
-    public enum DeclarationType
+
+    public class Type
     {
-        Number,
-        Pin
+        public static LanguageType GetType (ALangParser.FunctionContext context)
+        {
+            var type = context.TYPE().GetText();
+            switch (type)
+            {
+                case "void" : 
+                    return LanguageType.Void;
+                case "int" :
+                    return LanguageType.Int;
+                case "float" :
+                    return LanguageType.Float;
+                case "Pin" :
+                    return LanguageType.Pin;
+                case "time" :
+                    return LanguageType.Time;
+                default:
+                    return LanguageType.Null;
+            }
+        }
+        public static LanguageType GetType (ALangParser.DclContext context)
+        {
+            var type = context.TYPE().GetText();
+            switch (type)
+            {
+                case "void" : 
+                    return LanguageType.Void;
+                case "int" :
+                    return LanguageType.Int;
+                case "float" :
+                    return LanguageType.Float;
+                case "Pin" :
+                    return LanguageType.Pin;
+                case "time" :
+                    return LanguageType.Time;
+                default:
+                    return LanguageType.Null;
+            }
+        }
     }
-    
-    public enum ValueType
+    public enum LanguageType
     {
-        Integer,
+        Pin,
+        Void,
+        Int,
         Float,
-        Pin
+        Time,
+        Null
     }
 }
