@@ -5,15 +5,18 @@ using NUnit.Framework;
 using core_compile.AbstractSyntaxTree;
 using System.Text.RegularExpressions;
 using System;
+using System.Diagnostics;
 using System.IO;
-using ValueType = core_compile.AbstractSyntaxTree.ValueType;
+using System.IO.IsolatedStorage;
+using System.Transactions;
+using core_compile;
 
 namespace CompilerTests
 {
     [TestFixture]
     public class AstNodeTests
     {
-        ProgramNode astRoot;
+        CompilationUnit astRoot;
 
         [SetUp]
         public void Setup()
@@ -27,7 +30,7 @@ namespace CompilerTests
         [Test]
         public void AstShouldContainProgramAstNode()
         {
-            Assert.IsInstanceOf(typeof(ProgramNode), astRoot);
+            Assert.IsInstanceOf(typeof(CompilationUnit), astRoot);
         }
 
         [Test]
@@ -54,46 +57,72 @@ namespace CompilerTests
         public void EmptyAstRootHasNullNodeChildren()
         {
             var ast = TestHelpers.MakeAstRoot("");
-            Assert.IsNotNull(ast.GetChildren());
-            Assert.IsInstanceOf(typeof(NullNode), ast.GetChildren());
-            Assert.IsInstanceOf(typeof(NullNode), ast.GetChildren().RightSibling);
+            Assert.That(ast, Is.TypeOf<CompilationUnit>());
+            Assert.That(ast.GetChildren(), Is.TypeOf<NullNode>());
         }
 
         [Test]
         public void DeclarationNodeHasCorrectTypeAndId()
         {
-            var ast = TestHelpers.MakeAstRoot("number max = 10;");
+            // https://stackoverflow.com/questions/39386586/c-sharp-generic-interface-and-factory-pattern
+            AstNode astMads = astRoot.GetChildren(2);
+            Assert.That(astMads, Is.TypeOf<DeclarationNode>());
+            
+            DeclarationNode dclMads = astMads as DeclarationNode;
+            Assert.That(dclMads.Identifier, Is.EqualTo("mads"));
+            Assert.That(dclMads.Type, Is.EqualTo(LanguageType.Int));
+        }
 
-            Assert.That(ast.GetChildren(), Is.TypeOf(typeof(NullNode)));
-            Assert.That(ast.GetChildren().RightSibling, Is.TypeOf(typeof(DeclarationNode)));
-            Assert.That(((DeclarationNode) ast.GetChildren().RightSibling).Identifier, Is.EqualTo("max"));
-            Assert.That(((DeclarationNode) ast.GetChildren().RightSibling).Value.Value, Is.EqualTo(10));
+        [Test]
+        public void FunctionNodeHasCorrectIdAndTypeAndChildren()
+        {
+            AstNode presumableFuncNode = astRoot.GetChildren(3);
+            Assert.That(presumableFuncNode, Is.TypeOf<FunctionNode>());
+            
+            FunctionNode functionNode = presumableFuncNode as FunctionNode;
+            Assert.That(functionNode.Identifier, Is.EqualTo("setup"));
+            Assert.That(functionNode.Type, Is.EqualTo(LanguageType.Void));
+            Assert.That(functionNode.NumberOfChildren, Is.EqualTo(8));
+        }
+
+        [Test]
+        public void FourthChildOfRoot_ReturnsCorrectNodeTypes()
+        {
+            FunctionNode funcNode = astRoot.GetChildren(4) as FunctionNode;
+
+            Assert.That(funcNode.GetChildren(0), Is.TypeOf<FunctionCallNode>());
+            Assert.That(funcNode.GetChildren(1), Is.TypeOf<IfNode>());
+            Assert.That(funcNode.GetChildren(2), Is.TypeOf<IfNode>());
+            Assert.That(funcNode.GetChildren(3), Is.TypeOf<IfNode>());
         }
         
+        [Test]
+        public void FifthChildOfRoot_ReturnsCorrectNodeTypes()
+        {
+            FunctionNode funcNode = astRoot.GetChildren(5) as FunctionNode;
+
+            Assert.That(funcNode.GetChildren(0), Is.TypeOf<OutputNode>());
+            Assert.That(funcNode.GetChildren(1), Is.TypeOf<IfNode>());
+        }
+
         [Test]
         public void ImportsShouldHaveCorrectPath()
         {
-            Assert.AreEqual("std.alang", ((ImportNode)(astRoot.GetChildren())).Path);
-            Assert.AreEqual("string.alang", ((ImportNode)astRoot.GetChildren().RightSibling).Path);
-        }
-        
-        [Test]
-        public void AstRootHasCorrectChildren()
-        {
-            Assert.IsInstanceOf(typeof(DeclarationNode), TestHelpers.GetChildOfIndex(astRoot, 2));
-            Assert.IsInstanceOf(typeof(FunctionNode), TestHelpers.GetChildOfIndex(astRoot, 3));
-            Assert.IsInstanceOf(typeof(FunctionNode), TestHelpers.GetChildOfIndex(astRoot, 4));
-            Assert.IsInstanceOf(typeof(FunctionNode), TestHelpers.GetChildOfIndex(astRoot, 5));
-            Assert.IsInstanceOf(typeof(DeclarationNode), TestHelpers.GetChildOfIndex(astRoot, 6));
-            Assert.IsInstanceOf(typeof(FunctionNode), TestHelpers.GetChildOfIndex(astRoot, 7));
+            Assert.AreEqual("std.alang", ((ImportNode) (astRoot.GetChildren())).Path);
+            Assert.AreEqual("string.alang", ((ImportNode) astRoot.GetChildren().RightSibling).Path);
         }
 
         [Test]
-        public void DeclarationShouldHaveTypeAndIdentifier()
+        public void AstRootHasCorrectChildren()
         {
-            var dclnode = new DeclarationNode("Torben");
-            Assert.AreEqual(ValueType.Integer, dclnode.ValueKind);
-            Assert.AreEqual("Torben", dclnode.Identifier);
+            Assert.IsInstanceOf(typeof(ImportNode), astRoot.GetChildren(0));
+            Assert.IsInstanceOf(typeof(ImportNode), astRoot.GetChildren(1));
+            Assert.IsInstanceOf(typeof(DeclarationNode), astRoot.GetChildren(2));
+            Assert.IsInstanceOf(typeof(FunctionNode), astRoot.GetChildren(3));
+            Assert.IsInstanceOf(typeof(FunctionNode), astRoot.GetChildren(4));
+            Assert.IsInstanceOf(typeof(FunctionNode), astRoot.GetChildren(5));
+            Assert.IsInstanceOf(typeof(DeclarationNode), astRoot.GetChildren(6));
+            Assert.IsInstanceOf(typeof(FunctionNode), astRoot.GetChildren(7));
         }
 
         [Test]
@@ -104,7 +133,7 @@ namespace CompilerTests
             Assert.AreEqual(1, this.astRoot.Start.Line);
 
             Assert.AreEqual(0, this.astRoot.Stop.Column);
-            Assert.AreEqual(61, this.astRoot.Stop.Line);
+            Assert.AreEqual(63, this.astRoot.Stop.Line);
         }
 
         [Test]
@@ -112,10 +141,17 @@ namespace CompilerTests
         {
             var ast = TestHelpers.MakeAstRoot("import mads.alang;\nimport anders.alang;");
 
-            Assert.AreEqual(1, ast.GetChildren().Start.Line);
-            Assert.AreEqual(0, ast.GetChildren().Start.Column);
-            Assert.AreEqual(2, ast.GetChildren().Stop.Line);
-            Assert.AreEqual(19, ast.GetChildren().Stop.Column);
+            var firstchild = ast.GetChildren();
+            Assert.AreEqual(1, firstchild.Start.Line);
+            Assert.AreEqual(0, firstchild.Start.Column);
+            Assert.AreEqual(1, firstchild.Stop.Line);
+            Assert.AreEqual(17, firstchild.Stop.Column);
+
+            var secondChild = firstchild.RightSibling;
+            Assert.AreEqual(2, secondChild.Start.Line);
+            Assert.AreEqual(0, secondChild.Start.Column);
+            Assert.AreEqual(2, secondChild.Stop.Line);
+            Assert.AreEqual(19, secondChild.Stop.Column);
         }
     }
 }

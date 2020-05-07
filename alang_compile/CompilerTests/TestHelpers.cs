@@ -11,11 +11,11 @@ namespace CompilerTests
 {
     public static class TestHelpers
     {
-        public static ProgramNode MakeAstRoot(string text)
+        public static CompilationUnit MakeAstRoot(string text)
         {
             var tokenStream = LexInputFile(text);
             var parseTree = ParseTokens(tokenStream);
-            return (ProgramNode)new AstBuilderVisitor().VisitStart(parseTree);
+            return (CompilationUnit)new AstBuilderVisitor().VisitStart(parseTree);
         }
 
         public static AstNode GetChildOfIndex(AstNode parent, int index)

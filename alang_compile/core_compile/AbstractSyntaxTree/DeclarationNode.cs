@@ -1,19 +1,21 @@
+using System;
+using Antlr4.Runtime;
+using AntlrGen;
+
 namespace core_compile.AbstractSyntaxTree
 {
     public class DeclarationNode : AstNode
     {
-        public DeclarationType DeclarationType { get; set; }
         public string Identifier { get; set; }
-
-        public ExpressionNode Expression { get; set; }
+        public LanguageType Type { get; set; }
+        
+        public ExpressionNode Value { get; set; }
+        
+        public DeclarationNode(ALangParser.DclContext context) : base (context) { }
 
         public DeclarationNode()
         {
         }
-
-        public DeclarationNode(string identifier)
-        {
-            Identifier = identifier;
-        }
     }
+
 }

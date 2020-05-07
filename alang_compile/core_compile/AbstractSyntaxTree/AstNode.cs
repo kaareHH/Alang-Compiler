@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Antlr4.Runtime;
+using AntlrGen;
 
 namespace core_compile.AbstractSyntaxTree
 {
@@ -19,14 +20,50 @@ namespace core_compile.AbstractSyntaxTree
             LeftMostSibling = this;
         }
 
+        public AstNode(ParserRuleContext context) : this()
+        {
+            AddLocationFromContext(context);
+        }
+
+        public int NumberOfChildren
+        {
+            get {
+                int children = 0;
+                
+                var node = GetChildren();
+              
+                while (node != null)
+                {
+                    children++;
+                    node = node.RightSibling;
+                }
+
+                return children;
+            }
+        }
+        
+
 
         public AstNode GetChildren()
         {
             return LeftMostChild;
         }
+        public AstNode GetChildren(int i)
+        {
+            if (i == 0)
+                return GetChildren();
+            
+            var node = GetChildren();
+            for (int j = 0; j < i; j++)
+            {
+                node = node.RightSibling;
+            }
+            return node;
+
+        }
 
         // Implemented as shown in [CAC p. 253]
-        public void AdobtChildren(AstNode y)
+        public void AdoptChildren(AstNode y)
         {
             if (y == null)
             {

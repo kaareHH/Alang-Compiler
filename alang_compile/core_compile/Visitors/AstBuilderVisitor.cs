@@ -3,6 +3,9 @@ using AntlrGen;
 using core_compile.AbstractSyntaxTree;
 using System;
 using System.Linq;
+using System.Threading;
+using Antlr4.Runtime.Tree;
+using Type = core_compile.AbstractSyntaxTree.Type;
 
 namespace core_compile.Visitors
 {
@@ -10,119 +13,94 @@ namespace core_compile.Visitors
     {
         public override AstNode VisitStart(ALangParser.StartContext context)
         {
-            var imports = context.imports().Accept(this);
-            var commands = context.commands().Accept(this);
-
-            var programNode = MakeFamily(AstNodeType.Program,
-                                         imports,
-                                         commands);
-
-            programNode.AddLocationFromContext(context);
-
-            return programNode;
-        }
-
-        // TODO: Add location to import nodes
-        public override AstNode VisitImports(ALangParser.ImportsContext context)
-        {
-            if (context.GetText() == "")
-            {
-                return new NullNode();
-            }
-            const int first = 0;
-            ImportNode result = new ImportNode();
-            result.AddLocationFromContext(context);
-
-            result.Path = context.ALANGFILENAME(first).GetText();
-
-            foreach (var import in context.ALANGFILENAME().Skip(1))
-            {
-                var newToken = new ImportNode();
-                newToken.Path = import.GetText();
-                result.MakeSiblings(newToken);
-            }
-
-            return result;
+            var astRoot = new CompilationUnit(context);
+            astRoot.AdoptChildren(context.commands().Accept(this));
+            return astRoot;
         }
 
         public override AstNode VisitCommands(ALangParser.CommandsContext context)
         {
-            AstNode firstCommand;
+            
+            AstNode node = ExtractCommandTypeNode(context);
+            if (context.commands() != null)
+                node.MakeSiblings(context.commands().Accept(this));
+            
+            return node;
+        }
 
-            if (context.command().Length > 0)
-            {
-                firstCommand = context.command(0).Accept(this);
-
-                for (int i = 1; i < context.command().Length; i++)
-                {
-                    var command = context.command(i).Accept(this);
-                    firstCommand.MakeSiblings(command);
-                }
-            }
-            else
-            {
-                firstCommand = new NullNode();
-            }
-
-
-            return firstCommand;
+        private AstNode ExtractCommandTypeNode(ALangParser.CommandsContext context)
+        {
+            if(context.dcl() != null)
+                return context.dcl().Accept(this);
+            if (context.imports() != null)
+                return context.imports().Accept(this);
+            if (context.function() != null)
+                return context.function().Accept(this);
+            return new NullNode();
         }
 
         public override AstNode VisitDcl(ALangParser.DclContext context)
         {
-            return new DeclarationNode();
+            var node = new DeclarationNode(context);
+            node.Value = context.primaryExpression().Accept(this) as ExpressionNode;
+            node.Identifier = context.ID().GetText();
+            node.Type = Type.GetType(context);
+            
+            return node;
         }
+        
 
         public override AstNode VisitFunction(ALangParser.FunctionContext context)
         {
-            return new FunctionNode();
-        }
-
-        private AstNode MakeFamily(AstNodeType parentType, params AstNode[] kids)
-        {
-            if (kids == null)
-            {
-                return null;
-            }
-
-            var parentNode = MakeNode(parentType);
-            foreach (var kid in kids)
-            {
-                if (kid != null)
-                {
-                    parentNode.AdobtChildren(kid);
-                }
-            }
-
-            return parentNode;
-        }
-
-        private AstNode MakeNode(AstNodeType type)
-        {
-            AstNode node;
-            switch (type)
-            {
-                case AstNodeType.Program:
-                    node = new ProgramNode();
-                    break;
-                case AstNodeType.Import:
-                    node = new ImportNode();
-                    break;
-                case AstNodeType.Comment:
-                    node = new CommentNode();
-                    break;
-                case AstNodeType.Function:
-                    node = new FunctionNode();
-                    break;
-                case AstNodeType.Declaration:
-                    node = new DeclarationNode();
-                    break;
-                default:
-                    node = new NullNode();
-                    break;
-            }
-
+            var node = new FunctionNode();
+            node.Identifier = context.ID().GetText();
+            node.Type = Type.GetType(context);
+            node.AdoptChildren(context.stmts().Accept(this));
+            
             return node;
+        }
+
+        public override AstNode VisitImports(ALangParser.ImportsContext context)
+        {
+            var node = new ImportNode(context);
+            node.Path = context.ALANGFILENAME().GetText();
+            return node;
+        }
+
+        public override AstNode VisitStmts(ALangParser.StmtsContext context)
+        {
+            var node = ExtractStmtTypeNode(context);
+            if (context.stmts().children != null)
+                node.MakeSiblings(context.stmts().Accept(this));
+            return node;
+        }
+        
+        private AstNode ExtractStmtTypeNode(ALangParser.StmtsContext context)
+        {
+            if(context.dcl() != null)
+                return context.dcl().Accept(this);
+            if(context.ifstmt() != null)
+                return context.ifstmt().Accept(this);
+            if(context.functioncall() != null)
+                return context.functioncall().Accept(this);
+            if(context.outputstmt() != null)
+                return context.outputstmt().Accept(this);
+            return new NullNode();
+        }
+
+        public override AstNode VisitOutputstmt(ALangParser.OutputstmtContext context)
+        {
+            return new OutputNode(context);
+        }
+
+        public override AstNode VisitIfstmt(ALangParser.IfstmtContext context)
+        {
+            return new IfNode(context);
+        }
+
+        public override AstNode VisitFunctioncall(ALangParser.FunctioncallContext context)
+        {
+            return new FunctionCallNode(context);
         }
     }
 }
