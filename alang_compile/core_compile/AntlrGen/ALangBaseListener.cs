@@ -180,6 +180,30 @@ public partial class ALangBaseListener : IALangListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitIfstmt([NotNull] ALangParser.IfstmtContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.alternative"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterAlternative([NotNull] ALangParser.AlternativeContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.alternative"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitAlternative([NotNull] ALangParser.AlternativeContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.iflol"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterIflol([NotNull] ALangParser.IflolContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.iflol"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitIflol([NotNull] ALangParser.IflolContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

@@ -95,6 +95,17 @@ namespace CompilerTests
             Assert.That(funcNode.GetChildren(2), Is.TypeOf<IfNode>());
             Assert.That(funcNode.GetChildren(3), Is.TypeOf<IfNode>());
         }
+
+        [Test]
+        public void IfNode_ShouldHaveAlternative()
+        {
+            FunctionNode funcNode = astRoot.GetChildren(4) as FunctionNode;
+            AstNode presumableIfNode = funcNode.GetChildren(1);
+            Assert.That(presumableIfNode, Is.TypeOf<IfNode>());
+            
+            IfNode ifNode = presumableIfNode as IfNode;
+            Assert.That(ifNode.Alternative, Is.Not.Null);
+        }
         
         [Test]
         public void FifthChildOfRoot_ReturnsCorrectNodeTypes()

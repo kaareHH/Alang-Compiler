@@ -105,6 +105,18 @@ public interface IALangVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitIfstmt([NotNull] ALangParser.IfstmtContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.alternative"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAlternative([NotNull] ALangParser.AlternativeContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.iflol"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitIflol([NotNull] ALangParser.IflolContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

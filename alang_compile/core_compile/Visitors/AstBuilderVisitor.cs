@@ -93,9 +93,20 @@ namespace core_compile.Visitors
             return new OutputNode(context);
         }
 
+        public override AstNode VisitAlternative(ALangParser.AlternativeContext context)
+        {
+            var node = new IfNode(context);
+            if (context.alternative() != null)
+                node.Alternative = context.alternative().Accept(this) as IfNode;
+            return node;
+        }
+
         public override AstNode VisitIfstmt(ALangParser.IfstmtContext context)
         {
-            return new IfNode(context);
+            var node = new IfNode(context);
+            if (context.alternative() != null)
+                node.Alternative = context.alternative().Accept(this) as IfNode;
+            return node;
         }
 
         public override AstNode VisitFunctioncall(ALangParser.FunctioncallContext context)

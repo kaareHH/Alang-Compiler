@@ -51,7 +51,16 @@ stmts               : dcl stmts
 assignstmt          : ID '=' primaryExpression ';'
                     ;
 
-ifstmt              : 'if' primaryExpression 'then' stmts ('else if' primaryExpression 'then' stmts)* 'endif'
+
+ifstmt              : 'if' alternative 'endif'
+                    ;
+
+alternative         : primaryExpression 'then' stmts alternative    
+                    | primaryExpression 'then' stmts 'else if' alternative
+                    | primaryExpression 'then' stmts 'else' stmts
+                    |
+                    ;
+iflol              : 'if' primaryExpression 'then' stmts ('else if' primaryExpression 'then' stmts)* 'endif'
                     | 'if' primaryExpression 'then' stmts ('else if' primaryExpression 'then' stmts)* 'else' stmts 'endif'
                     ;
                     
