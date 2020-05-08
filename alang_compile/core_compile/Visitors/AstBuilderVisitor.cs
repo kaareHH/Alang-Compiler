@@ -20,17 +20,17 @@ namespace core_compile.Visitors
 
         public override AstNode VisitCommands(ALangParser.CommandsContext context)
         {
-            
+
             AstNode node = ExtractCommandTypeNode(context);
             if (context.commands() != null)
                 node.MakeSiblings(context.commands().Accept(this));
-            
+
             return node;
         }
 
         private AstNode ExtractCommandTypeNode(ALangParser.CommandsContext context)
         {
-            if(context.dcl() != null)
+            if (context.dcl() != null)
                 return context.dcl().Accept(this);
             if (context.imports() != null)
                 return context.imports().Accept(this);
@@ -45,10 +45,10 @@ namespace core_compile.Visitors
             node.Value = context.primaryExpression().Accept(this) as ExpressionNode;
             node.Identifier = context.ID().GetText();
             node.Type = Type.GetType(context);
-            
+
             return node;
         }
-        
+
 
         public override AstNode VisitFunction(ALangParser.FunctionContext context)
         {
@@ -56,7 +56,7 @@ namespace core_compile.Visitors
             node.Identifier = context.ID().GetText();
             node.Type = Type.GetType(context);
             node.AdoptChildren(context.stmts().Accept(this));
-            
+
             return node;
         }
 
@@ -74,17 +74,21 @@ namespace core_compile.Visitors
                 node.MakeSiblings(context.stmts().Accept(this));
             return node;
         }
-        
+
         private AstNode ExtractStmtTypeNode(ALangParser.StmtsContext context)
         {
-            if(context.dcl() != null)
+            if (context.dcl() != null)
                 return context.dcl().Accept(this);
-            if(context.ifstmt() != null)
+            if (context.ifstmt() != null)
                 return context.ifstmt().Accept(this);
-            if(context.functioncall() != null)
+            if (context.functioncall() != null)
                 return context.functioncall().Accept(this);
-            if(context.outputstmt() != null)
+            if (context.outputstmt() != null)
                 return context.outputstmt().Accept(this);
+            if (context.repeatstmt() != null)
+                return context.repeatstmt().Accept(this);
+            if (context.assignstmt() != null)
+                return context.assignstmt().Accept(this);
             return new NullNode();
         }
 
@@ -112,6 +116,26 @@ namespace core_compile.Visitors
         public override AstNode VisitFunctioncall(ALangParser.FunctioncallContext context)
         {
             return new FunctionCallNode(context);
+        }
+
+        public override AstNode VisitRepeatstmt(ALangParser.RepeatstmtContext context)
+        {
+            var repeatNode = new RepeatNode(context);
+            if (context.primaryExpression() != null)
+                repeatNode.LoopExpression = context.primaryExpression().Accept(this) as ExpressionNode;
+            if (context.stmts().children != null)
+                repeatNode.AdoptChildren(context.stmts().Accept(this));
+            return repeatNode;
+        }
+
+        public override AstNode VisitPrimaryExpression(ALangParser.PrimaryExpressionContext context)
+        {
+            return new ExpressionNode();
+        }
+
+        public override AstNode VisitAssignstmt(ALangParser.AssignstmtContext context)
+        {
+            return new AssignmentNode();
         }
     }
 }

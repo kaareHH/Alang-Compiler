@@ -64,7 +64,7 @@ iflol              : 'if' primaryExpression 'then' stmts ('else if' primaryExpre
                     | 'if' primaryExpression 'then' stmts ('else if' primaryExpression 'then' stmts)* 'else' stmts 'endif'
                     ;
                     
-repeatstmt:         'repeat' value 'times' stmts 'endrepeat';
+repeatstmt:         'repeat' primaryExpression 'times' stmts 'endrepeat';
 
 outputstmt:         'toggle' ID ';'
                     | ID ONOFF ';'

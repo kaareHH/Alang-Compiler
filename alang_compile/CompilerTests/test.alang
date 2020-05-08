@@ -61,3 +61,10 @@ function everyHour ->| void
         TimePassed = 00:00;
     endif
 endfunction
+
+function repeatTest -> | void
+   int test = 2;
+   repeat 2 times
+      test = test + 1;
+   endrepeat
+endfunction

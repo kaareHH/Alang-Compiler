@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:/Users/aaspr.DESKTOP-G6R73JT/OneDrive/Desktop/pomo/p4/alang_compile/core_compile\ALang.g4 by ANTLR 4.8
+// Generated from /home/mads/dev/aau/p4-compiler/alang_compile/core_compile/ALang.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -1078,8 +1078,8 @@ public partial class ALangParser : Parser {
 
 	public partial class RepeatstmtContext : ParserRuleContext {
 		public ITerminalNode REPEAT() { return GetToken(ALangParser.REPEAT, 0); }
-		public ValueContext value() {
-			return GetRuleContext<ValueContext>(0);
+		public PrimaryExpressionContext primaryExpression() {
+			return GetRuleContext<PrimaryExpressionContext>(0);
 		}
 		public ITerminalNode TIMES() { return GetToken(ALangParser.TIMES, 0); }
 		public StmtsContext stmts() {
@@ -1114,7 +1114,7 @@ public partial class ALangParser : Parser {
 			EnterOuterAlt(_localctx, 1);
 			{
 			State = 193; Match(REPEAT);
-			State = 194; value();
+			State = 194; primaryExpression();
 			State = 195; Match(TIMES);
 			State = 196; stmts();
 			State = 197; Match(ENDREPEAT);
@@ -1579,7 +1579,7 @@ public partial class ALangParser : Parser {
 		'\xC0', '\xC2', '\x3', '\x2', '\x2', '\x2', '\xC1', '\x9F', '\x3', '\x2', 
 		'\x2', '\x2', '\xC1', '\xAF', '\x3', '\x2', '\x2', '\x2', '\xC2', '\x1D', 
 		'\x3', '\x2', '\x2', '\x2', '\xC3', '\xC4', '\a', '\x10', '\x2', '\x2', 
-		'\xC4', '\xC5', '\x5', '(', '\x15', '\x2', '\xC5', '\xC6', '\a', '\x11', 
+		'\xC4', '\xC5', '\x5', '\f', '\a', '\x2', '\xC5', '\xC6', '\a', '\x11', 
 		'\x2', '\x2', '\xC6', '\xC7', '\x5', '\x14', '\v', '\x2', '\xC7', '\xC8', 
 		'\a', '\v', '\x2', '\x2', '\xC8', '\x1F', '\x3', '\x2', '\x2', '\x2', 
 		'\xC9', '\xCA', '\a', '\b', '\x2', '\x2', '\xCA', '\xCB', '\a', '\x1F', 

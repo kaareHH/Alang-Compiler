@@ -67,7 +67,7 @@ namespace CompilerTests
             // https://stackoverflow.com/questions/39386586/c-sharp-generic-interface-and-factory-pattern
             AstNode astMads = astRoot.GetChildren(2);
             Assert.That(astMads, Is.TypeOf<DeclarationNode>());
-            
+
             DeclarationNode dclMads = astMads as DeclarationNode;
             Assert.That(dclMads.Identifier, Is.EqualTo("mads"));
             Assert.That(dclMads.Type, Is.EqualTo(LanguageType.Int));
@@ -78,7 +78,7 @@ namespace CompilerTests
         {
             AstNode presumableFuncNode = astRoot.GetChildren(3);
             Assert.That(presumableFuncNode, Is.TypeOf<FunctionNode>());
-            
+
             FunctionNode functionNode = presumableFuncNode as FunctionNode;
             Assert.That(functionNode.Identifier, Is.EqualTo("setup"));
             Assert.That(functionNode.Type, Is.EqualTo(LanguageType.Void));
@@ -102,11 +102,11 @@ namespace CompilerTests
             FunctionNode funcNode = astRoot.GetChildren(4) as FunctionNode;
             AstNode presumableIfNode = funcNode.GetChildren(1);
             Assert.That(presumableIfNode, Is.TypeOf<IfNode>());
-            
+
             IfNode ifNode = presumableIfNode as IfNode;
             Assert.That(ifNode.Alternative, Is.Not.Null);
         }
-        
+
         [Test]
         public void FifthChildOfRoot_ReturnsCorrectNodeTypes()
         {
@@ -119,8 +119,8 @@ namespace CompilerTests
         [Test]
         public void ImportsShouldHaveCorrectPath()
         {
-            Assert.AreEqual("std.alang", ((ImportNode) (astRoot.GetChildren())).Path);
-            Assert.AreEqual("string.alang", ((ImportNode) astRoot.GetChildren().RightSibling).Path);
+            Assert.AreEqual("std.alang", ((ImportNode)(astRoot.GetChildren())).Path);
+            Assert.AreEqual("string.alang", ((ImportNode)astRoot.GetChildren().RightSibling).Path);
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace CompilerTests
             Assert.AreEqual(1, this.astRoot.Start.Line);
 
             Assert.AreEqual(0, this.astRoot.Stop.Column);
-            Assert.AreEqual(63, this.astRoot.Stop.Line);
+            Assert.AreEqual(70, this.astRoot.Stop.Line);
         }
 
         [Test]
@@ -163,6 +163,33 @@ namespace CompilerTests
             Assert.AreEqual(0, secondChild.Start.Column);
             Assert.AreEqual(2, secondChild.Stop.Line);
             Assert.AreEqual(19, secondChild.Stop.Column);
+        }
+
+        [Test]
+        public void RepeatTestFunction_ShouldHaveRepeatNodeAsSecondChild()
+        {
+            FunctionNode funcNode = this.astRoot.GetChildren(8) as FunctionNode;
+            Assert.That(funcNode.Identifier, Is.EqualTo("repeatTest"));
+
+            Assert.That(funcNode.GetChildren(1), Is.TypeOf<RepeatNode>());
+        }
+
+        [Test]
+        public void RepeatTestNode_ShouldHaveLoopExpression()
+        {
+            FunctionNode funcNode = this.astRoot.GetChildren(8) as FunctionNode;
+            var repeatNode = funcNode.GetChildren(1) as RepeatNode;
+
+            Assert.That(repeatNode.LoopExpression, Is.Not.Null);
+        }
+
+        [Test]
+        public void RepeatTestNode_ShouldHaveAssignmentChild()
+        {
+            FunctionNode funcNode = this.astRoot.GetChildren(8) as FunctionNode;
+            var repeatNode = funcNode.GetChildren(1) as RepeatNode;
+
+            Assert.That(repeatNode.GetChildren(0), Is.TypeOf<AssignmentNode>());
         }
     }
 }
