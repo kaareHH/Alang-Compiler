@@ -52,16 +52,10 @@ assignstmt          : ID '=' primaryExpression ';'
                     ;
 
 
-ifstmt              : 'if' alternative 'endif'
-                    ;
-
-alternative         : primaryExpression 'then' stmts alternative    
-                    | primaryExpression 'then' stmts 'else if' alternative
-                    | primaryExpression 'then' stmts 'else' stmts
-                    |
-                    ;
-iflol              : 'if' primaryExpression 'then' stmts ('else if' primaryExpression 'then' stmts)* 'endif'
-                    | 'if' primaryExpression 'then' stmts ('else if' primaryExpression 'then' stmts)* 'else' stmts 'endif'
+ifstmt              : 'if' primaryExpression 'then' stmts 'endif'
+                    | 'if' primaryExpression 'then' stmts 'else' stmts 'endif'
+                    | 'if' primaryExpression 'then' stmts 'else if' stmts 'endif'
+                    | 'if' primaryExpression 'then' stmts 'else if' stmts 'else' stmts 'endif'
                     ;
                     
 repeatstmt:         'repeat' value 'times' stmts 'endrepeat';
