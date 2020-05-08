@@ -54,8 +54,6 @@ assignstmt          : ID '=' primaryExpression ';'
 
 ifstmt              : 'if' primaryExpression 'then' stmts 'endif'
                     | 'if' primaryExpression 'then' stmts 'else' stmts 'endif'
-                    | 'if' primaryExpression 'then' stmts 'else if' stmts 'endif'
-                    | 'if' primaryExpression 'then' stmts 'else if' stmts 'else' stmts 'endif'
                     ;
                     
 repeatstmt:         'repeat' value 'times' stmts 'endrepeat';
@@ -140,7 +138,18 @@ ALANGFILENAME: ([a-zA-Z0-9])+ '.alang'
              ;
 
  // SKIPS
- WHITESPACE          : (' '|'\t'|'\r'? '\n'|'\r')+ -> skip ;
+ 
+Whitespace
+    :   [ \t]+
+        -> skip
+    ;
+
+Newline
+    :   (   '\r' '\n'?
+        |   '\n'
+        )
+        -> skip
+    ;
  BLOCKCOMMENT        :   '#*' .*? '*#' -> skip ;
  LINECOMMENT         :   '#' ~[\r\n]* -> skip ;
  //NEWLINE             : ('\r'? '\n' | '\r')+ -> skip ;
