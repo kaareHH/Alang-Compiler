@@ -4,6 +4,9 @@ namespace core_compile.AbstractSyntaxTree
 {
     public class AssignmentNode : AstNode
     {
+        public string Identifier { get; set; }
+        public ExpressionNode Expression { get; set; }
+
         public AssignmentNode()
         {
         }
@@ -11,5 +14,6 @@ namespace core_compile.AbstractSyntaxTree
         public AssignmentNode(ParserRuleContext context) : base(context)
         {
         }
+
     }
 }

@@ -135,7 +135,11 @@ namespace core_compile.Visitors
 
         public override AstNode VisitAssignstmt(ALangParser.AssignstmtContext context)
         {
-            return new AssignmentNode();
+            var assignNode = new AssignmentNode(context);
+            assignNode.Identifier = context.ID().GetText();
+            if (context.primaryExpression() != null)
+                assignNode.Expression = context.primaryExpression().Accept(this) as ExpressionNode;
+            return assignNode;
         }
     }
 }

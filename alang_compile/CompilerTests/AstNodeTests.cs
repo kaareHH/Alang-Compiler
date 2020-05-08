@@ -191,5 +191,40 @@ namespace CompilerTests
 
             Assert.That(repeatNode.GetChildren(0), Is.TypeOf<AssignmentNode>());
         }
+
+        [Test]
+        public void RepeatTestNodeWithoutBody_ShouldHaveNoChildren()
+        {
+            var ast = TestHelpers.MakeAstRoot("function testFunction -> | void\nrepeat 2 times\n endrepeat\nendfunction");
+            FunctionNode funcNode = ast.GetChildren(0) as FunctionNode;
+
+            RepeatNode repeatNode = funcNode.GetChildren(0) as RepeatNode;
+
+            Assert.That(repeatNode.GetChildren(0), Is.Null);
+        }
+
+        [Test]
+        public void AssignStatementHasCorrectId()
+        {
+            var ast = TestHelpers.MakeAstRoot("int tester = 2;\nfunction testFunction -> | void\ntester = 4;\nendfunction");
+            FunctionNode funcNode = ast.GetChildren(1) as FunctionNode;
+
+            AssignmentNode assignNode = funcNode.GetChildren(0) as AssignmentNode;
+
+            Assert.That(assignNode.Identifier, Is.EqualTo("tester"));
+            Assert.That(assignNode.Expression, Is.TypeOf<ExpressionNode>());
+        }
+
+        [Test]
+        public void AssignStatementWithVariable_ShouldContainExpressionNode()
+        {
+            var ast = TestHelpers.MakeAstRoot("int varTest = 2;\nint tester = 2;\nfunction testFunction -> | void\ntester = varTest;\nendfunction");
+            FunctionNode funcNode = ast.GetChildren(2) as FunctionNode;
+
+            AssignmentNode assignNode = funcNode.GetChildren(0) as AssignmentNode;
+
+            Assert.That(assignNode.Identifier, Is.EqualTo("tester"));
+            Assert.That(assignNode.Expression, Is.TypeOf<ExpressionNode>());
+        }
     }
 }
