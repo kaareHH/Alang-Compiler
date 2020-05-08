@@ -17,12 +17,17 @@ endfunction
 function loop -> | void
     everyHour ->;
 
+   if true then
+     IsMorning = true;
+   endif
    # Define when each state is reached during the day
    if TIME >= 07:45 && TIME < 12:00 then
       IsMorning = true;
-   else if TIME >= 12:00 && TIME < 16:00 then
+   endif
+   if TIME >= 12:00 && TIME < 16:00 then
       IsNoon = true;
-   else if TIME >= 16:00 && TIME < 22:00 then
+   endif
+   if TIME >= 16:00 && TIME < 22:00 then
       IsEvening = true;
    else
       IsNight = true;
@@ -67,4 +72,9 @@ function repeatTest -> | void
    repeat 2 times
       test = test + 1;
    endrepeat
+endfunction
+
+function expressionTest -> | void
+   int test = 2;
+   int kasper = test * 10 + (25 / 5);
 endfunction

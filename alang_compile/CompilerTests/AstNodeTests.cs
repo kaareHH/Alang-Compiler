@@ -97,14 +97,40 @@ namespace CompilerTests
         }
 
         [Test]
-        public void IfNode_ShouldHaveAlternative()
+        public void IfNode_ShouldNotHaveAlternate()
         {
             FunctionNode funcNode = astRoot.GetChildren(4) as FunctionNode;
             AstNode presumableIfNode = funcNode.GetChildren(1);
             Assert.That(presumableIfNode, Is.TypeOf<IfNode>());
 
             IfNode ifNode = presumableIfNode as IfNode;
-            Assert.That(ifNode.Alternative, Is.Not.Null);
+            Assert.That(ifNode.Alternate, Is.Null);
+            Assert.That(ifNode.Consequent, Is.Not.Null);
+            Assert.That(ifNode.Condition, Is.Not.Null);
+        }
+
+        [Test]
+        public void IfNode_ShouldHaveAlternate()
+        {
+            FunctionNode funcNode = astRoot.GetChildren(4) as FunctionNode;
+            AstNode presumableIfNode = funcNode.GetChildren(4);
+            Assert.That(presumableIfNode, Is.TypeOf<IfNode>());
+
+            IfNode ifNode = presumableIfNode as IfNode;
+            Assert.That(ifNode.Alternate, Is.Not.Null);
+            Assert.That(ifNode.Consequent, Is.Not.Null);
+        }
+
+        [Test]
+        public void TestExpression_ShouldHave()
+        {
+            FunctionNode expressionTestFunction = astRoot.GetChildren(9) as FunctionNode;
+            DeclarationNode dclNode = expressionTestFunction.GetChildren(1) as DeclarationNode;
+            ExpressionNode expressionNode = dclNode.PrimaryExpression as ExpressionNode;
+
+            Assert.That(expressionNode.Operator, Is.EqualTo(Operator.Multiplication));
+            Assert.That(expressionNode.Right, Is.TypeOf<ExpressionNode>());
+            Assert.That(expressionNode.Left, Is.TypeOf<ExpressionNode>());
         }
 
         [Test]
@@ -144,7 +170,7 @@ namespace CompilerTests
             Assert.AreEqual(1, this.astRoot.Start.Line);
 
             Assert.AreEqual(0, this.astRoot.Stop.Column);
-            Assert.AreEqual(70, this.astRoot.Stop.Line);
+            Assert.AreEqual(80, this.astRoot.Stop.Line);
         }
 
         [Test]

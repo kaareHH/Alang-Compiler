@@ -4,7 +4,10 @@ namespace core_compile.AbstractSyntaxTree
 {
     public class IfNode : AstNode
     {
-        public IfNode Alternative { get; set; }
+        public AstNode Alternate { get; set; }
+
+        public AstNode Consequent { get; set; }
+        public ExpressionNode Condition { get; set; }
 
         public IfNode(ParserRuleContext context) : base(context)
         {

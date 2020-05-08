@@ -5,6 +5,7 @@ namespace core_compile.AbstractSyntaxTree
         Addition,
         Subtraction,
         Multiplication,
-        Division
+        Division,
+        InvalidOperator
     }
 }

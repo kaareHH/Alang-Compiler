@@ -8,10 +8,10 @@ namespace core_compile.AbstractSyntaxTree
     {
         public string Identifier { get; set; }
         public LanguageType Type { get; set; }
-        
-        public ExpressionNode Value { get; set; }
-        
-        public DeclarationNode(ALangParser.DclContext context) : base (context) { }
+
+        public ExpressionNode PrimaryExpression { get; set; }
+
+        public DeclarationNode(ALangParser.DclContext context) : base(context) { }
 
         public DeclarationNode()
         {

@@ -51,18 +51,9 @@ stmts               : dcl stmts
 assignstmt          : ID '=' primaryExpression ';'
                     ;
 
-
-ifstmt              : 'if' alternative 'endif'
-                    ;
-
-alternative         : primaryExpression 'then' stmts alternative    
-                    | primaryExpression 'then' stmts 'else if' alternative
-                    | primaryExpression 'then' stmts 'else' stmts
-                    |
-                    ;
-iflol              : 'if' primaryExpression 'then' stmts ('else if' primaryExpression 'then' stmts)* 'endif'
-                    | 'if' primaryExpression 'then' stmts ('else if' primaryExpression 'then' stmts)* 'else' stmts 'endif'
-                    ;
+ifstmt              : 'if' primaryExpression 'then' stmts 'endif'
+                    | 'if' primaryExpression 'then' stmts 'else' stmts 'endif'
+                    ;            
                     
 repeatstmt:         'repeat' primaryExpression 'times' stmts 'endrepeat';
 
@@ -148,7 +139,8 @@ ALANGFILENAME: ([a-zA-Z0-9])+ '.alang'
              ;
 
  // SKIPS
- WHITESPACE          : (' '|'\t'|'\r'? '\n'|'\r')+ -> skip ;
+ WHITESPACE :   [ \t]+ -> skip;
+ NEWLINE :   (   '\r' '\n'? |   '\n') -> skip;
  BLOCKCOMMENT        :   '#*' .*? '*#' -> skip ;
  LINECOMMENT         :   '#' ~[\r\n]* -> skip ;
  //NEWLINE             : ('\r'? '\n' | '\r')+ -> skip ;
