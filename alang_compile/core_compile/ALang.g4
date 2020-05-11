@@ -24,7 +24,7 @@ imports             : 'import' ALANGFILENAME ';'
 primaryExpression   : expression OPALL primaryExpression
                     | expression
                     ;
-                    
+
 expression          : value
                     | '(' primaryExpression ')'
                     ;
