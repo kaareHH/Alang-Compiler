@@ -55,24 +55,24 @@ ifstmt              : 'if' primaryExpression 'then' stmts 'endif'
                     | 'if' primaryExpression 'then' stmts 'else' stmts 'endif'
                     ;            
                     
-repeatstmt:         'repeat' primaryExpression 'times' stmts 'endrepeat';
+repeatstmt:         'while' primaryExpression 'do' stmts 'endwhile';
 
-outputstmt:         'toggle' ID ';'
-                    | ID ONOFF ';'
+outputstmt:          'ON' '->' ID ';'
+                    |'OFF' '->' ID ';'
                     ;
 
 returnstmt          : 'return' primaryExpression ';'
                     ;
                     
 functioncall        : ID '->' inputparams ';'
+                    | ID '->' ';'
                     ;
                     
 inputparams         : value
                     | value ',' inputparams
-                    |
                     ;
 
-value: ID | INTEGERS | PIN | TIME | BOOLEAN | FLOAT;
+value: ID | INTEGERS | PIN | TIME;
 
 //TERMINALS
 ENDIF: 'endif';
@@ -122,10 +122,10 @@ BOOLEAN: 'true' | 'false';
 INTEGERS: '0' | DIGITS;
 fragment DIGITS: '1' ..'9' '0' ..'9'*;
 PIN: '0' ..'9' | '1' '0' ..'3';
-ONOFF: 'ON' | 'OFF';
-TIME                :  NUM NUM ':' NUM NUM
-                    |  NUM NUM ':' NUM NUM ':' NUM NUM
-                    ;
+ON: 'ON' ;
+OFF: 'OFF';
+TIME                :  NUM NUM ':' NUM NUM ':' NUM NUM
+;
 fragment NUM        : '0'..'9';
 FLOAT: NUM* '.' NUM+ ;
 

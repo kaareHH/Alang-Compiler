@@ -16,7 +16,7 @@ namespace CompilerTests
     [TestFixture]
     public class AstNodeTests
     {
-        CompilationUnit astRoot;
+        CompilationNode astRoot;
 
         [SetUp]
         public void Setup()
@@ -30,7 +30,7 @@ namespace CompilerTests
         [Test]
         public void AstShouldContainProgramAstNode()
         {
-            Assert.IsInstanceOf(typeof(CompilationUnit), astRoot);
+            Assert.IsInstanceOf(typeof(CompilationNode), astRoot);
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace CompilerTests
         public void EmptyAstRootHasNullNodeChildren()
         {
             var ast = TestHelpers.MakeAstRoot("");
-            Assert.That(ast, Is.TypeOf<CompilationUnit>());
+            Assert.That(ast, Is.TypeOf<CompilationNode>());
             Assert.That(ast.GetChildren(), Is.TypeOf<NullNode>());
         }
 
@@ -197,14 +197,14 @@ namespace CompilerTests
             FunctionNode funcNode = this.astRoot.GetChildren(8) as FunctionNode;
             Assert.That(funcNode.Identifier, Is.EqualTo("repeatTest"));
 
-            Assert.That(funcNode.GetChildren(1), Is.TypeOf<RepeatNode>());
+            Assert.That(funcNode.GetChildren(1), Is.TypeOf<WhileNode>());
         }
 
         [Test]
         public void RepeatTestNode_ShouldHaveLoopExpression()
         {
             FunctionNode funcNode = this.astRoot.GetChildren(8) as FunctionNode;
-            var repeatNode = funcNode.GetChildren(1) as RepeatNode;
+            var repeatNode = funcNode.GetChildren(1) as WhileNode;
 
             Assert.That(repeatNode.LoopExpression, Is.Not.Null);
         }
@@ -213,7 +213,7 @@ namespace CompilerTests
         public void RepeatTestNode_ShouldHaveAssignmentChild()
         {
             FunctionNode funcNode = this.astRoot.GetChildren(8) as FunctionNode;
-            var repeatNode = funcNode.GetChildren(1) as RepeatNode;
+            var repeatNode = funcNode.GetChildren(1) as WhileNode;
 
             Assert.That(repeatNode.GetChildren(0), Is.TypeOf<AssignmentNode>());
         }
@@ -221,12 +221,12 @@ namespace CompilerTests
         [Test]
         public void RepeatTestNodeWithoutBody_ShouldHaveNoChildren()
         {
-            var ast = TestHelpers.MakeAstRoot("function testFunction -> | void\nrepeat 2 times\n endrepeat\nendfunction");
+            var ast = TestHelpers.MakeAstRoot("function testFunction -> | void\nwhile 2 do\n endwhile\nendfunction");
             FunctionNode funcNode = ast.GetChildren(0) as FunctionNode;
 
-            RepeatNode repeatNode = funcNode.GetChildren(0) as RepeatNode;
+            WhileNode whileNode = funcNode.GetChildren(0) as WhileNode;
 
-            Assert.That(repeatNode.GetChildren(0), Is.Null);
+            Assert.That(whileNode.GetChildren(0), Is.Null);
         }
 
         [Test]
@@ -238,7 +238,7 @@ namespace CompilerTests
             AssignmentNode assignNode = funcNode.GetChildren(0) as AssignmentNode;
 
             Assert.That(assignNode.Identifier, Is.EqualTo("tester"));
-            Assert.That(assignNode.Expression, Is.TypeOf<ExpressionNode>());
+            Assert.That(assignNode.Expression, Is.TypeOf<IntNode>());
         }
 
         [Test]
@@ -250,7 +250,7 @@ namespace CompilerTests
             AssignmentNode assignNode = funcNode.GetChildren(0) as AssignmentNode;
 
             Assert.That(assignNode.Identifier, Is.EqualTo("tester"));
-            Assert.That(assignNode.Expression, Is.TypeOf<ExpressionNode>());
+            Assert.That(assignNode.Expression, Is.TypeOf<IdentfierNode>());
         }
     }
 }

@@ -22,7 +22,7 @@ namespace CompilerTests
         [Test]
         public void GetChildrenShouldReturnSecondChild()
         {
-            var ast = new CompilationUnit
+            var ast = new CompilationNode
             {
                 LeftMostChild = new ImportNode { RightSibling = new ImportNode() }
             };
@@ -36,7 +36,7 @@ namespace CompilerTests
         [Test]
         public void GetChildrenOne_IsNotADeclaration()
         {
-            var ast = new CompilationUnit
+            var ast = new CompilationNode
             {
                 LeftMostChild = new DeclarationNode() { RightSibling = new ImportNode { RightSibling = new DeclarationNode()} }
             };
@@ -47,7 +47,7 @@ namespace CompilerTests
         [Test]
         public void GetChildren_Returns3Children()
         {
-            var ast = new CompilationUnit
+            var ast = new CompilationNode
             {
                 LeftMostChild = new DeclarationNode() { RightSibling = new ImportNode { RightSibling = new DeclarationNode()} }
             };
@@ -58,7 +58,7 @@ namespace CompilerTests
         [Test]
         public void GetChildren_Returns0Children()
         {
-            var ast = new CompilationUnit();
+            var ast = new CompilationNode();
             
             Assert.That(ast.NumberOfChildren, Is.EqualTo(0));
             
@@ -67,7 +67,7 @@ namespace CompilerTests
         [Test]
         public void AstNodeShouldAdoptChild()
         {
-            var newAstRoot = new CompilationUnit();
+            var newAstRoot = new CompilationNode();
             var importNode = new ImportNode();
             newAstRoot.AdoptChildren(importNode);
             Assert.IsNotNull(newAstRoot.GetChildren());
@@ -77,7 +77,7 @@ namespace CompilerTests
         [Test]
         public void AstNodeShouldNotAdobtNull()
         {
-            var newAstRoot = new CompilationUnit();
+            var newAstRoot = new CompilationNode();
             Assert.IsNotNull(newAstRoot.LeftMostSibling);
 
             newAstRoot.AdoptChildren(null);
@@ -87,7 +87,7 @@ namespace CompilerTests
         [Test]
         public void AdobtedChildHasCorrectParent()
         {
-            var newAstRoot = new CompilationUnit();
+            var newAstRoot = new CompilationNode();
             newAstRoot.AdoptChildren(new ImportNode());
             newAstRoot.AdoptChildren(new ImportNode());
 
@@ -100,7 +100,7 @@ namespace CompilerTests
         [Test]
         public void AllChildrenPointsToLeftMostSibling()
         {
-            var newAstRoot = new CompilationUnit();
+            var newAstRoot = new CompilationNode();
             newAstRoot.AdoptChildren(new ImportNode());
             newAstRoot.AdoptChildren(new ImportNode());
             newAstRoot.AdoptChildren(new ImportNode());
@@ -115,7 +115,7 @@ namespace CompilerTests
         [Test]
         public void LeftMostChildOfAstRootShouldBeLeftMostSibling()
         {
-            var newAstRoot = new CompilationUnit();
+            var newAstRoot = new CompilationNode();
             newAstRoot.AdoptChildren(new ImportNode());
             Assert.AreEqual(newAstRoot.LeftMostChild, newAstRoot.GetChildren().LeftMostSibling);
         }
@@ -123,7 +123,7 @@ namespace CompilerTests
         [Test]
         public void MakeSiblingShouldChainSiblings()
         {
-            var newAstRoot = new CompilationUnit();
+            var newAstRoot = new CompilationNode();
             var node = new ImportNode();
             newAstRoot.AdoptChildren(node);
 
@@ -141,7 +141,7 @@ namespace CompilerTests
         [Test]
         public void MakeSiblingsShouldAssignCorrectParent()
         {
-            var newAstRoot = new CompilationUnit();
+            var newAstRoot = new CompilationNode();
             var node = new ImportNode();
             newAstRoot.AdoptChildren(node);
 

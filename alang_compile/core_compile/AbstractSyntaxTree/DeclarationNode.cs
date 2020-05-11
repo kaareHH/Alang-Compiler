@@ -1,6 +1,7 @@
 using System;
 using Antlr4.Runtime;
 using AntlrGen;
+using core_compile.Visitors;
 
 namespace core_compile.AbstractSyntaxTree
 {
@@ -9,12 +10,16 @@ namespace core_compile.AbstractSyntaxTree
         public string Identifier { get; set; }
         public LanguageType Type { get; set; }
 
-        public ExpressionNode PrimaryExpression { get; set; }
+        public AstNode PrimaryExpression { get; set; }
 
         public DeclarationNode(ALangParser.DclContext context) : base(context) { }
 
         public DeclarationNode()
         {
+        }
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 

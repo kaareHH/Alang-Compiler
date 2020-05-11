@@ -1,4 +1,3 @@
-using Antlr4.Runtime;
 using AntlrGen;
 using core_compile.AbstractSyntaxTree;
 using System;
@@ -13,7 +12,7 @@ namespace core_compile.Visitors
     {
         public override AstNode VisitStart(ALangParser.StartContext context)
         {
-            var astRoot = new CompilationUnit(context);
+            var astRoot = new CompilationNode(context);
             astRoot.AdoptChildren(context.commands().Accept(this));
             return astRoot;
         }
@@ -42,7 +41,7 @@ namespace core_compile.Visitors
         public override AstNode VisitDcl(ALangParser.DclContext context)
         {
             var node = new DeclarationNode(context);
-            node.PrimaryExpression = context.primaryExpression().Accept(this) as ExpressionNode;
+            node.PrimaryExpression = context.primaryExpression().Accept(this);
             node.Identifier = context.ID().GetText();
             node.Type = Type.GetType(context);
 
@@ -52,12 +51,14 @@ namespace core_compile.Visitors
 
         public override AstNode VisitFunction(ALangParser.FunctionContext context)
         {
-            var node = new FunctionNode();
-            node.Identifier = context.ID().GetText();
-            node.Type = Type.GetType(context);
-            node.AdoptChildren(context.stmts().Accept(this));
+            var functionNode = new FunctionNode();
+            functionNode.Identifier = context.ID().GetText();
+            if(context.@params() != null)
+                functionNode.Params = context.@params().Accept(this);
+            functionNode.Type = Type.GetType(context);
+            functionNode.AdoptChildren(context.stmts().Accept(this));
 
-            return node;
+            return functionNode;
         }
 
         public override AstNode VisitImports(ALangParser.ImportsContext context)
@@ -70,9 +71,36 @@ namespace core_compile.Visitors
         public override AstNode VisitStmts(ALangParser.StmtsContext context)
         {
             var node = ExtractStmtTypeNode(context);
-            if (context.stmts().children != null)
-                node.MakeSiblings(context.stmts().Accept(this));
+
+            var stmt = context.stmts();
+            if (context.stmts() != null) 
+                if (context.stmts().children != null) 
+                    node.MakeSiblings(context.stmts().Accept(this));
             return node;
+        }
+
+        public override AstNode VisitParams(ALangParser.ParamsContext context)
+        {
+            AstNode node;
+            if (context.param() != null)
+            {
+                node = context.param().Accept(this); 
+                if (context.@params() != null)
+                    node.MakeSiblings(context.@params().Accept(this));
+            }
+            else
+                node = null;
+
+            return node;
+        }
+
+        public override AstNode VisitParam(ALangParser.ParamContext context)
+        {
+            return new ParameterNode(context)
+            {
+                Identifier = context.ID().GetText(),
+                Type = Type.GetType(context)
+            };
         }
 
         private AstNode ExtractStmtTypeNode(ALangParser.StmtsContext context)
@@ -94,14 +122,21 @@ namespace core_compile.Visitors
 
         public override AstNode VisitOutputstmt(ALangParser.OutputstmtContext context)
         {
-            return new OutputNode(context);
+            OutputNode node = new OutputNode(context);
+
+            node.Identifier = context.ID().GetText();
+            if (context.ON() != null)
+                node.State = true;
+            else
+                node.State = false;
+            return node;
         }
 
         public override AstNode VisitIfstmt(ALangParser.IfstmtContext context)
         {
             var node = new IfNode(context);
             if (context.primaryExpression() != null)
-                node.Condition = context.primaryExpression().Accept(this) as ExpressionNode;
+                node.Condition = context.primaryExpression().Accept(this);
             if (context.stmts(0) != null)
                 node.Consequent = context.stmts(0).Accept(this);
             if (context.stmts(1) != null)
@@ -109,16 +144,30 @@ namespace core_compile.Visitors
             return node;
         }
 
+        public override AstNode VisitInputparams(ALangParser.InputparamsContext context)
+        {
+            ValueNode node = new ValueNode(context);
+            node.Value = context.value().Accept(this);
+            if (context.inputparams() != null)
+                node.MakeSiblings(context.inputparams().Accept(this));
+            
+            return node;
+        }
+
         public override AstNode VisitFunctioncall(ALangParser.FunctioncallContext context)
         {
-            return new FunctionCallNode(context);
+            FunctionCallNode node = new FunctionCallNode(context);
+            node.FunctionToBeCalled = context.ID().GetText();
+            if(context.inputparams() != null)
+                node.Params = context.inputparams().Accept(this);
+            return node;
         }
 
         public override AstNode VisitRepeatstmt(ALangParser.RepeatstmtContext context)
         {
-            var repeatNode = new RepeatNode(context);
+            var repeatNode = new WhileNode(context);
             if (context.primaryExpression() != null)
-                repeatNode.LoopExpression = context.primaryExpression().Accept(this) as ExpressionNode;
+                repeatNode.LoopExpression = context.primaryExpression().Accept(this);
             if (context.stmts().children != null)
                 repeatNode.AdoptChildren(context.stmts().Accept(this));
             return repeatNode;
@@ -126,15 +175,53 @@ namespace core_compile.Visitors
 
         public override AstNode VisitPrimaryExpression(ALangParser.PrimaryExpressionContext context)
         {
-            ExpressionNode node = new ExpressionNode(context);
+            AstNode node;
             if (context.OPALL() != null)
-                node.Operator = GetOperatorKind(context.OPALL().GetText());
-            if (context.expression() != null)
-                node.Left = context.expression().Accept(this) as ExpressionNode;
-            if (context.primaryExpression() != null)
-                node.Right = context.primaryExpression().Accept(this) as ExpressionNode;
+            {
+                node = new ExpressionNode(context);
+                ((ExpressionNode)node).Operator = GetOperatorKind(context.OPALL().GetText());
+                ((ExpressionNode)node).Left = context.expression().Accept(this);
+                ((ExpressionNode)node).Right = context.primaryExpression().Accept(this);
+            }
+            else node = context.expression().Accept(this);
 
             return node;
+        }
+
+        public override AstNode VisitExpression(ALangParser.ExpressionContext context)
+        {
+            if (context.value() != null)
+                return context.value().Accept(this);
+            else return new NullNode();
+        }
+
+        public override AstNode VisitValue(ALangParser.ValueContext context)
+        {
+            AstNode visitValue;
+            if (context.ID() != null)
+                visitValue = new IdentfierNode(context) {Symbol = context.ID().GetText()};
+            else if (context.INTEGERS() != null)
+            {
+                var node = new IntNode(context);
+                node.Value = Int32.Parse(context.INTEGERS().GetText());
+                visitValue = node;
+            }
+            else if (context.PIN() != null)
+            {
+                var node = new PinNode(context);
+                node.Value = Int32.Parse(context.PIN().GetText());
+                visitValue = node;
+            }
+            else if (context.TIME() != null)
+            {
+                var node = new TimeNode(context);
+                node.Value = Time.TimeFromString(context.TIME().GetText());
+                visitValue = node;
+            }
+            else
+                visitValue = new NullNode();
+
+            return visitValue;
         }
 
         private Operator GetOperatorKind(string op)
@@ -149,6 +236,8 @@ namespace core_compile.Visitors
                     return Operator.Multiplication;
                 case "/":
                     return Operator.Division;
+                case "%":
+                    return Operator.Modulo;
                 default:
                     return Operator.InvalidOperator;
             }
@@ -159,8 +248,10 @@ namespace core_compile.Visitors
             var assignNode = new AssignmentNode(context);
             assignNode.Identifier = context.ID().GetText();
             if (context.primaryExpression() != null)
-                assignNode.Expression = context.primaryExpression().Accept(this) as ExpressionNode;
+                assignNode.Expression = context.primaryExpression().Accept(this);
             return assignNode;
         }
     }
+
+    
 }

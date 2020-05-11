@@ -6,6 +6,7 @@ namespace core_compile.AbstractSyntaxTree
         Subtraction,
         Multiplication,
         Division,
-        InvalidOperator
+        InvalidOperator,
+        Modulo
     }
 }

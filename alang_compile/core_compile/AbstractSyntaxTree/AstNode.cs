@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Antlr4.Runtime;
 using AntlrGen;
+using core_compile.Visitors;
 
 namespace core_compile.AbstractSyntaxTree
 {
@@ -23,6 +24,11 @@ namespace core_compile.AbstractSyntaxTree
         public AstNode(ParserRuleContext context) : this()
         {
             AddLocationFromContext(context);
+        }
+        
+        public virtual void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
         }
 
         public int NumberOfChildren

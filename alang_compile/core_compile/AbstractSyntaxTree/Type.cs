@@ -15,9 +15,7 @@ namespace core_compile.AbstractSyntaxTree
                     return LanguageType.Void;
                 case "int" :
                     return LanguageType.Int;
-                case "float" :
-                    return LanguageType.Float;
-                case "Pin" :
+                case "pin" :
                     return LanguageType.Pin;
                 case "time" :
                     return LanguageType.Time;
@@ -34,9 +32,7 @@ namespace core_compile.AbstractSyntaxTree
                     return LanguageType.Void;
                 case "int" :
                     return LanguageType.Int;
-                case "float" :
-                    return LanguageType.Float;
-                case "Pin" :
+                case "pin" :
                     return LanguageType.Pin;
                 case "time" :
                     return LanguageType.Time;
@@ -44,14 +40,23 @@ namespace core_compile.AbstractSyntaxTree
                     return LanguageType.Null;
             }
         }
-    }
-    public enum LanguageType
-    {
-        Pin,
-        Void,
-        Int,
-        Float,
-        Time,
-        Null
+
+        public static LanguageType GetType(ALangParser.ParamContext context)
+        {
+            var type = context.TYPE().GetText();
+            switch (type)
+            {
+                case "void" : 
+                    return LanguageType.Void;
+                case "int" :
+                    return LanguageType.Int;
+                case "pin" :
+                    return LanguageType.Pin;
+                case "time" :
+                    return LanguageType.Time;
+                default:
+                    return LanguageType.Null;
+            }
+        }
     }
 }
