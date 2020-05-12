@@ -14,5 +14,9 @@ namespace core_compile.Visitors
         public PinNode(ParserRuleContext context) : base(context)
         {
         }
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }
