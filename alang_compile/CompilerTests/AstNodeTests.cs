@@ -28,6 +28,15 @@ namespace CompilerTests
         }
 
         [Test]
+        public void TryToCompileProgram()
+        {
+            var visitor = new CodeGenVisitor();
+
+            astRoot.Accept(visitor);
+            visitor.WriteToFile();
+        }
+
+        [Test]
         public void AstShouldContainProgramAstNode()
         {
             Assert.IsInstanceOf(typeof(CompilationNode), astRoot);
@@ -206,7 +215,7 @@ namespace CompilerTests
             FunctionNode funcNode = this.astRoot.GetChildren(8) as FunctionNode;
             var repeatNode = funcNode.GetChildren(1) as WhileNode;
 
-            Assert.That(repeatNode.LoopExpression, Is.Not.Null);
+            Assert.That(repeatNode.Condition, Is.Not.Null);
         }
 
         [Test]

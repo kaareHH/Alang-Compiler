@@ -19,7 +19,7 @@ namespace core_compile.Visitors
 
         public override AstNode VisitCommands(ALangParser.CommandsContext context)
         {
-
+            
             AstNode node = ExtractCommandTypeNode(context);
             if (context.commands() != null)
                 node.MakeSiblings(context.commands().Accept(this));
@@ -35,7 +35,7 @@ namespace core_compile.Visitors
                 return context.imports().Accept(this);
             if (context.function() != null)
                 return context.function().Accept(this);
-            return new NullNode();
+            return null;
         }
 
         public override AstNode VisitDcl(ALangParser.DclContext context)
@@ -117,7 +117,7 @@ namespace core_compile.Visitors
                 return context.repeatstmt().Accept(this);
             if (context.assignstmt() != null)
                 return context.assignstmt().Accept(this);
-            return new NullNode();
+            return new NullNode(context);
         }
 
         public override AstNode VisitOutputstmt(ALangParser.OutputstmtContext context)
@@ -138,7 +138,7 @@ namespace core_compile.Visitors
             if (context.primaryExpression() != null)
                 node.Condition = context.primaryExpression().Accept(this);
             if (context.stmts(0) != null)
-                node.Consequent = context.stmts(0).Accept(this);
+                node.AdoptChildren(context.stmts(0).Accept(this));
             if (context.stmts(1) != null)
                 node.Alternate = context.stmts(1).Accept(this);
             return node;
@@ -157,9 +157,9 @@ namespace core_compile.Visitors
         public override AstNode VisitFunctioncall(ALangParser.FunctioncallContext context)
         {
             FunctionCallNode node = new FunctionCallNode(context);
-            node.FunctionToBeCalled = context.ID().GetText();
+            node.Name = context.ID().GetText();
             if(context.inputparams() != null)
-                node.Params = context.inputparams().Accept(this);
+                node.AdoptChildren(context.inputparams().Accept(this));
             return node;
         }
 
@@ -167,7 +167,7 @@ namespace core_compile.Visitors
         {
             var repeatNode = new WhileNode(context);
             if (context.primaryExpression() != null)
-                repeatNode.LoopExpression = context.primaryExpression().Accept(this);
+                repeatNode.Condition = context.primaryExpression().Accept(this);
             if (context.stmts().children != null)
                 repeatNode.AdoptChildren(context.stmts().Accept(this));
             return repeatNode;
@@ -190,9 +190,17 @@ namespace core_compile.Visitors
 
         public override AstNode VisitExpression(ALangParser.ExpressionContext context)
         {
+            AstNode node = new NullNode(context);
             if (context.value() != null)
-                return context.value().Accept(this);
-            else return new NullNode();
+                node = context.value().Accept(this);
+            else if (context.LPAREN() != null)
+            {
+                node = context.primaryExpression().Accept(this);
+                if (node is ExpressionNode expnode)
+                    expnode.Parenthesized = true;
+            }
+
+            return node;
         }
 
         public override AstNode VisitValue(ALangParser.ValueContext context)
@@ -219,7 +227,7 @@ namespace core_compile.Visitors
                 visitValue = node;
             }
             else
-                visitValue = new NullNode();
+                visitValue = new NullNode(context);
 
             return visitValue;
         }
@@ -238,6 +246,20 @@ namespace core_compile.Visitors
                     return Operator.Division;
                 case "%":
                     return Operator.Modulo;
+                case ">":
+                    return Operator.Greater;
+                case "<":
+                    return Operator.Less;
+                case ">=":
+                    return Operator.GreaterEqual;
+                case "<=":
+                    return Operator.LessEqual;
+                case "==" :
+                    return Operator.EqualEqual;
+                case "||":
+                    return Operator.OR;
+                case "&&":
+                    return Operator.AND;
                 default:
                     return Operator.InvalidOperator;
             }

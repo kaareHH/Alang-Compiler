@@ -10,5 +10,10 @@ namespace core_compile.AbstractSyntaxTree
             Line = line;
             Column = column;
         }
+
+        public override string ToString()
+        {
+            return $"[Line:{Line} Column: {Column}]";
+        }
     }
 }

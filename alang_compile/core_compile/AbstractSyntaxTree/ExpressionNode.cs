@@ -10,6 +10,8 @@ namespace core_compile.AbstractSyntaxTree
         public AstNode Left { get; set; }
         public Operator Operator { get; set; }
         public AstNode Right { get; set; }
+
+        public bool Parenthesized { get; set; } = false;
         public ExpressionNode()
         {
         }
