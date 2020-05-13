@@ -28,15 +28,6 @@ namespace CompilerTests
         }
 
         [Test]
-        public void TryToCompileProgram()
-        {
-            var visitor = new CodeGenVisitor();
-
-            astRoot.Accept(visitor);
-            visitor.WriteToFile();
-        }
-
-        [Test]
         public void AstShouldContainProgramAstNode()
         {
             Assert.IsInstanceOf(typeof(CompilationNode), astRoot);
