@@ -38,6 +38,10 @@ function loop -> | void
       MorningRoutine ->;
    endif
 
+   every 10 begin
+      toggle bedroomLight;
+   end
+
    # Make sure all light is turned off when Im at work
    if IsNoon || IsNight then
       OFF -> bedroomLight;

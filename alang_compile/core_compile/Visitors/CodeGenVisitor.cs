@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System;
 using System.IO;
 using System.Linq;
@@ -11,6 +14,7 @@ namespace core_compile.Visitors
     public class CodeGenVisitor : IVisitor
     {
         public string program { get; set; } = "";
+        public Hashtable globalPins = new Hashtable();
 
         public void WriteToFile([Optional] string filename)
         {
@@ -40,7 +44,9 @@ namespace core_compile.Visitors
         public void Visit(CompilationNode node)
         {
             emit("#include <time.h>\n");
+            emit("time_t TIME = now();");
             node.AcceptChildren(this);
+
         }
 
         
@@ -62,6 +68,10 @@ namespace core_compile.Visitors
             emit("=");
             node.PrimaryExpression.Accept(this);
             emit(";");
+
+            if(node.Type == LanguageType.Pin)
+                globalPins.Add(node.Identifier, node);
+                
         }
 
         public void Visit(ExpressionNode node)
@@ -84,6 +94,7 @@ namespace core_compile.Visitors
             
         }
 
+
         public void Visit(FunctionNode node)
         {
             emit(node.Type.ToEnumString());
@@ -93,10 +104,30 @@ namespace core_compile.Visitors
             if (node.Params != null)
                 node.Params.Accept(this);
             emit("){\n");
+            if(node.Identifier == "loop")
+                LoopBoilerPlate(node);
+            if(node.Identifier == "setup")
+                SetupBoilerPlate(node);
             node.AcceptChildren(this);
             emit("\n}\n");
 
 
+        }
+
+        private void SetupBoilerPlate(FunctionNode node)
+        {
+            foreach (var pinnode in globalPins)
+            {
+                var pinno = pinnode as DeclarationNode;
+                emit($"pinMode(");
+                pinno.PrimaryExpression.Accept(this);
+                emit(", OUTPUT);");
+            }
+        }
+
+        public void LoopBoilerPlate(AstNode node)
+        {
+            emit("TIME = millis();");
         }
 
         public void Visit(IdentfierNode node)

@@ -6,6 +6,7 @@ namespace core_compile.AbstractSyntaxTree
     public class WhileNode : AstNode
     {
         public AstNode Condition { get; set; }
+        
 
         public WhileNode()
         {
