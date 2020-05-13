@@ -53,7 +53,7 @@ namespace core_compile.Visitors
         {
             var functionNode = new FunctionNode();
             functionNode.Identifier = context.ID().GetText();
-            if(context.@params() != null)
+            if (context.@params() != null)
                 functionNode.Params = context.@params().Accept(this);
             functionNode.Type = Type.GetType(context);
             functionNode.AdoptChildren(context.stmts().Accept(this));
@@ -73,8 +73,8 @@ namespace core_compile.Visitors
             var node = ExtractStmtTypeNode(context);
 
             var stmt = context.stmts();
-            if (context.stmts() != null) 
-                if (context.stmts().children != null) 
+            if (context.stmts() != null)
+                if (context.stmts().children != null)
                     node.MakeSiblings(context.stmts().Accept(this));
             return node;
         }
@@ -84,7 +84,7 @@ namespace core_compile.Visitors
             AstNode node;
             if (context.param() != null)
             {
-                node = context.param().Accept(this); 
+                node = context.param().Accept(this);
                 if (context.@params() != null)
                     node.MakeSiblings(context.@params().Accept(this));
             }
@@ -150,7 +150,7 @@ namespace core_compile.Visitors
             node.Value = context.value().Accept(this);
             if (context.inputparams() != null)
                 node.MakeSiblings(context.inputparams().Accept(this));
-            
+
             return node;
         }
 
@@ -158,7 +158,7 @@ namespace core_compile.Visitors
         {
             FunctionCallNode node = new FunctionCallNode(context);
             node.FunctionToBeCalled = context.ID().GetText();
-            if(context.inputparams() != null)
+            if (context.inputparams() != null)
                 node.Params = context.inputparams().Accept(this);
             return node;
         }
@@ -199,7 +199,7 @@ namespace core_compile.Visitors
         {
             AstNode visitValue;
             if (context.ID() != null)
-                visitValue = new IdentfierNode(context) {Symbol = context.ID().GetText()};
+                visitValue = new IdentfierNode(context) { Symbol = context.ID().GetText() };
             else if (context.INTEGERS() != null)
             {
                 var node = new IntNode(context);
@@ -253,5 +253,5 @@ namespace core_compile.Visitors
         }
     }
 
-    
+
 }

@@ -21,7 +21,6 @@ namespace core_compile.AbstractSyntaxTree
         {
             visitor.Visit(this);
         }
-        
 
     }
 }

@@ -25,7 +25,7 @@ namespace core_compile.AbstractSyntaxTree
         {
             AddLocationFromContext(context);
         }
-        
+
         public virtual void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
@@ -33,11 +33,12 @@ namespace core_compile.AbstractSyntaxTree
 
         public int NumberOfChildren
         {
-            get {
+            get
+            {
                 int children = 0;
-                
+
                 var node = GetChildren();
-              
+
                 while (node != null)
                 {
                     children++;
@@ -47,7 +48,7 @@ namespace core_compile.AbstractSyntaxTree
                 return children;
             }
         }
-        
+
 
 
         public AstNode GetChildren()
@@ -58,7 +59,7 @@ namespace core_compile.AbstractSyntaxTree
         {
             if (i == 0)
                 return GetChildren();
-            
+
             var node = GetChildren();
             for (int j = 0; j < i; j++)
             {
