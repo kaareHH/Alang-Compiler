@@ -31,20 +31,27 @@ namespace core_compile.Visitors
 
         public void Visit(AssignmentNode node)
         {
-            if (!CurrentSymbolTable.currentTable.Lookup(node.Identifier))
-                throw new SymbolDoNotExistException();
+            CurrentSymbolTable.currentTable.CheckIfExists(node.Identifier);
 
+            node.Expression.Accept(this);
         }
 
         public void Visit(ExpressionNode node)
         {
-            // node.Left.Accept(this);
-            // node.Right.Accept(this);
+            node.Left.Accept(this);
+            node.Right.Accept(this);
         }
 
         public void Visit(FunctionCallNode node)
         {
+            CurrentSymbolTable.currentTable.CheckIfExists(node.FunctionToBeCalled);
 
+            var child = node.GetChildren();
+            while (child != null)
+            {
+                child.Accept(this);
+                child = child.RightSibling;
+            }
         }
 
         public void Visit(FunctionNode node)
@@ -52,7 +59,14 @@ namespace core_compile.Visitors
             CurrentSymbolTable.Insert(node.Identifier, node);
             CurrentSymbolTable.OpenScope();
 
-            var child = node.GetChildren();
+            var child = node.Params;
+            while (child != null)
+            {
+                child.Accept(this);
+                child = child.RightSibling;
+            }
+
+            child = node.GetChildren();
             while (child != null)
             {
                 child.Accept(this);
@@ -64,7 +78,8 @@ namespace core_compile.Visitors
 
         public void Visit(IdentfierNode node)
         {
-
+            System.Console.WriteLine("visiting id node");
+            CurrentSymbolTable.currentTable.CheckIfExists(node.Symbol);
         }
 
         public void Visit(IfNode node)
@@ -111,14 +126,12 @@ namespace core_compile.Visitors
 
         public void Visit(OutputNode node)
         {
-            // if (!CurrentSymbolTable.ContainsSymbolByName(node.Identifier))
-            //     throw new Exception("Variable used before its declared...");
+            CurrentSymbolTable.currentTable.CheckIfExists(node.Identifier);
         }
 
         public void Visit(ParameterNode node)
         {
-            // if (!CurrentSymbolTable.ContainsSymbolByName(node.Identifier))
-            //     throw new Exception("Variable used before its declared...");
+            CurrentSymbolTable.Insert(node.Identifier, node);
         }
 
         public void Visit(PinNode node)
@@ -139,23 +152,17 @@ namespace core_compile.Visitors
         public void Visit(WhileNode node)
         {
             node.LoopExpression.Accept(this);
-
-            CurrentSymbolTable.OpenScope();
             var child = node.GetChildren();
             while (child != null)
             {
                 child.Accept(this);
                 child = child.RightSibling;
             }
-
-            CurrentSymbolTable.CloseScope();
         }
 
         public void Visit(AstNode node)
         {
-
-            //node.Accept(this);
+            return;
         }
     }
-
 }

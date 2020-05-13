@@ -1,5 +1,6 @@
 using Antlr4.Runtime;
 using core_compile.AbstractSyntaxTree;
+using core_compile.Visitors;
 
 namespace core_compile.AbstractSyntaxTree
 {
@@ -13,6 +14,11 @@ namespace core_compile.AbstractSyntaxTree
 
         public IdentfierNode(ParserRuleContext context) : base(context)
         {
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

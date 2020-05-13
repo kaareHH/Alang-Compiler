@@ -16,38 +16,9 @@ namespace CompilerTests
             var ast = TestHelpers.MakeAstRoot("int karen = 2;\nint mads = 8;\nfunction test -> | void\n if 1==1 then\nint torben = 3;\n" +
                                               "int bent = 4;\n endif\n karen = 2;\n int bob = 3; endfunction\n function scopeTest -> | void\n int bob = 6; endfunction\nint peter = 8;");
 
-
-
             var visitor = new SymbolTableVisitor();
 
             ast.Accept(visitor);
-
-            //int karen = 2;\nint mads = 8;\nfunction test -> | void\n if 1==1 then\ntorben = 3;\n int bent = 4;\n endif\n karen = 2;\n int bob = 3; endfunction\n function scopeTest -> | void\n int bob = 5;\n endfunction
-
-            // var table = visitor.CurrentSymbolTable;
-            // while (table != null)
-            // {
-            //     Console.WriteLine("Opened scope: " + table.Table.Count);
-            //     foreach (DictionaryEntry item in table.Table)
-            //     {
-            //         Console.WriteLine("Key: " + item.Key + " Value: " + item.Value);
-            //     }
-            //     Console.WriteLine("Closed scope");
-            //     table = table.currentTable;
-            // }
-
-            // Opened scope:
-            //      Name: karen Type: Int
-            //      Name: mads Type: Int
-            //      Name: test Type: Void
-            //          Opened scope:½
-            //              name: bent Type: int
-            //          Closed scope
-            //      Name: scopeTest Type: Void
-            //          Opened scope:
-            //              name: bent Type: int
-            //          Closed scope
-            // Closed scope
         }
 
         [Test]
@@ -74,11 +45,90 @@ namespace CompilerTests
         public void AssignmentToNotDeclaredVar_ShouldThrowException()
         {
             var ast = TestHelpers.MakeAstRoot("function test -> | void\n karen = 8;\n endfunction");
-            // var ast = TestHelpers.MakeAstRoot("karen = 8;");
 
             var visitor = new SymbolTableVisitor();
 
             Assert.Throws<SymbolDoNotExistException>(() => ast.Accept(visitor));
+        }
+
+        [Test]
+        public void AssignmentInTwoFunctions_ShouldNotThrowException()
+        {
+            var ast = TestHelpers.MakeAstRoot("int karen = 2;\nfunction test -> | void\n int karen = 8;\n endfunction\nfunction testFunc -> | void\n karen = 13;\n endfunction");
+
+            var visitor = new SymbolTableVisitor();
+
+            Assert.DoesNotThrow(() => ast.Accept(visitor));
+        }
+
+        [Test]
+        public void GlobalScope_ShouldNotReachInnerFunction()
+        {
+            var ast = TestHelpers.MakeAstRoot("function test -> | void\n int karen = 8;\n endfunction\n int karen = 2;");
+
+            var visitor = new SymbolTableVisitor();
+
+            Assert.DoesNotThrow(() => ast.Accept(visitor));
+        }
+
+        [Test]
+        public void FunctionCallOfNotDeclared_ShouldThrowException()
+        {
+            var ast = TestHelpers.MakeAstRoot("function test -> | void\n torben -> ;\n endfunction\n int karen = 2;");
+
+            var visitor = new SymbolTableVisitor();
+
+            Assert.Throws<SymbolDoNotExistException>(() => ast.Accept(visitor));
+        }
+
+        [Test]
+        public void VariableNotDeclared_ShouldThrowException()
+        {
+            var ast = TestHelpers.MakeAstRoot("int michael = 0; int jens = 3; \nfunction test -> | void\n michael = jens + 2 + lars; \n endfunction\n int karen = 2;");
+
+            var visitor = new SymbolTableVisitor();
+
+            Assert.Throws<SymbolDoNotExistException>(() => ast.Accept(visitor));
+        }
+
+        [Test]
+        public void FunctionParams_ShouldBeSavedInFunctionScope()
+        {
+            var ast = TestHelpers.MakeAstRoot("function test -> int bobby | void\n int bobby = 2; \n endfunction\n");
+
+            var visitor = new SymbolTableVisitor();
+
+            Assert.Throws<SymbolExistException>(() => ast.Accept(visitor));
+        }
+
+        [Test]
+        public void FunctionParams_ShouldBeSavedInFunctionScopeAnd_ShouldNotThrowExceptionWhenCorrectlyUsed()
+        {
+            var ast = TestHelpers.MakeAstRoot("function test -> int bobby | void\n bobby = 2; \n endfunction\n");
+
+            var visitor = new SymbolTableVisitor();
+
+            Assert.DoesNotThrow(() => ast.Accept(visitor));
+        }
+
+        [Test]
+        public void FunctionParams_ShouldBeSavedInFunctionScope_v2()
+        {
+            var ast = TestHelpers.MakeAstRoot("int max = 2;\nfunction test -> int max | void\n max = 2; \n endfunction\n");
+
+            var visitor = new SymbolTableVisitor();
+
+            Assert.DoesNotThrow(() => ast.Accept(visitor));
+        }
+
+        [Test]
+        public void FunctionParamVariables_ShouldBeCheckedIfTheyExistsAndThrowAnExceptionIfTheyDoNotExist_OtherwiseItShouldNotDoThat()
+        {
+            var ast = TestHelpers.MakeAstRoot("int max = 2;\nint peter = 2;\nfunction test -> int max | void\n peter = max + max; \n endfunction\n function main -> | void\n test -> peter;\n endfunction\n");
+
+            var visitor = new SymbolTableVisitor();
+
+            Assert.DoesNotThrow(() => ast.Accept(visitor));
         }
     }
 }

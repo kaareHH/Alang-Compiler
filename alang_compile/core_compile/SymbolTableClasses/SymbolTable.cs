@@ -39,18 +39,31 @@ namespace core_compile.SymbolTableClasses
             SymbolTable symbolTable = this;
             while (symbolTable != null)
             {
-                Console.WriteLine("vi lever for første gang");
-
                 if (symbolTable.Contains(name))
                 {
-                    Console.WriteLine("vi lever");
                     return true;
                 }
                 symbolTable = symbolTable.parent;
             }
 
-            System.Console.WriteLine("Not found " + name);
             return false;
+        }
+
+        public void CheckIfExists(string name)
+        {
+            // if (!CurrentSymbolTable.currentTable.Lookup(node.FunctionToBeCalled))
+            //     throw new SymbolDoNotExistException();
+            SymbolTable symbolTable = this;
+            while (symbolTable != null)
+            {
+                if (symbolTable.Contains(name))
+                {
+                    return;
+                }
+                symbolTable = symbolTable.parent;
+            }
+
+            throw new SymbolDoNotExistException();
         }
 
         public void Insert(string name, AstNode node)
@@ -76,20 +89,7 @@ namespace core_compile.SymbolTableClasses
 
         private bool Contains(string name)
         {
-            // Console.WriteLine("Hello there");
-            // Console.WriteLine(this.currentTable == null ? "null" : "ikke null");
-            // Console.WriteLine(this.currentTable.Table);
             System.Console.WriteLine("Checking for " + name + " in symboltable with: " + Table?.Count + " entries" + ". Parent count: " + parent?.Table.Count);
-            // if (currentTable == null)
-            //     return false;
-            // System.Console.WriteLine(" ged" + (currentTable.Table == null ? "null" : "ikke null"));
-
-            // if (currentTable.Table.Contains(name))
-            //     return true;
-            // else
-            //     return false;
-
-
             return Table.Contains(name);
         }
 

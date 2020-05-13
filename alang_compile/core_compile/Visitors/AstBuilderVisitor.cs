@@ -159,7 +159,7 @@ namespace core_compile.Visitors
             FunctionCallNode node = new FunctionCallNode(context);
             node.FunctionToBeCalled = context.ID().GetText();
             if (context.inputparams() != null)
-                node.Params = context.inputparams().Accept(this);
+                node.AdoptChildren(context.inputparams().Accept(this));
             return node;
         }
 
