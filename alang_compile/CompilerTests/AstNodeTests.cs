@@ -58,7 +58,7 @@ namespace CompilerTests
         {
             var ast = TestHelpers.MakeAstRoot("");
             Assert.That(ast, Is.TypeOf<CompilationNode>());
-            Assert.That(ast.GetChildren(), Is.TypeOf<NullNode>());
+            Assert.That(ast.GetChildren(), Is.Null);
         }
 
         [Test]
