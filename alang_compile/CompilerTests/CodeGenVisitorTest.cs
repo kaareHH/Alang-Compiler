@@ -21,28 +21,6 @@ namespace CompilerTests
             visitor.WriteToFile();
         }
 
-        private EqualConstraint MatchCode(string code)
-        {
-            return Is.EqualTo($"#include <time.h>\n{code}");
-        }
-        [Test]
-        public void Declaration_EmitsRightCode()
-        {
-            var ast = TestHelpers.MakeAstRoot("int torben = 2;");
-            var visitor = new CodeGenVisitor();
-
-            ast.Accept(visitor);
-            
-            Assert.That(visitor.program , MatchCode("int torben=2;") );
-        }
-
-        [Test]
-        public void EnumToString_ShouldBetime_t()
-        {
-            var torben = LanguageType.Time;
-            Assert.That(torben.ToEnumString(), Is.EqualTo("time_t"));
-        }
-
         [Test]
         public void WriteToFile()
         {
@@ -61,6 +39,7 @@ namespace CompilerTests
 
             pin coffeMachine = 10;
             pin bedroomLight = 12;
+            pin light = 4;
             
             function setup -> | void
                 OFF -> coffeMachine;
@@ -71,10 +50,16 @@ namespace CompilerTests
                 everyHour ->;
 
                 # Define when each state is reached during the day
-                if TIME >= 00:00:01 && TIME < 00:00:03 then
+                int Morning = TIME >= 00:00:01 && TIME < 00:00:03;
+                int Afternoon = TIME >= 00:00:05 && TIME < 00:00:07;
+                if Morning || Afternoon then
                     ON -> bedroomLight;
                 else
                     OFF -> bedroomLight;
+                endif
+
+                if Morning then
+                    MorningRoutine->;
                 endif
         
             endfunction
@@ -84,25 +69,26 @@ namespace CompilerTests
             endfunction
 
             time TimePassed = 00:00:00;
+            int toggle = 0;
             function everyHour ->| void
                 int someVariable = 69;
-                if TimePassed < 01:00:00 then
-                    TimePassed = TimePassed + TIME;
-                else
-                    TimePassed = 00:00:00;
-                    ON -> bedroomLight;
+                if TIME - TimePassed >= 00:00:01 then
+                    TimePassed = TIME;
+                    toggle = (toggle + 1) % 2;
                 endif
+                if toggle then
+                    ON -> light;
+                else
+                    OFF -> light;
+                endif
+                    
             endfunction
 
-            function repeatTest -> | void
+            function repeatTest -> int tal, int tid | void
              int test = 2;
                 while 2 do
-                    test = test + 1;
+                    int kasper = test * 10 + (25 / 5);
                 endwhile
-            endfunction
-
-            function expressionTest -> | void
-                int kasper = test * 10 + (25 / 5);
             endfunction
             ";
 

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -43,9 +44,19 @@ namespace core_compile.Visitors
 
         public void Visit(CompilationNode node)
         {
-            emit("#include <time.h>\n");
-            emit("time_t TIME = now();");
+            emit("unsigned long " + timeNow());
             node.AcceptChildren(this);
+
+        }
+
+        private const int COMPILELEEPTIME = 1;
+        private const int ADAYINMILLIS = 86400000;
+
+        private static string timeNow()
+        {
+            var now = DateTime.Now.AddSeconds(COMPILELEEPTIME).TimeOfDay;
+            var nowMS = (long)now.TotalMilliseconds;
+            return $" TIME = (millis() + {nowMS.ToString()}) % {ADAYINMILLIS};";
 
         }
 
@@ -105,29 +116,22 @@ namespace core_compile.Visitors
                 node.Params.Accept(this);
             emit("){\n");
             if(node.Identifier == "loop")
-                LoopBoilerPlate(node);
+                emit(timeNow());
             if(node.Identifier == "setup")
                 SetupBoilerPlate(node);
             node.AcceptChildren(this);
             emit("\n}\n");
-
-
         }
 
         private void SetupBoilerPlate(FunctionNode node)
         {
-            foreach (var pinnode in globalPins)
+            foreach (DictionaryEntry dicObject in globalPins)
             {
-                var pinno = pinnode as DeclarationNode;
+                var pinNode = dicObject.Value as DeclarationNode;
                 emit($"pinMode(");
-                pinno.PrimaryExpression.Accept(this);
+                pinNode.PrimaryExpression.Accept(this);
                 emit(", OUTPUT);");
             }
-        }
-
-        public void LoopBoilerPlate(AstNode node)
-        {
-            emit("TIME = millis();");
         }
 
         public void Visit(IdentfierNode node)
@@ -148,7 +152,6 @@ namespace core_compile.Visitors
                 node.Alternate.Accept(this);
                 emit("}");
             }
-
         }
 
         public void Visit(ImportNode node)
@@ -174,8 +177,14 @@ namespace core_compile.Visitors
 
         public void Visit(ParameterNode node)
         {
-            emit($"{node.Type.ToString()} {node.Identifier} ");
-            node.AcceptChildren(this);
+            emit($"{node.Type.ToEnumString()} {node.Identifier}");
+            
+            var sibling = node.RightSibling as ParameterNode;
+            while (sibling != null){
+                emit($", {sibling.Type.ToEnumString()} {sibling.Identifier}");
+                sibling = sibling.RightSibling as ParameterNode;
+            }
+            
         }
 
         public void Visit(PinNode node)

@@ -6,7 +6,7 @@ namespace CompilerTests
     [TestFixture]
     public class TimeTest
     {
-        private const int Day = 86400, Hour = 3600, Min = 60, Sec = 1;
+        private const int Day=24*Hour, Hour=60*Min, Min=60*Sec, Sec = 1000;
         [Test]
         public void OneHour_ShouldReturn3600()
         {

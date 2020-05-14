@@ -28,7 +28,7 @@ namespace core_compile.AbstractSyntaxTree
                 case LanguageType.Void:
                     return "void";
                 case LanguageType.Time:
-                    return "time_t";
+                    return "unsigned long";
                 case LanguageType.Null:
                     return "null";
                 default:
