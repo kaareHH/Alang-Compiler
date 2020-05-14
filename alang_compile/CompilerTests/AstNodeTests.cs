@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.Linq.Expressions;
 using System.Transactions;
 using core_compile;
 
@@ -237,6 +238,7 @@ namespace CompilerTests
 
             AssignmentNode assignNode = funcNode.GetChildren(0) as AssignmentNode;
 
+            //TestContext.WriteLine(((ExpressionNode)assignNode.Expression).Operator);
             Assert.That(assignNode.Identifier, Is.EqualTo("tester"));
             Assert.That(assignNode.Expression, Is.TypeOf<IntNode>());
         }

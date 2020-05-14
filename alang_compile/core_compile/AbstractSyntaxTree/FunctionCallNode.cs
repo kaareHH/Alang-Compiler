@@ -17,5 +17,10 @@ namespace core_compile
         {
             visitor.Visit(this);
         }
+        
+        public override LanguageType Accept(ITypeCheckerVisitor visitor)
+        {
+            return visitor.Visit(this);
+        }
     }
 }

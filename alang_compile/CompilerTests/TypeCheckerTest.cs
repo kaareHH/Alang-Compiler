@@ -30,12 +30,19 @@ namespace CompilerTests
         // }
 
         [Test]
-        public void Peter()
+        public void DeclarationOfTimeToInt_ShouldThrowException()
         {
-            var ast = TestHelpers.MakeAstRoot("int testrup = 2 + 3 + 4 * 2;");
+            var ast = TestHelpers.MakeAstRoot("int testrup = 00:00:00;");
             var visitor = new TypeCheckerVisitor();
-            ast.Accept(visitor);
-            Assert.Fail();
+            Assert.Throws<Exception>(() => ast.Accept(visitor));
+        }
+
+        [Test]
+        public void AssignmentOfTimeToInt_ShouldThrowException()
+        {
+            var ast = TestHelpers.MakeAstRoot("int testrup = 2; function lars -> | void\n testrup = 00:00:00; endfunction");
+            var visitor = new TypeCheckerVisitor();
+            Assert.Throws<Exception>(() => ast.Accept(visitor));
         }
     }
 }

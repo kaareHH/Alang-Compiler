@@ -9,38 +9,36 @@ namespace CompilerTests
         [Test]
         public void AdditionExpression_ShouldHaveHigherPrecedenceThanMultiplication()
         {
-            var ast = TestHelpers.MakeAstRoot("int test = 2 * 2 + 2;");
+            var ast = TestHelpers.MakeAstRoot("int test = 3 * 3 + 2;");
             var dclNode = ast.GetChildren(0) as DeclarationNode;
             
             // Note to self: Don't think about precedence for now! 
             var dclNodePrimaryExpression = (ExpressionNode)dclNode.PrimaryExpression;
-            Assert.That(dclNodePrimaryExpression.Operator, Is.EqualTo(Operator.Multiplication));
+            Assert.That(dclNodePrimaryExpression.Operator, Is.EqualTo(Operator.Addition));
+        }
+        
+        [Test]
+        public void TopMostExpressionNode_ShouldBeWithHighestPrecedence()
+        {
+            var ast = TestHelpers.MakeAstRoot("int test = 3 * 3 + 2 > 34 && 3 * 7 != 9;");
+            var dclNode = ast.GetChildren(0) as DeclarationNode;
+            
+            // Note to self: Don't think about precedence for now! 
+            var dclNodePrimaryExpression = (ExpressionNode)dclNode.PrimaryExpression;
+            Assert.That(dclNodePrimaryExpression.Operator, Is.EqualTo(Operator.AND));
         }
 
         [Test]
-        public void AssignmentNode_ShouldConsistOfThreeExpression()    
+        public void AssignmentNode_ShouldConsistOfTwoExpressions()    
         {
             var ast = TestHelpers.MakeAstRoot("int test = 1 * 2 + 3;");
             var dclNode = ast.GetChildren(0) as DeclarationNode;
 
             var multiExpres = (ExpressionNode)dclNode.PrimaryExpression;
             
-            var OneLit = multiExpres.Left as IntNode;
-            Assert.That(OneLit, Is.Not.Null);
-            Assert.That(OneLit, Is.TypeOf<IntNode>());
-            
-            Assert.That(OneLit.Value, Is.EqualTo(1));
-            Assert.That(multiExpres.Operator, Is.EqualTo(Operator.Multiplication));
-            
-            var plusExpression = multiExpres.Right as ExpressionNode;
-            Assert.That(plusExpression.Operator, Is.EqualTo(Operator.Addition));
-            
-            var TwoLit = plusExpression.Left as IntNode;
-            Assert.That(TwoLit, Is.TypeOf<IntNode>());
-            Assert.That(TwoLit.Value, Is.EqualTo(2));
-            
-            var ThreeLit = plusExpression.Right;
-            Assert.That(((IntNode)ThreeLit).Value, Is.EqualTo(3));
+            Assert.That(multiExpres.Left, Is.TypeOf<ExpressionNode>());
+            Assert.That(((ExpressionNode)multiExpres.Left).Operator, Is.EqualTo(Operator.Multiplication));
+            Assert.That(multiExpres.Right, Is.TypeOf<IntNode>());
         }
 
         [Test]

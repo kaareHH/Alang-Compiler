@@ -21,11 +21,16 @@ function            : 'function' ID '->' params '|' TYPE stmts 'endfunction'
 imports             : 'import' ALANGFILENAME ';'
                     ;
 
-primaryExpression   : expression OPALL primaryExpression
-                    | expression
-                    ;
+primaryExpression : predicateExpression ( BOOLOP predicateExpression ) *
+                    | ;
 
-expression          : value
+predicateExpression : additiveExpression ( PREDOP additiveExpression ) *;
+
+additiveExpression : multiExpression ( ADDOP multiExpression ) *;
+
+multiExpression : primary ( MULOP primary ) * ;
+
+primary             : value
                     | '(' primaryExpression ')'
                     ;
                     
@@ -109,10 +114,11 @@ ASSIGNOPERATOR: '=';
 
 // OPERATORS
 
-OPALL: OPERATOR | BOOLOPERATOR | PREDOPERATOR;
-fragment OPERATOR: ('+' | '-' | '*' | '/' | '%');
-fragment BOOLOPERATOR: '&&' | '||' | '^';
-fragment PREDOPERATOR: '==' | '>=' | '<=' | '>' | '<' | '!=';
+//OPALL: ADDOP | MULOP | BOOLOP | PREDOP;
+ADDOP: ('+' | '-');
+MULOP: ('*' | '/' | '%');
+BOOLOP: '&&' | '||' | '^';
+PREDOP: '==' | '>=' | '<=' | '>' | '<' | '!=';
 
 // DATA TYPES
 BOOLEAN: 'true' | 'false';

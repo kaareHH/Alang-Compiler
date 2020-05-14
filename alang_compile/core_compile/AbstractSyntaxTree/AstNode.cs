@@ -35,6 +35,18 @@ namespace core_compile.AbstractSyntaxTree
                 child = child.RightSibling;
             }
         }
+        
+        public LanguageType AcceptChildren(ITypeCheckerVisitor visitor)
+        {
+            var child = LeftMostChild;
+            while (child != null)
+            {
+                child.Accept(visitor);
+                child = child.RightSibling;
+            }
+
+            return LanguageType.Null;
+        }
 
         public void AcceptChildrenFrom(AstNode node, IVisitor visitor)
         {
@@ -49,6 +61,11 @@ namespace core_compile.AbstractSyntaxTree
         public virtual void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
+        }
+        
+        public virtual LanguageType Accept(ITypeCheckerVisitor visitor)
+        {
+            return visitor.Visit(this);
         }
 
         public int NumberOfChildren

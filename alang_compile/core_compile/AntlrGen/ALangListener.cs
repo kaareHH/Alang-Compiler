@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:/Users/aaspr.DESKTOP-G6R73JT/OneDrive/Desktop/pomo/p4/alang_compile/core_compile\ALang.g4 by ANTLR 4.8
+// Generated from /home/mads/dev/aau/p4-compiler/alang_compile/core_compile/ALang.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -92,15 +92,45 @@ public interface IALangListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitPrimaryExpression([NotNull] ALangParser.PrimaryExpressionContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.expression"/>.
+	/// Enter a parse tree produced by <see cref="ALangParser.predicateExpression"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterExpression([NotNull] ALangParser.ExpressionContext context);
+	void EnterPredicateExpression([NotNull] ALangParser.PredicateExpressionContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.expression"/>.
+	/// Exit a parse tree produced by <see cref="ALangParser.predicateExpression"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitExpression([NotNull] ALangParser.ExpressionContext context);
+	void ExitPredicateExpression([NotNull] ALangParser.PredicateExpressionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.additiveExpression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterAdditiveExpression([NotNull] ALangParser.AdditiveExpressionContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.additiveExpression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitAdditiveExpression([NotNull] ALangParser.AdditiveExpressionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.multiExpression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterMultiExpression([NotNull] ALangParser.MultiExpressionContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.multiExpression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitMultiExpression([NotNull] ALangParser.MultiExpressionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ALangParser.primary"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterPrimary([NotNull] ALangParser.PrimaryContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ALangParser.primary"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitPrimary([NotNull] ALangParser.PrimaryContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.params"/>.
 	/// </summary>

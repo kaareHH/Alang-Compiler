@@ -22,6 +22,11 @@ namespace core_compile.AbstractSyntaxTree
         {
             visitor.Visit(this);
         }
+        
+        public override LanguageType Accept(ITypeCheckerVisitor visitor)
+        {
+            return visitor.Visit(this);
+        }
 
     }
 }

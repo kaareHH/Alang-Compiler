@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:/Users/aaspr.DESKTOP-G6R73JT/OneDrive/Desktop/pomo/p4/alang_compile/core_compile\ALang.g4 by ANTLR 4.8
+// Generated from /home/mads/dev/aau/p4-compiler/alang_compile/core_compile/ALang.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -69,11 +69,29 @@ public interface IALangVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitPrimaryExpression([NotNull] ALangParser.PrimaryExpressionContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ALangParser.expression"/>.
+	/// Visit a parse tree produced by <see cref="ALangParser.predicateExpression"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitExpression([NotNull] ALangParser.ExpressionContext context);
+	Result VisitPredicateExpression([NotNull] ALangParser.PredicateExpressionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.additiveExpression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAdditiveExpression([NotNull] ALangParser.AdditiveExpressionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.multiExpression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitMultiExpression([NotNull] ALangParser.MultiExpressionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ALangParser.primary"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitPrimary([NotNull] ALangParser.PrimaryContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ALangParser.params"/>.
 	/// </summary>
