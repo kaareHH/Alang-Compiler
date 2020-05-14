@@ -26,6 +26,4 @@ namespace core_compile.Visitors
         public void Visit(ValueNode node);
         public void Visit(WhileNode node);
     }
-    
-    
 }

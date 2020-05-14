@@ -6,7 +6,6 @@ namespace core_compile.AbstractSyntaxTree
 {
     public class ExpressionNode : AstNode
     {
-
         public AstNode Left { get; set; }
         public Operator Operator { get; set; }
         public AstNode Right { get; set; }

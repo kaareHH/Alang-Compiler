@@ -183,7 +183,8 @@ namespace core_compile.Visitors
                 ((ExpressionNode)node).Left = context.expression().Accept(this);
                 ((ExpressionNode)node).Right = context.primaryExpression().Accept(this);
             }
-            else node = context.expression().Accept(this);
+            else
+                node = context.expression().Accept(this);
 
             return node;
         }

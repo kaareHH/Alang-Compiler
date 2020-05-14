@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using core_compile.AbstractSyntaxTree;
 using core_compile.SymbolTableClasses;
 using core_compile.Visitors;
 using NUnit.Framework;
@@ -18,7 +19,7 @@ namespace CompilerTests
 
             var visitor = new SymbolTableVisitor();
 
-            ast.Accept(visitor);
+            Assert.DoesNotThrow(() => ast.Accept(visitor));
         }
 
         [Test]
@@ -129,6 +130,19 @@ namespace CompilerTests
             var visitor = new SymbolTableVisitor();
 
             Assert.DoesNotThrow(() => ast.Accept(visitor));
+        }
+
+        [Test]
+        public void CompilationNode_ShouldHaveSymbolTable()
+        {
+            var ast = TestHelpers.MakeAstRoot("int max = 2;\nint peter = 2;\nfunction test -> int max | void\n peter = max + max; \n endfunction\n function main -> | void\n test -> peter;\n endfunction\n");
+
+            var visitor = new SymbolTableVisitor();
+
+            ast.Accept(visitor);
+
+            Assert.That(ast.SymbolTable, Is.Not.Null);
+            Assert.That(((FunctionNode)ast.GetChildren(2)).SymbolTable, Is.Not.Null);
         }
     }
 }

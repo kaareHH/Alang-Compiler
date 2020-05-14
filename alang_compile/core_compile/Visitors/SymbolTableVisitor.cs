@@ -16,6 +16,7 @@ namespace core_compile.Visitors
         {
             CurrentSymbolTable.OpenScope();
             node.AcceptChildren(this);
+            node.SymbolTable = CurrentSymbolTable.currentTable;
             CurrentSymbolTable.CloseScope();
         }
 
@@ -49,6 +50,7 @@ namespace core_compile.Visitors
             CurrentSymbolTable.OpenScope();
             node.AcceptChildrenFrom(node.Params, this);
             node.AcceptChildren(this);
+            node.SymbolTable = CurrentSymbolTable.currentTable;
             CurrentSymbolTable.CloseScope();
         }
 
