@@ -1,4 +1,4 @@
-﻿import std.alang; # finder lolleren.alang i mappen
+import std.alang; # finder lolleren.alang i mappen
 import string.alang;
 
 int mads = 2;

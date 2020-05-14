@@ -1,3 +1,5 @@
+using System;
+
 namespace core_compile.AbstractSyntaxTree
 {
     public class Time
@@ -17,7 +19,20 @@ namespace core_compile.AbstractSyntaxTree
 
             return time;
         }
+        
+        public const int MillisecondsInSeconds = 1000;
+        public const int ADAYINSECONDS = HOURSINSECOUNDS * 24;
+        public const int HOURSINSECOUNDS = MINSINSECOUNDS * 60;
+        public const int MINSINSECOUNDS = 60;
 
+        public int ToMillis()
+        {
+            return ((Hours * HOURSINSECOUNDS + Min * MINSINSECOUNDS + Sec) % ADAYINSECONDS) * MillisecondsInSeconds;
+        }
 
+        public override string ToString()
+        {
+            return ToMillis().ToString();
+        }
     }
 }

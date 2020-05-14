@@ -26,6 +26,16 @@ namespace core_compile.AbstractSyntaxTree
             AddLocationFromContext(context);
         }
 
+        public void AcceptChildren(IVisitor visitor)
+        {
+            var child = LeftMostChild;
+            while (child != null)
+            {
+                child.Accept(visitor);
+                child = child.RightSibling;
+            }
+        }
+
         public virtual void Accept(IVisitor visitor)
         {
             visitor.Visit(this);

@@ -18,7 +18,6 @@ namespace core_compile.Visitors
         public void Visit(IfNode node);
         public void Visit(ImportNode node);
         public void Visit(IntNode node);
-        public void Visit(Location node);
         public void Visit(NullNode node);
         public void Visit(OutputNode node);
         public void Visit(ParameterNode node);

@@ -58,7 +58,7 @@ namespace CompilerTests
         {
             var ast = TestHelpers.MakeAstRoot("");
             Assert.That(ast, Is.TypeOf<CompilationNode>());
-            Assert.That(ast.GetChildren(), Is.TypeOf<NullNode>());
+            Assert.That(ast.GetChildren(), Is.Null);
         }
 
         [Test]
@@ -105,7 +105,7 @@ namespace CompilerTests
 
             IfNode ifNode = presumableIfNode as IfNode;
             Assert.That(ifNode.Alternate, Is.Null);
-            Assert.That(ifNode.Consequent, Is.Not.Null);
+            Assert.That(ifNode.GetChildren(), Is.Not.Null);
             Assert.That(ifNode.Condition, Is.Not.Null);
         }
 
@@ -118,7 +118,7 @@ namespace CompilerTests
 
             IfNode ifNode = presumableIfNode as IfNode;
             Assert.That(ifNode.Alternate, Is.Not.Null);
-            Assert.That(ifNode.Consequent, Is.Not.Null);
+            Assert.That(ifNode.GetChildren(), Is.Not.Null);
         }
 
         [Test]
@@ -206,7 +206,7 @@ namespace CompilerTests
             FunctionNode funcNode = this.astRoot.GetChildren(8) as FunctionNode;
             var repeatNode = funcNode.GetChildren(1) as WhileNode;
 
-            Assert.That(repeatNode.LoopExpression, Is.Not.Null);
+            Assert.That(repeatNode.Condition, Is.Not.Null);
         }
 
         [Test]

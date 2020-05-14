@@ -44,7 +44,7 @@ namespace core_compile.Visitors
 
         public void Visit(FunctionCallNode node)
         {
-            CurrentSymbolTable.currentTable.CheckIfExists(node.FunctionToBeCalled);
+            CurrentSymbolTable.currentTable.CheckIfExists(node.Name);
 
             var child = node.GetChildren();
             while (child != null)
@@ -86,7 +86,7 @@ namespace core_compile.Visitors
         {
             node.Condition.Accept(this);
 
-            var child = node.Consequent;
+            var child = node.GetChildren();
             while (child != null)
             {
                 child.Accept(this);
@@ -151,7 +151,7 @@ namespace core_compile.Visitors
 
         public void Visit(WhileNode node)
         {
-            node.LoopExpression.Accept(this);
+            node.Condition.Accept(this);
             var child = node.GetChildren();
             while (child != null)
             {

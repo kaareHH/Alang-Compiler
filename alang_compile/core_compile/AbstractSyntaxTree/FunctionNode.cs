@@ -6,7 +6,7 @@ namespace core_compile.AbstractSyntaxTree
 {
     public class FunctionNode : AstNode
     {
-        public AstNode Params;
+        public AstNode Params = new ParameterNode();
         public string Identifier { get; set; }
         public LanguageType Type { get; set; }
 
