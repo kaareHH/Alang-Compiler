@@ -15,12 +15,7 @@ namespace core_compile.Visitors
         public void Visit(CompilationNode node)
         {
             CurrentSymbolTable.OpenScope();
-            var child = node.GetChildren();
-            while (child != null)
-            {
-                child.Accept(this);
-                child = child.RightSibling;
-            }
+            node.AcceptChildren(this);
             CurrentSymbolTable.CloseScope();
         }
 
@@ -32,7 +27,6 @@ namespace core_compile.Visitors
         public void Visit(AssignmentNode node)
         {
             CurrentSymbolTable.currentTable.CheckIfExists(node.Identifier);
-
             node.Expression.Accept(this);
         }
 
@@ -45,40 +39,21 @@ namespace core_compile.Visitors
         public void Visit(FunctionCallNode node)
         {
             CurrentSymbolTable.currentTable.CheckIfExists(node.Name);
-
-            var child = node.GetChildren();
-            while (child != null)
-            {
-                child.Accept(this);
-                child = child.RightSibling;
-            }
+            node.AcceptChildren(this);
         }
 
         public void Visit(FunctionNode node)
         {
             CurrentSymbolTable.Insert(node.Identifier, node);
+
             CurrentSymbolTable.OpenScope();
-
-            var child = node.Params;
-            while (child != null)
-            {
-                child.Accept(this);
-                child = child.RightSibling;
-            }
-
-            child = node.GetChildren();
-            while (child != null)
-            {
-                child.Accept(this);
-                child = child.RightSibling;
-            }
-
+            node.AcceptChildrenFrom(node.Params, this);
+            node.AcceptChildren(this);
             CurrentSymbolTable.CloseScope();
         }
 
         public void Visit(IdentfierNode node)
         {
-            System.Console.WriteLine("visiting id node");
             CurrentSymbolTable.currentTable.CheckIfExists(node.Symbol);
         }
 
@@ -86,21 +61,11 @@ namespace core_compile.Visitors
         {
             node.Condition.Accept(this);
 
-            var child = node.GetChildren();
-            while (child != null)
-            {
-                child.Accept(this);
-                child = child.RightSibling;
-            }
+            node.AcceptChildren(this);
 
             if (node.Alternate != null)
             {
-                child = node.Alternate;
-                while (child != null)
-                {
-                    child.Accept(this);
-                    child = child.RightSibling;
-                }
+                node.AcceptChildrenFrom(node.Alternate, this);
             }
         }
 
@@ -152,12 +117,7 @@ namespace core_compile.Visitors
         public void Visit(WhileNode node)
         {
             node.Condition.Accept(this);
-            var child = node.GetChildren();
-            while (child != null)
-            {
-                child.Accept(this);
-                child = child.RightSibling;
-            }
+            node.AcceptChildren(this);
         }
 
         public void Visit(AstNode node)
