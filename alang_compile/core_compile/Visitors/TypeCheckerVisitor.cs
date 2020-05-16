@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
 using core_compile.AbstractSyntaxTree;
+using core_compile.Exceptions;
 using core_compile.SymbolTableClasses;
 
 namespace core_compile.Visitors
@@ -16,7 +18,8 @@ namespace core_compile.Visitors
         {
             // System.Console.WriteLine("Visiting compilationNode" + node.SymbolTable);
             CurrentSymbolTable = node.SymbolTable;
-            return node.AcceptChildren(this);
+            node.AcceptChildren(this);
+            return LanguageType.Void;
         }
 
         public LanguageType Visit(DeclarationNode node)
@@ -31,9 +34,10 @@ namespace core_compile.Visitors
             return exprType;
         }
 
-        public LanguageType Visit(AssignmentNode node)
+        public LanguageType Visit(AssignmentNode node) 
         {
-            var type = CurrentSymbolTable.Get(node.Identifier, CurrentSymbolTable);
+            var symbol = CurrentSymbolTable.Get(node.Identifier, CurrentSymbolTable);
+            var type = symbol.Type;
             if (type != node.Expression.Accept(this))
                 throw new Exception("Cannot assign type of " + node.Expression.Accept(this) + " to variable of type " + type);
             return LanguageType.Null;
@@ -51,33 +55,33 @@ namespace core_compile.Visitors
 
         public LanguageType Visit(FunctionCallNode node)
         {
-            // System.Console.WriteLine("gedgedged" + node.Name);
-            // System.Console.WriteLine("ostostost" + node.LeftMostChild);
-
-            // node.AcceptChildren(this);
-            // System.Console.WriteLine(node.AcceptChildren(this));
-            // System.Console.WriteLine("gedgedged" + node.NumberOfChildren);
-
-            System.Console.WriteLine("Function call node: ");
-            foreach (DictionaryEntry item in CurrentSymbolTable.Table)
+            var functionNode = CurrentSymbolTable.Get(node.Name, CurrentSymbolTable).Node as FunctionNode;
+            var child = functionNode.Params;
+            var paramchildren = node.GetChildren();
+            while (child != null)
             {
-                System.Console.WriteLine(item.Key + ": " + item.Value);
+                if (paramchildren == null)
+                    throw new TooFewArgumentsException(child);
+                var ShouldBeType = child.Accept(this);
+                var actualtype = paramchildren.Accept(this);
+
+                if (ShouldBeType != actualtype)
+                    throw new FunctionCalledWithWrongTypeException(ShouldBeType, actualtype);
+                
+                child = child.RightSibling;
+                paramchildren = paramchildren.RightSibling;
             }
 
-
-            node.AcceptChildren(this);
+            if (paramchildren != null)
+                throw new TooManyArgumentsException(paramchildren);
             return LanguageType.Null;
         }
 
         public LanguageType Visit(FunctionNode node)
         {
             CurrentSymbolTable = node.SymbolTable;
-            node.AcceptChildrenFrom(node.Params, this);
+            node.AcceptSiblings(node.Params, this);
             node.AcceptChildren(this);
-            foreach (DictionaryEntry item in CurrentSymbolTable.Table)
-            {
-                System.Console.WriteLine(item.Key + ": " + item.Value);
-            }
             CurrentSymbolTable = node.SymbolTable.parent;
 
             return LanguageType.Null;
@@ -85,7 +89,8 @@ namespace core_compile.Visitors
 
         public LanguageType Visit(IdentfierNode node)
         {
-            var type = CurrentSymbolTable.Get(node.Symbol, CurrentSymbolTable);
+            var symbol = CurrentSymbolTable.Get(node.Symbol, CurrentSymbolTable);
+            var type = symbol.Type;
             if (type == LanguageType.Int)
                 return LanguageType.Int;
             if (type == LanguageType.Time)
@@ -125,8 +130,7 @@ namespace core_compile.Visitors
 
         public LanguageType Visit(ParameterNode node)
         {
-            System.Console.WriteLine("param: " + node.Identifier);
-            return LanguageType.Null;
+            return node.Type;
         }
 
         public LanguageType Visit(PinNode node)
@@ -141,15 +145,7 @@ namespace core_compile.Visitors
 
         public LanguageType Visit(ValueNode node)
         {
-         //   Console.WriteLine("fadervor: " + ((FunctionCallNode)node.Parent).Name);
-
-            if (node.Value.GetType() == typeof(TimeNode))
-                return LanguageType.Time;
-            if (node.Value.GetType() == typeof(IntNode))
-                return LanguageType.Int;
-            if (node.Value.GetType() == typeof(PinNode))
-                return LanguageType.Pin;
-            return LanguageType.Null;
+            return node.Value.Accept(this);
         }
 
         public LanguageType Visit(WhileNode node)

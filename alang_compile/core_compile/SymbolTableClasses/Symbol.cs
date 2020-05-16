@@ -9,11 +9,13 @@ namespace core_compile.SymbolTableClasses
     {
         public string Name;
         public LanguageType Type;
+        public AstNode Node;
 
-        public Symbol(string name, LanguageType type)
+        public Symbol(string name, LanguageType type, AstNode node)
         {
             this.Name = name;
             this.Type = type;
+            Node = node;
         }
 
         public Symbol()

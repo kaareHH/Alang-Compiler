@@ -24,7 +24,7 @@ namespace core_compile.Visitors
         {
             System.Console.WriteLine("ged2");
 
-            CurrentSymbolTable.Insert(node.Identifier, node.Type);
+            CurrentSymbolTable.Insert(node.Identifier, node.Type, node);
         }
 
         public void Visit(AssignmentNode node)
@@ -47,10 +47,10 @@ namespace core_compile.Visitors
 
         public void Visit(FunctionNode node)
         {
-            CurrentSymbolTable.Insert(node.Identifier, node.Type);
+            CurrentSymbolTable.Insert(node.Identifier, node.Type, node);
 
             CurrentSymbolTable.OpenScope();
-            node.AcceptChildrenFrom(node.Params, this);
+            node.AcceptSiblings(node.Params, this);
             node.AcceptChildren(this);
             node.SymbolTable = CurrentSymbolTable.currentTable;
             CurrentSymbolTable.CloseScope();
@@ -69,7 +69,7 @@ namespace core_compile.Visitors
 
             if (node.Alternate != null)
             {
-                node.AcceptChildrenFrom(node.Alternate, this);
+                node.AcceptSiblings(node.Alternate, this);
             }
         }
 
@@ -100,7 +100,7 @@ namespace core_compile.Visitors
 
         public void Visit(ParameterNode node)
         {
-            CurrentSymbolTable.Insert(node.Identifier, node.Type);
+            CurrentSymbolTable.Insert(node.Identifier, node.Type, node);
         }
 
         public void Visit(PinNode node)

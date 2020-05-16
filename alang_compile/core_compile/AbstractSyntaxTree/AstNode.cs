@@ -48,7 +48,7 @@ namespace core_compile.AbstractSyntaxTree
             return LanguageType.Null;
         }
 
-        public void AcceptChildrenFrom(AstNode node, IVisitor visitor)
+        public void AcceptSiblings(AstNode node, IVisitor visitor)
         {
             var child = node;
             while (child != null)
@@ -57,7 +57,7 @@ namespace core_compile.AbstractSyntaxTree
                 child = child.RightSibling;
             }
         }
-        public void AcceptChildrenFrom(AstNode node, ITypeCheckerVisitor visitor)
+        public void AcceptSiblings(AstNode node, ITypeCheckerVisitor visitor)
         {
             var child = node;
             while (child != null)

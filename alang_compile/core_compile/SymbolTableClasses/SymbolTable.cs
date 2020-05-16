@@ -23,28 +23,27 @@ namespace core_compile.SymbolTableClasses
             parent = newsym;
         }
 
-        public LanguageType GetOld(string name)
+        public Symbol Get(string name, SymbolTable symbolTable)
         {
-            System.Console.WriteLine("ged");
-            for (SymbolTable symbolTable = currentTable; symbolTable != null; symbolTable = symbolTable.parent)
+            // for (SymbolTable symbolTable = currentTable; symbolTable != null; symbolTable = symbolTable.parent)
+            // {
+            //     if (symbolTable.Contains(name))
+            //         return symbolTable.Table[name] as Symbol;
+            // }
+            while (symbolTable != null)
             {
-                System.Console.WriteLine("peter");
-                if (Contains(name))
+                if (symbolTable.Contains(name))
                 {
-                    System.Console.WriteLine(symbolTable.Table[name]);
-                    // return LanguageType.Null;
-
-                    return (LanguageType)symbolTable.Table[name];
+                    return symbolTable.Table[name] as Symbol;
                 }
-                else
-                    return LanguageType.Null;
+                symbolTable = symbolTable.parent;
             }
 
             throw new SymbolDoNotExistException();
         }
 
 
-        public LanguageType Get(string name, SymbolTable symbolTable)
+        public LanguageType asGet(string name, SymbolTable symbolTable)
         {
             while (symbolTable != null)
             {
@@ -77,7 +76,7 @@ namespace core_compile.SymbolTableClasses
         {
             // if (!CurrentSymbolTable.currentTable.Lookup(node.FunctionToBeCalled))
             //     throw new SymbolDoNotExistException();
-            SymbolTable symbolTable = this;
+            SymbolTable symbolTable = this;    
             while (symbolTable != null)
             {
                 if (symbolTable.Contains(name))
@@ -90,13 +89,13 @@ namespace core_compile.SymbolTableClasses
             throw new SymbolDoNotExistException();
         }
 
-        public void Insert(string name, LanguageType type)
+        public void Insert(string name, LanguageType type, AstNode node)
         {
-            Console.WriteLine("Insert: " + name);
             if (currentTable.Contains(name))
                 throw new SymbolExistException();
-            currentTable.Table.Add(name, type);
-            Console.WriteLine("Inserting: " + type + " " + currentTable.Table.Count);
+            
+            var newsymbol = new Symbol(name, type, node);
+            currentTable.Table.Add(name, newsymbol);
         }
 
         public void OpenScope()

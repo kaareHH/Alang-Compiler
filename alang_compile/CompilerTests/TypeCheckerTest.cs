@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Security.Cryptography;
 using core_compile.AbstractSyntaxTree;
+using core_compile.Exceptions;
 using core_compile.SymbolTableClasses;
 using core_compile.Visitors;
 using NUnit.Framework;
+using Type = System.Type;
 
 namespace CompilerTests
 {
@@ -41,28 +44,62 @@ namespace CompilerTests
         public void AssignmentOfTimeToInt_ShouldThrowException()
         {
             // System.Console.WriteLine("asdasd");
-            var ast = TestHelpers.MakeAstRoot("int testrup = 2; function lars -> | void\n testrup = 00:00:00; endfunction");
+            var ast = TestHelpers.MakeAstRoot(@"
+            int testrup = 2;
+            function lars -> | void
+                testrup = 00:00:00;
+            endfunction");
             var visitor = new TypeCheckerVisitor();
             var symVisitor = new SymbolTableVisitor();
             ast.Accept(symVisitor);
+
             Assert.Throws<Exception>(() => ast.Accept(visitor));
         }
 
         [Test]
-        public void FunctionParams_ShouldThrowExeption()
+        public void FunctionParams_ShouldThrowFunctionCalledWithWrongTypeException()
         {
-            var ast = TestHelpers.MakeAstRoot(@"
-            int testrup = 2; function lars -> int franz | void
-            testrup = 2; endfunction
-            function mads -> | void
-                lars -> 00:00:00;
-                int alberte = 4;
+            ThrowsExceptionOfType<FunctionCalledWithWrongTypeException>(@"
+            function takeint -> int heltal | void
+            endfunction
+            function try -> | void
+                takeint -> 00:00:00; # Should not be possible.
             endfunction");
+        }
+
+        
+        
+        [Test]
+        public void FunctionParams_ThrowsTooFewArgumentsException()
+        {
+            ThrowsExceptionOfType<TooFewArgumentsException>(@"
+            function takeint -> int heltal | void
+            endfunction
+            function try -> | void
+                takeint ->; # Should have some input param.
+            endfunction");
+        }
+
+        [Test]
+        public void TooManyArgumentsInFunction_ShouldThrowTooManyArgumentsException()
+        {
+            ThrowsExceptionOfType<TooManyArgumentsException>(@"
+            function takeint -> int heltal | void
+            endfunction
+            function try -> | void
+                takeint -> 2, 2; # function takeint only takes 1 argument.
+            endfunction");
+        }
+        
+        private void ThrowsExceptionOfType<T>(string code) where T : Exception
+        {
+            var ast = TestHelpers.MakeAstRoot(code);
             
-            var visitor = new TypeCheckerVisitor();
-            var symVisitor = new SymbolTableVisitor();
-            ast.Accept(symVisitor);
-            Assert.Throws<Exception>(() => ast.Accept(visitor));
+            var symbolTableVisitor = new SymbolTableVisitor();
+            var typeCheckerVisitor = new TypeCheckerVisitor();
+            ast.Accept(symbolTableVisitor);
+            
+            Assert.Throws<T>(() => ast.Accept(typeCheckerVisitor));
         }
     }
 }
