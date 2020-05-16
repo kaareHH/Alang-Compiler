@@ -25,7 +25,7 @@ namespace core_compile.Visitors
         public LanguageType Visit(DeclarationNode node)
         {
             // System.Console.WriteLine("Visiting dclNode");
-            var exprType = node.PrimaryExpression.Accept(this);
+            var exprType = node.RightHandSide.Accept(this);
             if (exprType != node.Type)
             {
                 throw new Exception("DeclareType " + node.Type + " cannot be used with type" + exprType);
@@ -102,7 +102,9 @@ namespace core_compile.Visitors
 
         public LanguageType Visit(IfNode node)
         {
-            // Lav tjek her
+            var condtype = node.Condition.Accept(this);
+            if (condtype != LanguageType.Int || condtype != LanguageType.Time)
+                throw new TypeDoNotMatchConditionException(condtype);
             return LanguageType.Null;
         }
 

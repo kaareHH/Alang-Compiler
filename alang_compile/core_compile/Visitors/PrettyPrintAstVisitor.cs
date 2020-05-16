@@ -30,7 +30,7 @@ namespace core_compile.Visitors
         {
             Console.ForegroundColor = ConsoleColor.DarkBlue;
             Console.Write(Indent + "DeclarationNode: " + node.Type + " " + node.Identifier + " ");
-            node.PrimaryExpression.Accept(this);
+            node.RightHandSide.Accept(this);
             Console.Write("\n");
             Console.ResetColor();
         }

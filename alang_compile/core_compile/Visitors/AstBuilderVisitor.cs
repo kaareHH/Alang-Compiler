@@ -41,7 +41,7 @@ namespace core_compile.Visitors
         public override AstNode VisitDcl(ALangParser.DclContext context)
         {
             var node = new DeclarationNode(context);
-            node.PrimaryExpression = context.primaryExpression().Accept(this);
+            node.RightHandSide = context.primaryExpression().Accept(this);
             node.Identifier = context.ID().GetText();
             node.Type = Type.GetType(context);
 

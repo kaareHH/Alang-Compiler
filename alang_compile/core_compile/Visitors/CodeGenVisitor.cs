@@ -77,7 +77,7 @@ namespace core_compile.Visitors
             emit(" ");
             emit(node.Identifier);
             emit("=");
-            node.PrimaryExpression.Accept(this);
+            node.RightHandSide.Accept(this);
             emit(";");
 
             if(node.Type == LanguageType.Pin)
@@ -129,7 +129,7 @@ namespace core_compile.Visitors
             {
                 var pinNode = dicObject.Value as DeclarationNode;
                 emit($"pinMode(");
-                pinNode.PrimaryExpression.Accept(this);
+                pinNode.RightHandSide.Accept(this);
                 emit(", OUTPUT);");
             }
         }

@@ -13,7 +13,7 @@ namespace CompilerTests
             var dclNode = ast.GetChildren(0) as DeclarationNode;
             
             // Note to self: Don't think about precedence for now! 
-            var dclNodePrimaryExpression = (ExpressionNode)dclNode.PrimaryExpression;
+            var dclNodePrimaryExpression = (ExpressionNode)dclNode.RightHandSide;
             Assert.That(dclNodePrimaryExpression.Operator, Is.EqualTo(Operator.Addition));
         }
         
@@ -24,7 +24,7 @@ namespace CompilerTests
             var dclNode = ast.GetChildren(0) as DeclarationNode;
             
             // Note to self: Don't think about precedence for now! 
-            var dclNodePrimaryExpression = (ExpressionNode)dclNode.PrimaryExpression;
+            var dclNodePrimaryExpression = (ExpressionNode)dclNode.RightHandSide;
             Assert.That(dclNodePrimaryExpression.Operator, Is.EqualTo(Operator.AND));
         }
 
@@ -34,7 +34,7 @@ namespace CompilerTests
             var ast = TestHelpers.MakeAstRoot("int test = 1 * 2 + 3;");
             var dclNode = ast.GetChildren(0) as DeclarationNode;
 
-            var multiExpres = (ExpressionNode)dclNode.PrimaryExpression;
+            var multiExpres = (ExpressionNode)dclNode.RightHandSide;
             
             Assert.That(multiExpres.Left, Is.TypeOf<ExpressionNode>());
             Assert.That(((ExpressionNode)multiExpres.Left).Operator, Is.EqualTo(Operator.Multiplication));
@@ -47,7 +47,7 @@ namespace CompilerTests
             var ast = TestHelpers.MakeAstRoot("int ged = iden + 3;");
             var gedDcl = ast.GetChildren(0) as DeclarationNode;
 
-            var idenAndThree = (ExpressionNode)gedDcl.PrimaryExpression;
+            var idenAndThree = (ExpressionNode)gedDcl.RightHandSide;
             var iden = (IdentfierNode)idenAndThree.Left;
             Assert.That(iden, Is.TypeOf<IdentfierNode>());
             Assert.That(iden.Symbol, Is.EqualTo("iden"));

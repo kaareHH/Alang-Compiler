@@ -10,7 +10,7 @@ namespace core_compile.AbstractSyntaxTree
         public string Identifier { get; set; }
         public LanguageType Type { get; set; }
 
-        public AstNode PrimaryExpression { get; set; }
+        public AstNode RightHandSide { get; set; }
 
         public DeclarationNode(ALangParser.DclContext context) : base(context) { }
 
