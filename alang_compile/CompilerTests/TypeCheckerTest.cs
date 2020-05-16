@@ -51,7 +51,14 @@ namespace CompilerTests
         [Test]
         public void FunctionParams_ShouldThrowExeption()
         {
-            var ast = TestHelpers.MakeAstRoot("int testrup = 2; function lars -> int franz | void\n testrup = 2; endfunction\n function mads -> | void\n lars -> 00:00:00; int alberte = 4; endfunction");
+            var ast = TestHelpers.MakeAstRoot(@"
+            int testrup = 2; function lars -> int franz | void
+            testrup = 2; endfunction
+            function mads -> | void
+                lars -> 00:00:00;
+                int alberte = 4;
+            endfunction");
+            
             var visitor = new TypeCheckerVisitor();
             var symVisitor = new SymbolTableVisitor();
             ast.Accept(symVisitor);
