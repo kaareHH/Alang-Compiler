@@ -95,7 +95,7 @@ namespace core_compile.Visitors
 
         public void Visit(OutputNode node)
         {
-            CurrentSymbolTable.currentTable.CheckIfExists(node.Identifier);
+            node.Value.Accept(this);
         }
 
         public void Visit(ParameterNode node)

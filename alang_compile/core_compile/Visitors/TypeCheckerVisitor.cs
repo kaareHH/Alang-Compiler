@@ -126,8 +126,9 @@ namespace core_compile.Visitors
 
         public LanguageType Visit(OutputNode node)
         {
-            // verificer at der er tale om en pin
-        
+            var type = node.Value.Accept(this);
+            if (type != LanguageType.Pin)
+                throw new OutputNotPinException(node.Value);
             return LanguageType.Null;
         }
 

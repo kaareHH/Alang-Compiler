@@ -62,8 +62,8 @@ ifstmt              : 'if' primaryExpression 'then' stmts 'endif'
                     
 repeatstmt:         'while' primaryExpression 'do' stmts 'endwhile';
 
-outputstmt:          'ON' '->' ID ';'
-                    |'OFF' '->' ID ';'
+outputstmt:          'ON' '->' value ';'
+                    |'OFF' '->' value ';'
                     ;
 
 returnstmt          : 'return' primaryExpression ';'

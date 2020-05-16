@@ -172,7 +172,7 @@ namespace core_compile.Visitors
         public void Visit(OutputNode node)
         {
             var output = node.State ? "HIGH" : "LOW";
-            emit($"digitalWrite({node.Identifier},{output});");
+            emit($"digitalWrite({node.Value},{output});");
         }
 
         public void Visit(ParameterNode node)

@@ -160,5 +160,25 @@ namespace CompilerTests
                 endwhile
             endfunction");
         }
+
+        [Test]
+        public void OutputNode_DoseNotThrows()
+        {
+            DoesNotThrowExceptionOfType(@"
+            pin global = P10;
+            function try -> | void
+                ON -> global;
+            endfunction");
+        }
+
+        [Test]
+        public void OutputNode_ThrowsOutputNotPinException()
+        {
+            ThrowsExceptionOfType<OutputNotPinException>(@"
+            int global = 10;
+            function try -> | void
+                ON -> global;
+            endfunction");
+        }
     }
 }

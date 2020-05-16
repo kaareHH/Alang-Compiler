@@ -7,7 +7,7 @@ namespace core_compile.AbstractSyntaxTree
     {
 
         public bool State { get; set; }
-        public string Identifier { get; set; }
+        public AstNode Value { get; set; }
 
         public OutputNode()
         {
