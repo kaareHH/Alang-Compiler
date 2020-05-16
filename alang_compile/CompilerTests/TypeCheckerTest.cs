@@ -101,5 +101,17 @@ namespace CompilerTests
             
             Assert.Throws<T>(() => ast.Accept(typeCheckerVisitor));
         }
+
+        [Test]
+        public void IfNode_ConditionWShouldThrowException()
+        {
+            ThrowsExceptionOfType<TypeDoNotMatchConditionException>(@"
+            function try -> | void
+                pin cond = P2;
+                if cond then
+                    # Something.
+                endif
+            endfunction");
+        }
     }
 }

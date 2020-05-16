@@ -123,15 +123,14 @@ namespace CompilerTests
         }
 
         [Test]
-        public void TestExpression_ShouldHave()
+        public void BuildAst_MakesPinDecl()
         {
-            // FunctionNode expressionTestFunction = astRoot.GetChildren(9) as FunctionNode;
-            // DeclarationNode dclNode = expressionTestFunction.GetChildren(1) as DeclarationNode;
-            // ExpressionNode expressionNode = dclNode.PrimaryExpression as ExpressionNode;
-            //
-            // Assert.That(expressionNode.Operator, Is.EqualTo(Operator.Multiplication));
-            // Assert.That(expressionNode.Right, Is.TypeOf<ExpressionNode>());
-            // Assert.That(expressionNode.Left, Is.TypeOf<ExpressionNode>());
+            var ast = TestHelpers.MakeAstRoot(@"
+                pin test = P1;");
+
+            var pinDecl = ast.GetChildren() as DeclarationNode;
+            var pin = pinDecl.RightHandSide;
+            Assert.That(pin, Is.TypeOf<PinNode>());
         }
 
         [Test]
