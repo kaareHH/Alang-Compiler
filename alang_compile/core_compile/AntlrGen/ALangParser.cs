@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from /home/mads/dev/aau/p4-compiler/alang_compile/core_compile/ALang.g4 by ANTLR 4.8
+// Generated from C:/Users/aaspr.DESKTOP-G6R73JT/OneDrive/Desktop/pomo/p4/alang_compile/core_compile\ALang.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162

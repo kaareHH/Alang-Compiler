@@ -44,7 +44,7 @@ namespace core_compile.Visitors
             node.RightHandSide = context.primaryExpression().Accept(this);
             node.Identifier = context.ID().GetText();
             node.Type = Type.GetType(context);
-
+             
             return node;
         }
 
@@ -284,7 +284,7 @@ namespace core_compile.Visitors
             else if (context.PIN() != null)
             {
                 var node = new PinNode(context);
-                node.Value = Int32.Parse(context.PIN().GetText());
+                node.Value = Int32.Parse(context.PIN().GetText().TrimStart('P'));
                 visitValue = node;
             }
             else if (context.TIME() != null)

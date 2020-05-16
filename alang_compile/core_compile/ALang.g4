@@ -125,7 +125,7 @@ BOOLEAN: 'true' | 'false';
 
 INTEGERS: '0' | DIGITS;
 fragment DIGITS: '1' ..'9' '0' ..'9'*;
-PIN: '0' ..'9' | '1' '0' ..'3';
+PIN: 'P'('0' ..'9' | '1' '0' ..'3');
 ON: 'ON' ;
 OFF: 'OFF';
 TIME                :  NUM NUM ':' NUM NUM ':' NUM NUM
