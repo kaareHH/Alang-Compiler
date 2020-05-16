@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using core_compile.AbstractSyntaxTree;
 using core_compile.Exceptions;
 using core_compile.SymbolTableClasses;
+using InvalidExpressionException = core_compile.Exceptions.InvalidExpressionException;
 
 namespace core_compile.Visitors
 {
@@ -50,7 +51,7 @@ namespace core_compile.Visitors
             
             if (leftType == rightType)
                 return leftType;
-            throw new Exception("Operator: " + node.Operator + " cannot be used with " + leftType + " and " + rightType);
+            throw new InvalidExpressionException(node.Operator,leftType, rightType);
         }
 
         public LanguageType Visit(FunctionCallNode node)
@@ -103,7 +104,7 @@ namespace core_compile.Visitors
         public LanguageType Visit(IfNode node)
         {
             var condtype = node.Condition.Accept(this);
-            if (condtype != LanguageType.Int || condtype != LanguageType.Time)
+            if (condtype != LanguageType.Int && condtype != LanguageType.Time)
                 throw new TypeDoNotMatchConditionException(condtype);
             return LanguageType.Null;
         }
@@ -152,7 +153,9 @@ namespace core_compile.Visitors
 
         public LanguageType Visit(WhileNode node)
         {
-            // lav tjek her
+            var condtype = node.Condition.Accept(this);
+            if (condtype != LanguageType.Int && condtype != LanguageType.Time)
+                throw new TypeDoNotMatchConditionException(condtype);
             return LanguageType.Null;
         }
 

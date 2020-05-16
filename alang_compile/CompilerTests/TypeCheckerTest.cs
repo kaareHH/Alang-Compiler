@@ -101,6 +101,17 @@ namespace CompilerTests
             
             Assert.Throws<T>(() => ast.Accept(typeCheckerVisitor));
         }
+        
+        private void DoesNotThrowExceptionOfType(string code)
+        {
+            var ast = TestHelpers.MakeAstRoot(code);
+            
+            var symbolTableVisitor = new SymbolTableVisitor();
+            var typeCheckerVisitor = new TypeCheckerVisitor();
+            ast.Accept(symbolTableVisitor);
+            
+            Assert.DoesNotThrow(() => ast.Accept(typeCheckerVisitor));
+        }
 
         [Test]
         public void IfNode_ConditionWShouldThrowException()
@@ -111,6 +122,42 @@ namespace CompilerTests
                 if cond then
                     # Something.
                 endif
+            endfunction");
+        }
+        [Test]
+        public void IfNode_ConditionWShouldNotThrowException()
+        {
+            DoesNotThrowExceptionOfType(@"
+            function try -> | void
+                int cond = 1;
+                int condTwo = 2;
+                if cond > condTwo then
+                    # Something.
+                endif
+            endfunction");
+        }
+
+        [Test]
+        public void WhileNode_ConditionWShouldThrowException()
+        {
+            ThrowsExceptionOfType<TypeDoNotMatchConditionException>(@"
+            function try -> | void
+                pin cond = P2;
+                while cond do
+                    # Something.
+                endwhile
+            endfunction");
+        }
+        [Test]
+        public void WhileNode_ConditionWShouldNotThrowException()
+        {
+            ThrowsExceptionOfType<InvalidExpressionException>(@"
+            function try -> | void
+                time cond = 01:00:00;
+                int condTwo = 2;
+                while cond > condTwo && 1 == 2 do
+                    # Something.
+                endwhile
             endfunction");
         }
     }
