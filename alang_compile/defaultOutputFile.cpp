@@ -1,1 +1,1 @@
-unsigned long  TIME = (millis() + 82803223) % 86400000;int torben=2;
+unsigned long  TIME = (millis() + 36971294) % 86400000;int torben=2;

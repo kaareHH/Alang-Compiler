@@ -23,14 +23,38 @@ namespace core_compile.SymbolTableClasses
             parent = newsym;
         }
 
-        public AstNode Get(string name)
+        public LanguageType GetOld(string name)
         {
+            System.Console.WriteLine("ged");
             for (SymbolTable symbolTable = currentTable; symbolTable != null; symbolTable = symbolTable.parent)
             {
+                System.Console.WriteLine("peter");
                 if (Contains(name))
-                    return symbolTable.Table[name] as AstNode;
+                {
+                    System.Console.WriteLine(symbolTable.Table[name]);
+                    // return LanguageType.Null;
+
+                    return (LanguageType)symbolTable.Table[name];
+                }
+                else
+                    return LanguageType.Null;
             }
 
+            throw new SymbolDoNotExistException();
+        }
+
+
+        public LanguageType Get(string name, SymbolTable symbolTable)
+        {
+            while (symbolTable != null)
+            {
+                if (symbolTable.Contains(name))
+                {
+                    System.Console.WriteLine(symbolTable.Table[name]);
+                    return (LanguageType)symbolTable.Table[name];
+                }
+                symbolTable = symbolTable.parent;
+            }
             throw new SymbolDoNotExistException();
         }
 
@@ -66,13 +90,13 @@ namespace core_compile.SymbolTableClasses
             throw new SymbolDoNotExistException();
         }
 
-        public void Insert(string name, AstNode node)
+        public void Insert(string name, LanguageType type)
         {
             Console.WriteLine("Insert: " + name);
             if (currentTable.Contains(name))
                 throw new SymbolExistException();
-            currentTable.Table.Add(name, node);
-            Console.WriteLine("Inserting: " + node + " " + currentTable.Table.Count);
+            currentTable.Table.Add(name, type);
+            Console.WriteLine("Inserting: " + type + " " + currentTable.Table.Count);
         }
 
         public void OpenScope()

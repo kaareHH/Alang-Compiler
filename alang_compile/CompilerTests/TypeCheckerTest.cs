@@ -40,8 +40,21 @@ namespace CompilerTests
         [Test]
         public void AssignmentOfTimeToInt_ShouldThrowException()
         {
+            // System.Console.WriteLine("asdasd");
             var ast = TestHelpers.MakeAstRoot("int testrup = 2; function lars -> | void\n testrup = 00:00:00; endfunction");
             var visitor = new TypeCheckerVisitor();
+            var symVisitor = new SymbolTableVisitor();
+            ast.Accept(symVisitor);
+            Assert.Throws<Exception>(() => ast.Accept(visitor));
+        }
+
+        [Test]
+        public void FunctionParams_ShouldThrowExeption()
+        {
+            var ast = TestHelpers.MakeAstRoot("int testrup = 2; function lars -> int franz | void\n testrup = 2; endfunction\n function mads -> | void\n lars -> 00:00:00; int alberte = 4; endfunction");
+            var visitor = new TypeCheckerVisitor();
+            var symVisitor = new SymbolTableVisitor();
+            ast.Accept(symVisitor);
             Assert.Throws<Exception>(() => ast.Accept(visitor));
         }
     }

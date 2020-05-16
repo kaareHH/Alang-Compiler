@@ -57,6 +57,15 @@ namespace core_compile.AbstractSyntaxTree
                 child = child.RightSibling;
             }
         }
+        public void AcceptChildrenFrom(AstNode node, ITypeCheckerVisitor visitor)
+        {
+            var child = node;
+            while (child != null)
+            {
+                child.Accept(visitor);
+                child = child.RightSibling;
+            }
+        }
 
         public virtual void Accept(IVisitor visitor)
         {
