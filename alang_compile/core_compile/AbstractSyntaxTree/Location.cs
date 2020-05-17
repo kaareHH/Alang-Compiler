@@ -13,7 +13,7 @@ namespace core_compile.AbstractSyntaxTree
 
         public override string ToString()
         {
-            return $"[Line:{Line} Column: {Column}]";
+            return $"{Line}:{Column}";
         }
     }
 }

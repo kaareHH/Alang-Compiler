@@ -118,7 +118,7 @@ namespace core_compile.Visitors
                 return context.repeatstmt().Accept(this);
             if (context.assignstmt() != null)
                 return context.assignstmt().Accept(this);
-            return new NullNode(context);
+            return null;
         }
 
         public override AstNode VisitOutputstmt(ALangParser.OutputstmtContext context)
@@ -257,7 +257,7 @@ namespace core_compile.Visitors
         
         public override AstNode VisitPrimary(ALangParser.PrimaryContext context)
         {
-            AstNode node = new NullNode(context);
+            AstNode node = null;
             if (context.value() != null)
                 node = context.value().Accept(this);
             else if (context.LPAREN() != null)
@@ -294,7 +294,7 @@ namespace core_compile.Visitors
                 visitValue = node;
             }
             else
-                visitValue = new NullNode(context);
+                visitValue = null;
 
             return visitValue;
         }

@@ -15,6 +15,7 @@ namespace core_compile.Visitors
         public void Visit(CompilationNode node)
         {
             CurrentSymbolTable.OpenScope();
+            CurrentSymbolTable.Insert("TIME", LanguageType.Time, new TimeNode());
             node.AcceptChildren(this);
             node.SymbolTable = CurrentSymbolTable.currentTable;
             CurrentSymbolTable.CloseScope();
@@ -22,8 +23,6 @@ namespace core_compile.Visitors
 
         public void Visit(DeclarationNode node)
         {
-            System.Console.WriteLine("ged2");
-
             CurrentSymbolTable.Insert(node.Identifier, node.Type, node);
         }
 

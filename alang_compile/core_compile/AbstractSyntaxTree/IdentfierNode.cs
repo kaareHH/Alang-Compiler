@@ -7,6 +7,10 @@ namespace core_compile.AbstractSyntaxTree
     public class IdentfierNode : AstNode
     {
         public string Symbol;
+        public override string ToString()
+        {
+            return Symbol;
+        }
 
         public IdentfierNode()
         {

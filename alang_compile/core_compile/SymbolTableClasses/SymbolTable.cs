@@ -49,7 +49,6 @@ namespace core_compile.SymbolTableClasses
             {
                 if (symbolTable.Contains(name))
                 {
-                    System.Console.WriteLine(symbolTable.Table[name]);
                     return (LanguageType)symbolTable.Table[name];
                 }
                 symbolTable = symbolTable.parent;
@@ -100,19 +99,16 @@ namespace core_compile.SymbolTableClasses
 
         public void OpenScope()
         {
-            Console.WriteLine("Opening scope");
             currentTable = new SymbolTable(currentTable);
         }
 
         public void CloseScope()
         {
-            Console.WriteLine("Closing Scope");
             currentTable = currentTable.parent;
         }
 
         private bool Contains(string name)
         {
-            System.Console.WriteLine("Checking for " + name + " in symboltable with: " + Table?.Count + " entries" + ". Parent count: " + parent?.Table.Count);
             return Table.Contains(name);
         }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Security.Cryptography;
+using core_compile;
 using core_compile.AbstractSyntaxTree;
 using core_compile.Exceptions;
 using core_compile.SymbolTableClasses;
@@ -37,7 +38,7 @@ namespace CompilerTests
         {
             var ast = TestHelpers.MakeAstRoot("int testrup = 00:00:00;");
             var visitor = new TypeCheckerVisitor();
-            Assert.Throws<Exception>(() => ast.Accept(visitor));
+            Assert.Throws<AlangExeption>(() => ast.Accept(visitor));
         }
 
         [Test]
@@ -53,7 +54,7 @@ namespace CompilerTests
             var symVisitor = new SymbolTableVisitor();
             ast.Accept(symVisitor);
 
-            Assert.Throws<Exception>(() => ast.Accept(visitor));
+            Assert.Throws<AlangExeption>(() => ast.Accept(visitor));
         }
 
         [Test]

@@ -29,7 +29,7 @@ namespace core_compile.Visitors
             var exprType = node.RightHandSide.Accept(this);
             if (exprType != node.Type)
             {
-                throw new Exception("DeclareType " + node.Type + " cannot be used with type" + exprType);
+                throw new AlangExeption(node, "declareType " + node.Type + " cannot be used with type" + exprType);
             }
 
             return exprType;
@@ -40,7 +40,7 @@ namespace core_compile.Visitors
             var symbol = CurrentSymbolTable.Get(node.Identifier, CurrentSymbolTable);
             var type = symbol.Type;
             if (type != node.Expression.Accept(this))
-                throw new Exception("Cannot assign type of " + node.Expression.Accept(this) + " to variable of type " + type);
+                throw new AlangExeption(node, "cannot assign type of " + node.Expression.Accept(this) + " to variable of type " + type);
             return LanguageType.Null;
         }
 
