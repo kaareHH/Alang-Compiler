@@ -1,0 +1,80 @@
+﻿import std.alang; # finder lolleren.alang i mappen
+import string.alang;
+
+int mads = 2;
+
+function setup -> | void
+    pin bedroomLight = 12;
+    pin kitchenLight = 11;
+    pin livingRoomLight = 13;
+    pin coffeMachine = 10;
+    int IsMorning = 0;
+    int IsNoon = 0;
+    int IsEvening = 0;
+    int IsNight = 0;
+endfunction
+
+function loop -> | void
+    everyHour ->;
+
+   if 1 then
+     IsMorning = 1;
+   endif
+   # Define when each state is reached during the day
+   if TIME >= 07:45:00 && TIME < 12:00:00 then
+      IsMorning = 1;
+   endif
+   if TIME >= 12:00:00 && TIME < 16:00:00 then
+      IsNoon = 1;
+   endif
+   if TIME >= 16:00:00 && TIME < 22:00:00 then
+      IsEvening = 1;
+   else
+      IsNight = 1;
+   endif
+
+   # Begin my morning routine at 07:00.
+   if TIME == 07:00:00 then
+      MorningRoutine ->;
+   endif
+
+   # Make sure all light is turned off when Im at work
+   if IsNoon || IsNight then
+      OFF -> bedroomLight;
+      OFF -> kitchenLight;
+      OFF -> livingRoomLight;
+   endif
+endfunction
+
+function MorningRoutine ->| void
+      ON -> coffeMachine;
+    
+      if TIME >= 07:30:00 then
+            TOOGLE -> bedroomLight; 
+            WAIT -> 00:00:10;
+      endif
+endfunction
+
+time TimePassed = 00:00:00;
+
+function everyHour ->| void
+    int someVariable = 69;
+    if TimePassed < 01:00:00 then
+        TimePassed = TimePassed + TIME % 01:00:00;
+    else
+        # kør noget kode
+        TimePassed = 00:00:00;
+    endif
+endfunction
+
+function repeatTest -> | void
+   int test = 2;
+   while 2 do
+      test = test + 1;
+   endwhile
+endfunction
+
+function expressionTest -> | void
+   int test = 2;
+   int kasper = test * 10 + (25 / 5);
+endfunction

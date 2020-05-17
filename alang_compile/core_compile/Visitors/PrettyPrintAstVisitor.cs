@@ -1,129 +1,170 @@
-﻿using System;
-using System.Xml.Serialization;
+using System;
+using System.Linq;
+using System.Runtime.Serialization;
+using core_compile.AbstractSyntaxTree;
 
-namespace core_compile
+namespace core_compile.Visitors
 {
-    public class PrettyPrintAstVisitor : Visitor<object>
+    public class PrettyPrintAstVisitor : IVisitor
     {
+
         public int IndentLevel { get; set; }
         public string Indent => new String(' ', IndentLevel * 2);
- 
-        public override object Visit(StartNode node)
+
+        public void Visit(CompilationNode node)
         {
             Console.ForegroundColor = ConsoleColor.DarkGreen;
-            Console.WriteLine("StartNode:");
+            Console.WriteLine("CompilationNode:");
             Console.ResetColor();
             IndentLevel++;
-            Visit(node.MultipleDeclarationNode);
-            Visit(node.MultipleStatementsNode);
+            var child = node.GetChildren();
+            while (child != null)
+            {
+                child.Accept(this);
+                child = child.RightSibling;
+            }
             IndentLevel--;
-            return null;
-        }
 
-        public override object Visit(MultipleDeclarationsNode node)
-        {
-            foreach (var dcl in node.DeclarationNodes)
-            {
-                Visit((dynamic)dcl);
-            }
-            return null;
         }
-
-        public override object Visit(MultipleStatementsNode node)
-        {
-            foreach (var stmt in node.StatementNodes)
-            {
-                Visit((dynamic)stmt);
-            }
-            return null;
-        }
-
-        public override object Visit(DeclarationNode node)
+        public void Visit(DeclarationNode node)
         {
             Console.ForegroundColor = ConsoleColor.DarkBlue;
-            Console.Write(Indent + "DeclarationNode: " + node.DeclarationType + " " + node.Id + " ");
-            Visit(node.Value);
+            Console.Write(Indent + "DeclarationNode: " + node.Type + " " + node.Identifier + " ");
+            node.RightHandSide.Accept(this);
             Console.Write("\n");
             Console.ResetColor();
-            return null;
         }
 
-        public override object Visit(AssignStatementNode node)
+        public void Visit(AssignmentNode node)
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.Write(Indent + "AssignmentNode: " + node.Id + " ");
-            Visit(node.Value);
+            Console.Write(Indent + "AssignmentNode: " + node.Identifier + " ");
             Console.Write("\n");
             IndentLevel++;
-            Visit(node.Expression);
+            node.Expression.Accept(this);
             IndentLevel--;
             Console.Write("\n");
             Console.ResetColor();
-            return null;
         }
 
-        public override object Visit(IfStatementNode node)
-        {
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.Write(Indent + "IfStatementNode: ");
-            Visit(node.Value);
-            Console.Write("\n");
-            IndentLevel++;
-            Visit(node.Expression);
-            Console.Write("\n");
-            IndentLevel++;
-            Visit(node.MultipleStatementsNode);
-            IndentLevel--;
-            IndentLevel--;
-            Console.ResetColor();
-            return null;
-        }
-
-        public override object Visit(RepeatStatementNode node)
-        {
-            Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            Console.Write(Indent + "RepeatStatementNode: ");
-            Visit(node.Value);
-            Console.Write("\n");
-            Console.ResetColor();
-            IndentLevel++;
-            Visit(node.MultipleStatementsNode);
-            IndentLevel--;
-            return null;
-        }
-
-        public override object Visit(OutputStatementNode node)
-        {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.Write(Indent + "OutputStatementNode: " + node.Id + " " + node.Toggle);
-            Console.Write("\n");
-            Console.ResetColor();
-            return null;
-        }
-
-        public override object Visit(ExpressionNode node)
+        public void Visit(ExpressionNode node)
         {
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.Write(Indent + "ExpressionNode: ");
-            foreach (var op in node.ExpressionOperators)
-            {
-                Console.Write(" " + op + " ");
-            }
-
-            foreach (var value in node.Values)
-            {
-                Visit(value);
-            }
+            node.Left.Accept(this);
+            System.Console.Write(node.Operator.ToString());
+            node.Right.Accept(this);
             Console.ResetColor();
-            return null;
         }
 
-        public override object Visit(ValueNode node)
+        public void Visit(FunctionCallNode node)
         {
-            Console.Write(node.Value + " (" + node.ValueKind + ")");
-            Console.ResetColor();
-            return null;
+
         }
 
+        public void Visit(FunctionNode node)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine(Indent + "FunctionNode: " + node.Identifier);
+            IndentLevel++;
+            var child = node.GetChildren();
+            while (child != null)
+            {
+                child.Accept(this);
+                child = child.RightSibling;
+            }
+            IndentLevel--;
+        }
+
+        public void Visit(IdentfierNode node)
+        {
+            System.Console.WriteLine(node.Symbol);
+        }
+
+        public void Visit(IfNode node)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.Write(Indent + "IfStatementNode: ");
+            Visit(node.Condition);
+            Console.Write("Then\n");
+            IndentLevel++;
+            var child = node.Consequent;
+            while (child != null)
+            {
+                child.Accept(this);
+                child = child.RightSibling;
+            }
+            if (node.Alternate != null)
+            {
+                Console.Write("\nelse");
+                child = node.Alternate;
+                while (child != null)
+                {
+                    child.Accept(this);
+                    child = child.RightSibling;
+                }
+            }
+            IndentLevel--;
+            Console.ResetColor();
+        }
+
+        public void Visit(ImportNode node)
+        {
+
+        }
+
+        public void Visit(IntNode node)
+        {
+            //emit(node.Value.ToString());
+        }
+
+        public void Visit(Location node)
+        {
+
+        }
+
+        public void Visit(NullNode node)
+        {
+
+        }
+
+        public void Visit(OutputNode node)
+        {
+            // Console.ForegroundColor = ConsoleColor.DarkRed;
+            // Console.Write(Indent + "OutputStatementNode: " + node.Id + " " + node.Toggle);
+            // Console.Write("\n");
+            // Console.ResetColor();
+            // return null;
+        }
+
+        public void Visit(ParameterNode node)
+        {
+
+        }
+
+        public void Visit(PinNode node)
+        {
+
+        }
+
+        public void Visit(TimeNode node)
+        {
+
+        }
+
+        public void Visit(ValueNode node)
+        {
+
+        }
+
+        public void Visit(WhileNode node)
+        {
+
+        }
+
+        public void Visit(AstNode node)
+        {
+            return;
+        }
     }
 }

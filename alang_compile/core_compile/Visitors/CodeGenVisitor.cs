@@ -1,131 +1,248 @@
-﻿using System;
-using AntlrGen;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
+using core_compile.AbstractSyntaxTree;
 
-namespace core_compile
+namespace core_compile.Visitors
 {
-    internal class CodeGenVisitor : ALangBaseVisitor<object>
+    public class CodeGenVisitor : IVisitor
     {
-        public string Code { get; set; } = "";
-        public int IndentLevel { get; set; }
+        
+        public string program { get; set; } = "";
+        public Hashtable globalPins = new Hashtable();
 
-        public string Indent => new String(' ', IndentLevel*2);
-
-        public override object VisitStart(ALangParser.StartContext context)
+        public void WriteToFile([Optional] string filename)
         {
-            emit("#include<stdio.h>\n\n");
-            emit("int main(void)\n{\n");
-            IndentLevel++;
-            VisitChildren(context);
-            emit(Indent + "return 0;");
-            emit("\n}");
-            Console.WriteLine(Code);
-            WriteToFile("test.c");
-            return null;
-        }
-
-        private void WriteToFile(string filePath)
-        {
-            System.IO.File.WriteAllText(filePath, Code);
-        }
-
-        public override object VisitDcls(ALangParser.DclsContext context)
-        {
-            VisitChildren(context);
-            return null;
-        }
-
-        public override object VisitDcl(ALangParser.DclContext context)
-        {
-            if (context.TYPE().ToString() == "int")
-            {
-                emit(Indent + context.TYPE() + " " + context.ID() + " " + "=" + " ");
-                context.value().Accept(this);
-                emit(";\n");
-            }
-            else
-            {
-                emit(Indent + "int" + " " + context.ID() + " = ");
-                context.value().Accept(this);
-                emit(";\n");
-            }
+            string path =  "../../../../"+ (filename ?? "defaultOutputFile.cpp");
+            var filestring = path;
+            var filepath = Path.GetFullPath(filestring);
             
-            return null;
+            using var file = new StreamWriter(filepath);
+            file.Write(program);
         }
 
-        public override object VisitAssignstmt(ALangParser.AssignstmtContext context)
+        public void Visit(AssignmentNode node)
         {
-            emit(Indent + context.ID() + " = ");
-            context.value().Accept(this);
-            context.expr().Accept(this);
-            emit(";\n");
-            return null;
+            emit(node.Identifier);
+            emit("=");
+            node.Expression.Accept(this);
+            emit(";");
         }
 
-        public override object VisitIfstmt(ALangParser.IfstmtContext context)
+        public void Visit(AstNode node)
         {
-            emit(Indent + "if((");
-            context.value().Accept(this);
-            context.expr().Accept(this);
-            emit(") != 0)" + "\n" + Indent + "{\n");
-            IndentLevel++;
-            context.stmts().Accept(this);
-            IndentLevel--;
-            emit("\n" + Indent + "}\n");
-            return null;
+            emit("I should not be able to write this line");
+            emit(node.Start);
+            emit(node.Stop);
         }
 
-        public override object VisitRepeatstmt(ALangParser.RepeatstmtContext context)
+        public void Visit(CompilationNode node)
         {
-            emit(Indent + "for(int i=0;i<");
-            context.value().Accept(this);
-            emit(";i++)\n" + Indent + "{\n");
-            IndentLevel++;
-            context.stmts().Accept(this);
-            IndentLevel--;
-            emit("\n" + Indent + "}\n");
-            return null;
+            emit("unsigned long " + timeNow());
+            node.AcceptChildren(this);
+
         }
 
-        public override object VisitOutputstmt(ALangParser.OutputstmtContext context)
+        private const int COMPILELEEPTIME = 1;
+        private const int ADAYINMILLIS = 86400000;
+
+        private static string timeNow()
         {
-            emit(Indent + "printf(\"");
-            emit(context.ID() + " " + context.TOGGLE() + "\");\n");
-            return null;
+            var now = DateTime.Now.AddSeconds(COMPILELEEPTIME).TimeOfDay;
+            var nowMS = (long)now.TotalMilliseconds;
+            return $" TIME = (millis() + {nowMS.ToString()}) % {ADAYINMILLIS};";
+
         }
 
-        public override object VisitExpr(ALangParser.ExprContext context)
+        
+        private void emit(object code)
         {
-            for (int i = 0; i < context.OPERATOR().Length; i++)
-            {
-                emit(context.OPERATOR()[i] + " ");
-                context.value()[i].Accept(this);
-            }
-
-            return null;
-        }
-
-        public override object VisitValue(ALangParser.ValueContext context)
-        {
-            if (context.INTEGERS() != null)
-            {
-                emit(context.INTEGERS().ToString());
-            } else if (context.PIN() != null)
-            {
-                emit(context.PIN().ToString());
-            }
+            string text;
+            if (code is string s)
+                text = s;
             else
-            {
-                emit(context.ID().ToString());
-            }
+                text = code.ToString();
             
+            program += text;
+        }
+        public void Visit(DeclarationNode node)
+        {
+            emit(node.Type.ToEnumString());
             emit(" ");
-            
-            return null;
+            emit(node.Identifier);
+            emit("=");
+            node.RightHandSide.Accept(this);
+            emit(";");
+
+            if(node.Type == LanguageType.Pin)
+                globalPins.Add(node.Identifier, node);
+                
         }
 
-        private void emit(string text)
+        public void Visit(ExpressionNode node)
         {
-            Code += text;
+            if (node.Parenthesized)
+                emit("(");
+            node.Left.Accept(this);
+            emit(node.Operator.ToOperatorString());
+            node.Right.Accept(this);
+            if (node.Parenthesized)
+                emit(")");
+        }
+
+        public void Visit(FunctionCallNode node)
+        {
+            emit(node.Name);
+            emit("(");
+            node.AcceptChildren(this);
+            emit(");");
+            
+        }
+
+
+        public void Visit(FunctionNode node)
+        {
+            emit(node.Type.ToEnumString());
+            emit(" ");
+            emit(node.Identifier);
+            emit("(");
+            if (node.Params != null)
+                node.Params.Accept(this);
+            emit("){\n");
+            if(node.Identifier == "loop")
+                emit(timeNow());
+            if(node.Identifier == "setup")
+                SetupBoilerPlate(node);
+            node.AcceptChildren(this);
+            emit("\n}\n");
+        }
+
+        private void SetupBoilerPlate(FunctionNode node)
+        {
+            foreach (DictionaryEntry dicObject in globalPins)
+            {
+                var pinNode = dicObject.Value as DeclarationNode;
+                emit($"pinMode(");
+                pinNode.RightHandSide.Accept(this);
+                emit(", OUTPUT);");
+            }
+        }
+
+        public void Visit(IdentfierNode node)
+        {
+            emit(node);
+        }
+
+        public void Visit(IfNode node)
+        {
+            emit("if(");
+            node.Condition.Accept(this);
+            emit("){");
+            node.AcceptChildren(this);
+            emit("}");
+            if (node.Alternate != null)
+            {
+                emit("else{");
+                node.AcceptSiblings(node.Alternate, this);
+                emit("}");
+            }
+        }
+
+        public void Visit(ImportNode node)
+        {
+            emit("//maybeimport lul\n");
+        }
+
+        public void Visit(IntNode node)
+        {
+            emit(node.Value);
+        }
+
+        public void Visit(NullNode node)
+        {
+            throw new SomethingWentWrongException(node,"I am a NullNode. SPURGT");
+        }
+
+        public void Visit(OutputNode node)
+        {
+            var output = node.State ? "HIGH" : "LOW";
+            emit($"digitalWrite({node.Value},{output});");
+        }
+
+        public void Visit(ParameterNode node)
+        {
+            emit($"{node.Type.ToEnumString()} {node.Identifier}");
+            
+            var sibling = node.RightSibling as ParameterNode;
+            while (sibling != null){
+                emit($", {sibling.Type.ToEnumString()} {sibling.Identifier}");
+                sibling = sibling.RightSibling as ParameterNode;
+            }
+            
+        }
+
+        public void Visit(PinNode node)
+        {
+            emit(node.Value);
+        }
+
+        public void Visit(TimeNode node)
+        {
+            emit(node.Value);
+        }
+
+        public void Visit(ValueNode node)
+        {
+            node.Value.Accept(this);
+        }
+
+        public void Visit(WhileNode node)
+        {
+            emit("while (");
+            node.Condition.Accept(this);
+            emit("){");
+            node.AcceptChildren(this);
+            emit("}");
+        }
+    }
+
+    public class SomethingWentWrongException : Exception
+    {
+        public AstNode Node;
+        
+        public SomethingWentWrongException(AstNode node, string message = "") : base(message)
+        {
+            Node = node;
+        }
+    }
+
+    public class errorHandler
+    {
+        public void TryCompile()
+        {
+            var codegen = new CodeGenVisitor();
+            var ast = new CompilationNode();
+
+            try
+            {
+                ast.Accept(codegen);
+            }
+            catch (SomethingWentWrongException e)
+            {
+                Console.WriteLine(e.Node.Start);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }

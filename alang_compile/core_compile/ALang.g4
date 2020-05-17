@@ -2,108 +2,82 @@ grammar ALang;
 /*
  *  Parser Rules
  */
-start               : imports commands EOF
+start               : commands EOF
                     ;
 
-commands            : command*
+commands            : dcl commands
+                    | function commands
+                    | imports commands
+                    |
+                    ;
+                    
+dcl                 : TYPE ID '=' primaryExpression ';'
+                    | TYPE ID ';'
                     ;
 
-command             : dcl
-                    | function
+function            : 'function' ID '->' params '|' TYPE stmts 'endfunction'
                     ;
 
-function            : 'function' ID '->' params '|' TYPE codeblock 'endfunction'
+imports             : 'import' ALANGFILENAME ';'
                     ;
 
-params              : (param(',' param)*)?
+primaryExpression : predicateExpression ( BOOLOP predicateExpression ) *
+                    | ;
+
+predicateExpression : additiveExpression ( PREDOP additiveExpression ) *;
+
+additiveExpression : multiExpression ( ADDOP multiExpression ) *;
+
+multiExpression : primary ( MULOP primary ) * ;
+
+primary             : value
+                    | '(' primaryExpression ')'
+                    ;
+                    
+params              : param
+                    | param ',' params
+                    |
                     ;
 
 param               : TYPE ID
                     ;
 
-inputparams         : (value(',' value)*)?
+stmts               : dcl stmts
+                    | ifstmt stmts
+                    | repeatstmt stmts
+                    | outputstmt stmts
+                    | returnstmt stmts
+                    | functioncall stmts
+                    | assignstmt stmts
+                    |
+                    ;
+                    
+
+assignstmt          : ID '=' primaryExpression ';'
                     ;
 
-codeblock           : code*
+ifstmt              : 'if' primaryExpression 'then' stmts 'endif'
+                    | 'if' primaryExpression 'then' stmts 'else' stmts 'endif'
+                    ;            
+                    
+repeatstmt:         'while' primaryExpression 'do' stmts 'endwhile';
+
+outputstmt:          'ON' '->' value ';'
+                    |'OFF' '->' value ';'
                     ;
 
-code                : dcl
-                    | stmt
+returnstmt          : 'return' primaryExpression ';'
                     ;
-
-imports             : ('import' ALANGFILENAME ';')*
-                    ;
-
-dcl                 : TYPE ID '=' udtryk ';'
-                    | TYPE ID ';'
-                    ;
-
-udtryk              : arithmeticexpr
-                    | logicexpr
-                    | predexpr
-                    ;
-
-stmt                : assignstmt
-                    | ifstmt
-                    | repeatstmt
-                    | outputstmt
-                    | returnstmt
-                    | functioncall
-                    ;
-
+                    
 functioncall        : ID '->' inputparams ';'
+                    | ID '->' ';'
                     ;
-
-returnstmt          : 'return' udtryk ';'
+                    
+inputparams         : value
+                    | value ',' inputparams
                     ;
-
-assignstmt          : ID '=' udtryk ';'
-                    | ID '+=' udtryk ';'
-                    ;
-
-arithmeticexpr      : arithmeticexpr OPERATOR arithmeticexpr
-                    | value
-                    | '(' arithmeticexpr ')'
-                    ;
-
-ifstmt              : 'if' condition 'then' codeblock 'endif'
-                    | 'if' condition 'then' codeblock 'else' codeblock 'endif'
-                    | 'if' condition 'then' codeblock ('else if' condition 'then' codeblock)+ 'endif'
-                    | 'if' condition 'then' codeblock ('else if' condition 'then' codeblock)+ 'else' codeblock 'endif'
-                    ;
-
-condition           : predexpr
-                    | logicexpr
-                    | BOOLEAN
-                    | ID
-                    ;
-
-predexpr            : ID PREDOPERATOR TIME
-                    | arithmeticexpr PREDOPERATOR arithmeticexpr
-                    ;
-
-
-logicexpr           : ID BOOLOPERATOR ID
-                    | BOOLEAN BOOLOPERATOR BOOLEAN
-                    | predexpr BOOLOPERATOR predexpr
-                    | '('logicexpr')' BOOLOPERATOR '('logicexpr')'
-                    | BOOLEAN
-                    | '('logicexpr')'
-                    ;
-
-
-
-repeatstmt: REPEAT value TIMES codeblock ENDREPEAT;
-
-outputstmt: TOGGLE ID ENDTERM;
 
 value: ID | INTEGERS | PIN | TIME;
-
-state : '(' ID (',' ID)* ')';
-
-
-
-
 
 //TERMINALS
 ENDIF: 'endif';
@@ -125,13 +99,12 @@ TIMES: 'times';
 THEN: 'then';
 
 TYPE: 'void'
-    | 'number'
+    | 'int'
+    | 'float'
     | 'pin'
-    | 'bool'
     | 'time'
     ;
 
-INCLUDE  : 'include ' ;
 LPAREN : '(' ;
 RPAREN : ')' ;
 COMMA : ',' ;
@@ -139,25 +112,26 @@ COMMA : ',' ;
 ASSIGNOPERATOR: '=';
 
 // OPERATORS
-OPERATOR: ('+' | '-' | '*' | '/' | '%');
-BOOLOPERATOR: '&&' | '||' | '^';
-PREDOPERATOR: '==' | '>=' | '<=' | '>' | '<' | '!=';
+
+//OPALL: ADDOP | MULOP | BOOLOP | PREDOP;
+ADDOP: ('+' | '-');
+MULOP: ('*' | '/' | '%');
+BOOLOP: '&&' | '||' | '^';
+PREDOP: '==' | '>=' | '<=' | '>' | '<' | '!=';
 
 // DATA TYPES
 BOOLEAN: 'true' | 'false';
 
 INTEGERS: '0' | DIGITS;
 fragment DIGITS: '1' ..'9' '0' ..'9'*;
-
-PIN: '0' ..'9' | '1' '0' ..'3';
-
-TOGGLE: 'on' | 'off';
-
-TIME                :  NUM NUM ':' NUM NUM
-                    |  NUM NUM ':' NUM NUM ':' NUM NUM
-                    ;
-
+PIN: 'P'('0' ..'9' | '1' '0' ..'3');
+ON: 'ON' ;
+OFF: 'OFF';
+TIME                :  NUM NUM ':' NUM NUM ':' NUM NUM
+;
 fragment NUM        : '0'..'9';
+FLOAT: NUM* '.' NUM+ ;
+
 // IDENTIFIERS
 ID: (LOWERCASE | UPPERCASE)+;
 fragment UPPERCASE: [A-Z];
@@ -168,7 +142,8 @@ ALANGFILENAME: ([a-zA-Z0-9])+ '.alang'
              ;
 
  // SKIPS
- WHITESPACE          : (' '|'\t'|'\r'? '\n'|'\r')+ -> skip ;
+ WHITESPACE :   [ \t]+ -> skip;
+ NEWLINE :   (   '\r' '\n'? |   '\n') -> skip;
  BLOCKCOMMENT        :   '#*' .*? '*#' -> skip ;
  LINECOMMENT         :   '#' ~[\r\n]* -> skip ;
  //NEWLINE             : ('\r'? '\n' | '\r')+ -> skip ;

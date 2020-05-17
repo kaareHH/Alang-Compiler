@@ -1,62 +1,12 @@
-﻿import lolleren; // finder lolleren.alang i mappen 
-
-function setup | void
-    pin bedroomLight = 12;
-    pin kitchenLight = 11;
-    pin livingRoomLight = 13;
-    pin coffeMachine = 10;
-endfunction
-
-
-bool IsMorning = false;
-bool IsNoon = false;
-bool IsEvening = false;
-bool IsNight = false;
-
-function loop | void
-    everyHour ->;
-
-   # Define when each state is reached during the day
-   if TIME >= 07:45 && TIME < 12:00 then
-      IsMorning = true;
-   else if TIME >= 1200 && < 1600 then
-      IsNoon = true;
-   else if TIME >= 1600 && < 2200 then
-      IsEvening = true;
-   else
-      IsNight = true;
-   endif
-
-   # Begin my morning routine at 07:00.
-   if TIME == 07:00 then
-      MorningRoutine ->;
-   endif
-
-   # Make sure all light is turned off when Im at work
-   if IsNoon || IsNight then
-      OFF -> bedroomLight;
-      Off -> kitchenLight;
-      Off -> livingRoomLight;
-   endif
-endloop
-
-function MorningRoutine ->| void
-      ON -> coffeMachine;
-    
-      if TIME >= 07:30 then
-         repeat 10 times
-            TOOGLE -> bedroomLight; 
-            WAIT -> 00:00:10;
-         endrepeat
-      endif
-endfunction
-
-time TimePassed = 00:00;
-function everyHour ->| void
-    if TimePassed < 01:00 then
-        TimePassed += TIME % 01:00;
+﻿pin red = 13;
+function loop -> | void
+    red = 13;
+    if TIME > 17:12:00 then
+        ON -> red;
     else
-        # kør noget kode
-        TimePassed = 0:00;
+        OFF -> red;
     endif
+endfunction
+
+function setup -> | void
 endfunction
