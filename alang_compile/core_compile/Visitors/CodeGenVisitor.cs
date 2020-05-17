@@ -14,6 +14,7 @@ namespace core_compile.Visitors
 {
     public class CodeGenVisitor : IVisitor
     {
+        
         public string program { get; set; } = "";
         public Hashtable globalPins = new Hashtable();
 
@@ -64,8 +65,8 @@ namespace core_compile.Visitors
         private void emit(object code)
         {
             string text;
-            if (code is string)
-                text = code as string;
+            if (code is string s)
+                text = s;
             else
                 text = code.ToString();
             
@@ -136,7 +137,7 @@ namespace core_compile.Visitors
 
         public void Visit(IdentfierNode node)
         {
-            emit(node.Symbol);
+            emit(node);
         }
 
         public void Visit(IfNode node)
@@ -149,7 +150,7 @@ namespace core_compile.Visitors
             if (node.Alternate != null)
             {
                 emit("else{");
-                node.Alternate.Accept(this);
+                node.AcceptSiblings(node.Alternate, this);
                 emit("}");
             }
         }
