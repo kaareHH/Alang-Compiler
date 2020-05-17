@@ -18,23 +18,6 @@ namespace CompilerTests
             return (CompilationNode)new AstBuilderVisitor().VisitStart(parseTree);
         }
 
-        public static AstNode GetChildOfIndex(AstNode parent, int index)
-        {
-            var child = parent.GetChildren();
-
-            for (int i = 0; i < index; i++)
-            {
-                child = child.RightSibling;
-
-                if (child == null)
-                {
-                    throw new Exception("Child list out of bounds!");
-                }
-            }
-
-            return child;
-        }
-
         public static CommonTokenStream LexInputFile(string text)
         {
             AntlrInputStream inputStream = new AntlrInputStream(text);
@@ -49,14 +32,7 @@ namespace CompilerTests
             ALangParser.StartContext startContext = aLangParser.start();
             return startContext;
         }
-
-        public static void AssertLocation(AstNode ast, int startLine, int startCol, int stopLine, int stopCol)
-        {
-            Assert.AreEqual(startLine, ast.Start.Line);
-            Assert.AreEqual(stopLine, ast.Stop.Line);
-            Assert.AreEqual(startCol, ast.Start.Column);
-            Assert.AreEqual(stopCol, ast.Stop.Column);
-        }
+        
 
         public static bool ReadFromFile(string fileName, out string text)
         {
