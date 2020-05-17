@@ -102,7 +102,6 @@ TYPE: 'void'
     | 'int'
     | 'float'
     | 'pin'
-    | 'bool'
     | 'time'
     ;
 
