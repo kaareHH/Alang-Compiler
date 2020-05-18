@@ -106,6 +106,8 @@ namespace core_compile.Visitors
             var condtype = node.Condition.Accept(this);
             if (condtype != LanguageType.Int && condtype != LanguageType.Time)
                 throw new TypeDoNotMatchConditionException(condtype);
+            node.AcceptChildren(this);
+            node.AcceptSiblings(node.Alternate, this);
             return LanguageType.Null;
         }
 
@@ -126,9 +128,9 @@ namespace core_compile.Visitors
 
         public LanguageType Visit(OutputNode node)
         {
-            var type = node.Value.Accept(this);
-            if (type != LanguageType.Pin)
-                throw new OutputNotPinException(node.Value);
+            var idNode = CurrentSymbolTable.Get(node.Identifier, CurrentSymbolTable);
+            if (idNode.Type != LanguageType.Pin)
+                throw new OutputNotPinException(node);
             return LanguageType.Null;
         }
 
@@ -157,6 +159,7 @@ namespace core_compile.Visitors
             var condtype = node.Condition.Accept(this);
             if (condtype != LanguageType.Int && condtype != LanguageType.Time)
                 throw new TypeDoNotMatchConditionException(condtype);
+            node.AcceptChildren( this);
             return LanguageType.Null;
         }
 
