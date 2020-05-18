@@ -41,7 +41,7 @@ namespace core_compile
                 var codeGenVisitor = new CodeGenVisitor();
                 ast.Accept(codeGenVisitor);
 
-                var program = codeGenVisitor.program;
+                var program = codeGenVisitor.Program;
                 WriteProgramToFile(program, fileName);
             }
             catch (AntlrException ex)
@@ -51,6 +51,10 @@ namespace core_compile
             catch (AlangExeption ex)
             {
                 Console.WriteLine($"line {ex.Node.Start} {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
