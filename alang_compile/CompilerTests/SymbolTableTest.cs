@@ -42,15 +42,7 @@ namespace CompilerTests
             Assert.DoesNotThrow(() => ast.Accept(visitor));
         }
 
-        [Test]
-        public void AssignmentToNotDeclaredVar_ShouldThrowException()
-        {
-            var ast = TestHelpers.MakeAstRoot("function test -> | void\n karen = 8;\n endfunction");
 
-            var visitor = new SymbolTableVisitor();
-
-            Assert.Throws<SymbolDoNotExistException>(() => ast.Accept(visitor));
-        }
 
         [Test]
         public void AssignmentInTwoFunctions_ShouldNotThrowException()
@@ -70,26 +62,6 @@ namespace CompilerTests
             var visitor = new SymbolTableVisitor();
 
             Assert.DoesNotThrow(() => ast.Accept(visitor));
-        }
-
-        [Test]
-        public void FunctionCallOfNotDeclared_ShouldThrowException()
-        {
-            var ast = TestHelpers.MakeAstRoot("function test -> | void\n torben -> ;\n endfunction\n int karen = 2;");
-
-            var visitor = new SymbolTableVisitor();
-
-            Assert.Throws<SymbolDoNotExistException>(() => ast.Accept(visitor));
-        }
-
-        [Test]
-        public void VariableNotDeclared_ShouldThrowException()
-        {
-            var ast = TestHelpers.MakeAstRoot("int michael = 0; int jens = 3; \nfunction test -> | void\n michael = jens + 2 + lars; \n endfunction\n int karen = 2;");
-
-            var visitor = new SymbolTableVisitor();
-
-            Assert.Throws<SymbolDoNotExistException>(() => ast.Accept(visitor));
         }
 
         [Test]

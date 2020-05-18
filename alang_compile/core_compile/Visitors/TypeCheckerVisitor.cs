@@ -160,6 +160,23 @@ namespace core_compile.Visitors
             return LanguageType.Null;
         }
 
+        public LanguageType Visit(ReturnNode node)
+        {
+            var iterator = node.Parent;
+            while (iterator != null)
+            {
+                if (iterator is FunctionNode func)
+                {
+                    if (func.Type != node.Value.Accept(this))
+                        throw new AlangExeption(node, "Not equal types");
+                    else
+                        return LanguageType.Null;
+                }
+                iterator = iterator.Parent;
+            }
+            throw new Exception("Return not in function");
+        }
+
         public LanguageType Visit(AstNode node)
         {
             return LanguageType.Null;

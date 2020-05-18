@@ -28,7 +28,6 @@ namespace core_compile.Visitors
 
         public void Visit(AssignmentNode node)
         {
-            CurrentSymbolTable.currentTable.CheckIfExists(node.Identifier);
             node.Expression.Accept(this);
         }
 
@@ -40,7 +39,6 @@ namespace core_compile.Visitors
 
         public void Visit(FunctionCallNode node)
         {
-            CurrentSymbolTable.currentTable.CheckIfExists(node.Name);
             node.AcceptChildren(this);
         }
 
@@ -57,7 +55,6 @@ namespace core_compile.Visitors
 
         public void Visit(IdentfierNode node)
         {
-            CurrentSymbolTable.currentTable.CheckIfExists(node.Symbol);
         }
 
         public void Visit(IfNode node)
@@ -121,6 +118,11 @@ namespace core_compile.Visitors
         {
             node.Condition.Accept(this);
             node.AcceptChildren(this);
+        }
+
+        public void Visit(ReturnNode node)
+        {
+            return;
         }
 
         public void Visit(AstNode node)

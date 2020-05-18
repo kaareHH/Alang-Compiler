@@ -211,6 +211,13 @@ namespace core_compile.Visitors
             node.AcceptChildren(this);
             emit("}");
         }
+
+        public void Visit(ReturnNode node)
+        {
+            emit("return ");
+            node.Value.Accept(this);
+            emit(";");
+        }
     }
 
     public class SomethingWentWrongException : Exception

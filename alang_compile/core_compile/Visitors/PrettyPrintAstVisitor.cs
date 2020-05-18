@@ -162,6 +162,11 @@ namespace core_compile.Visitors
 
         }
 
+        public void Visit(ReturnNode node)
+        {
+            
+        }
+
         public void Visit(AstNode node)
         {
             return;

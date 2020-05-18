@@ -25,6 +25,7 @@ namespace core_compile.Visitors
         public void Visit(TimeNode node);
         public void Visit(ValueNode node);
         public void Visit(WhileNode node);
+        public void Visit(ReturnNode node);
     }
     
     public interface ITypeCheckerVisitor
@@ -47,5 +48,6 @@ namespace core_compile.Visitors
         public LanguageType Visit(TimeNode node);
         public LanguageType Visit(ValueNode node);
         public LanguageType Visit(WhileNode node);
+        public LanguageType Visit(ReturnNode node);
     }
 }

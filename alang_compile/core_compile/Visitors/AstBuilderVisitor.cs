@@ -118,6 +118,8 @@ namespace core_compile.Visitors
                 return context.repeatstmt().Accept(this);
             if (context.assignstmt() != null)
                 return context.assignstmt().Accept(this);
+            if (context.returnstmt() != null)
+                return context.returnstmt().Accept(this);
             return null;
         }
 
@@ -135,7 +137,9 @@ namespace core_compile.Visitors
 
         public override AstNode VisitReturnstmt(ALangParser.ReturnstmtContext context)
         {
-            return base.VisitReturnstmt(context);
+            var returnNode = new ReturnNode(context);
+            returnNode.Value = context.primaryExpression().Accept(this);
+            return returnNode;
         }
 
         public override AstNode VisitIfstmt(ALangParser.IfstmtContext context)

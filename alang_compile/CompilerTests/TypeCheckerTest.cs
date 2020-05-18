@@ -181,5 +181,59 @@ namespace CompilerTests
                 ON -> global;
             endfunction");
         }
+        
+        [Test]
+        public void Procedure_ShouldNothaveReturnNode()
+        {
+            var ast = TestHelpers.MakeAstRoot("function testFunction -> | void\n return 2;\nendfunction");
+            var typeCheckerVisitor = new TypeCheckerVisitor();
+
+            Assert.Throws<AlangExeption>(() => ast.Accept(typeCheckerVisitor));
+        }
+        
+        [Test]
+        public void AssignmentToNotDeclaredVar_ShouldThrowException()
+        {
+            var ast = TestHelpers.MakeAstRoot("function test -> | void\n karen = 8;\n endfunction");
+
+            var symbolTableVisitor = new SymbolTableVisitor();
+            ast.Accept(symbolTableVisitor);
+            var visitor = new TypeCheckerVisitor();
+
+            Assert.Throws<SymbolDoNotExistException>(() => ast.Accept(visitor));
+        }
+        
+        [Test]
+        public void VariableNotDeclared_ShouldThrowException()
+        {
+            var ast = TestHelpers.MakeAstRoot("int michael = 0; int jens = 3; \nfunction test -> | void\n michael = jens + 2 + lars; \n endfunction\n int karen = 2;");
+
+            var symbolTableVisitor = new SymbolTableVisitor();
+            ast.Accept(symbolTableVisitor);
+            var visitor = new TypeCheckerVisitor();
+
+            Assert.Throws<SymbolDoNotExistException>(() => ast.Accept(visitor));
+        }
+        
+        [Test]
+        public void FunctionCallOfNotDeclared_ShouldThrowException()
+        {
+            var ast = TestHelpers.MakeAstRoot("function test -> | void\n torben -> ;\n endfunction\n int karen = 2;");
+
+            var symbolTableVisitor = new SymbolTableVisitor();
+            ast.Accept(symbolTableVisitor);
+            var visitor = new TypeCheckerVisitor();
+
+            Assert.Throws<SymbolDoNotExistException>(() => ast.Accept(visitor));
+        }
+
+        [Test]
+        public void FunctionWithReturnType_ShouldhaveReturnNode()
+        {
+            var ast = TestHelpers.MakeAstRoot("function testFunction -> | int\n return 2;\nendfunction");
+            FunctionNode funcNode = ast.GetChildren(0) as FunctionNode;
+
+            Assert.That(funcNode.GetChildren(0), Is.InstanceOf<ReturnNode>());
+        }
     }
 }
