@@ -21,16 +21,6 @@ namespace CompilerTests
             visitor.WriteToFile();
         }
 
-        [Test]
-        public void WriteToFile()
-        {
-            var ast = TestHelpers.MakeAstRoot("int torben = 2;");
-            var visitor = new CodeGenVisitor();
-
-            ast.Accept(visitor);
-            visitor.WriteToFile();
-        }
-
         private AstNode GetFromTestString()
         {
             var text = @"

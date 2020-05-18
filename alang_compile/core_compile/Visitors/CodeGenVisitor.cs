@@ -14,9 +14,19 @@ namespace core_compile.Visitors
 {
     public class CodeGenVisitor : IVisitor
     {
+        private string header = "";
+        private string body = "";
+        private string standard = "";
         
-        public string program { get; set; } = "";
+        public string Program
+        {
+            get => header + body + standard; 
+        }
         public Hashtable globalPins = new Hashtable();
+        private int place = BODY;
+        private const int STD = 2;
+        private const int BODY = 3;
+
 
         public void WriteToFile([Optional] string filename)
         {
@@ -25,7 +35,7 @@ namespace core_compile.Visitors
             var filepath = Path.GetFullPath(filestring);
             
             using var file = new StreamWriter(filepath);
-            file.Write(program);
+            file.Write(Program);
         }
 
         public void Visit(AssignmentNode node)
@@ -47,20 +57,22 @@ namespace core_compile.Visitors
         {
             emit("unsigned long " + timeNow());
             node.AcceptChildren(this);
-
+            if (setup is null)
+            {
+                throw new Exception("no setup function");
+            }
+            SetupFunctionBoilerPlate(setup);
         }
 
-        private const int COMPILELEEPTIME = 1;
-        private const int ADAYINMILLIS = 86400000;
-
+        
         private static string timeNow()
-        {
+        { 
+            const int COMPILELEEPTIME = 1; 
+            const int ADAYINMILLIS = 86400000;
             var now = DateTime.Now.AddSeconds(COMPILELEEPTIME).TimeOfDay;
             var nowMS = (long)now.TotalMilliseconds;
             return $" TIME = (millis() + {nowMS.ToString()}) % {ADAYINMILLIS};";
-
         }
-
         
         private void emit(object code)
         {
@@ -69,8 +81,18 @@ namespace core_compile.Visitors
                 text = s;
             else
                 text = code.ToString();
-            
-            program += text;
+
+            switch (place)
+            {
+                case 1 :
+                    header+= text;
+                    break;
+                case 2 : standard += text;
+                    break;
+                default:
+                    body  += text;
+                    break;
+            }
         }
         public void Visit(DeclarationNode node)
         {
@@ -106,9 +128,18 @@ namespace core_compile.Visitors
             
         }
 
-
+        private FunctionNode setup;
         public void Visit(FunctionNode node)
         {
+            if (node.Identifier == "setup")
+            {
+                setup = node;
+                return;
+            }
+            
+            if (node.Identifier == "loop")
+                place = STD;
+            
             emit(node.Type.ToEnumString());
             emit(" ");
             emit(node.Identifier);
@@ -116,16 +147,24 @@ namespace core_compile.Visitors
             if (node.Params != null)
                 node.Params.Accept(this);
             emit("){\n");
-            if(node.Identifier == "loop")
+            if (node.Identifier == "loop")
                 emit(timeNow());
-            if(node.Identifier == "setup")
-                SetupBoilerPlate(node);
             node.AcceptChildren(this);
             emit("\n}\n");
+            place = BODY;
         }
 
-        private void SetupBoilerPlate(FunctionNode node)
+        private void SetupFunctionBoilerPlate(FunctionNode node)
         {
+            place = STD;
+            emit(node.Type.ToEnumString());
+            emit(" ");
+            emit(node.Identifier);
+            emit("(");
+            if (node.Params != null)
+                node.Params.Accept(this);
+            emit("){\n");
+            node.AcceptChildren(this);
             foreach (DictionaryEntry dicObject in globalPins)
             {
                 var pinNode = dicObject.Value as DeclarationNode;
@@ -133,6 +172,9 @@ namespace core_compile.Visitors
                 pinNode.RightHandSide.Accept(this);
                 emit(", OUTPUT);");
             }
+            emit("\n}\n");
+            place = BODY;
+
         }
 
         public void Visit(IdentfierNode node)
@@ -173,7 +215,7 @@ namespace core_compile.Visitors
         public void Visit(OutputNode node)
         {
             var output = node.State ? "HIGH" : "LOW";
-            emit($"digitalWrite({node.Value},{output});");
+            emit($"digitalWrite({node.Identifier},{output});");
         }
 
         public void Visit(ParameterNode node)

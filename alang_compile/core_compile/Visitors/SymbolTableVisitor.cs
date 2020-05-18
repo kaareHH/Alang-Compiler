@@ -91,7 +91,7 @@ namespace core_compile.Visitors
 
         public void Visit(OutputNode node)
         {
-            node.Value.Accept(this);
+            return;
         }
 
         public void Visit(ParameterNode node)

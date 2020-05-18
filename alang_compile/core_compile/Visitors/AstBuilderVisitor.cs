@@ -127,7 +127,7 @@ namespace core_compile.Visitors
         {
             OutputNode node = new OutputNode(context);
 
-            node.Value = context.value().Accept(this);
+            node.Identifier = context.ID().GetText();
             if (context.ON() != null)
                 node.State = true;
             else
