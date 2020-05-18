@@ -1,12 +1,19 @@
-﻿pin red = 13;
+﻿pin red = P13;
 function loop -> | void
-    red = 13;
+    red = P12;
     if TIME > 17:12:00 then
         ON -> red;
     else
         OFF -> red;
     endif
+    torben ->;
 endfunction
 
 function setup -> | void
 endfunction
+
+function torben -> | int
+    return 2;
+endfunction
+
+pin testThree = P3;

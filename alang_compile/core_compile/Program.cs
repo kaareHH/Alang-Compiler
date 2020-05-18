@@ -26,8 +26,8 @@ namespace core_compile
             Console.ResetColor();
             Console.WriteLine("done");
 
-            var filePath = args[0];
-            var AbsolutePath = Path.GetFullPath(filePath);
+            var fileName = args[0];
+            var AbsolutePath = Path.GetFullPath(fileName);
             if (ReadFromFile(AbsolutePath, out var text)) return;
 
             try
@@ -42,7 +42,7 @@ namespace core_compile
                 ast.Accept(codeGenVisitor);
 
                 var program = codeGenVisitor.program;
-                Console.WriteLine(program);
+                WriteProgramToFile(program, fileName);
             }
             catch (AntlrException ex)
             {
@@ -52,6 +52,14 @@ namespace core_compile
             {
                 Console.WriteLine($"line {ex.Node.Start} {ex.Message}");
             }
+        }
+
+        private static void WriteProgramToFile(string program, string fileName)
+        {
+            var newfileRaw = fileName.TrimEnd("alang".ToCharArray());
+            var newFileFullPath = newfileRaw + "ino";
+            using var file = new StreamWriter(newFileFullPath);
+            file.Write(program);
         }
 
         // private static void CompileCCode(string filePath)
