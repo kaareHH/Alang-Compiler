@@ -13,6 +13,7 @@ commands            : dcl commands
                     
 dcl                 : TYPE ID '=' primaryExpression ';'
                     | TYPE ID ';'
+                    | functioncall ';'
                     ;
 
 function            : 'function' ID '->' params '|' TYPE stmts 'endfunction'
@@ -69,38 +70,29 @@ outputstmt:          'ON' '->' ID ';'
 returnstmt          : 'return' primaryExpression ';'
                     ;
                     
-functioncall        : ID '->' inputparams ';'
-                    | ID '->' ';'
+functioncall        : ID '->' inputparams 
+                    | ID '->'
                     ;
                     
 inputparams         : value
                     | value ',' inputparams
                     ;
 
-value: ID | INTEGERS | PIN | TIME;
+value: ID | INTEGERS | PIN | TIME | functioncall;
 
 //TERMINALS
 ENDIF: 'endif';
-
-ENDREPEAT: 'endrepeat';
 
 ENDTERM: ';';
 
 IF: 'if';
 
-ELSEIF: 'else if';
-
 ELSE: 'else';
-
-REPEAT: 'repeat';
-
-TIMES: 'times';
 
 THEN: 'then';
 
 TYPE: 'void'
     | 'int'
-    | 'float'
     | 'pin'
     | 'time'
     ;
@@ -120,8 +112,6 @@ BOOLOP: '&&' | '||' | '^';
 PREDOP: '==' | '>=' | '<=' | '>' | '<' | '!=';
 
 // DATA TYPES
-BOOLEAN: 'true' | 'false';
-
 INTEGERS: '0' | DIGITS;
 fragment DIGITS: '1' ..'9' '0' ..'9'*;
 PIN: 'P'('0' ..'9' | '1' '0' ..'3');
@@ -130,7 +120,6 @@ OFF: 'OFF';
 TIME                :  NUM NUM ':' NUM NUM ':' NUM NUM
 ;
 fragment NUM        : '0'..'9';
-FLOAT: NUM* '.' NUM+ ;
 
 // IDENTIFIERS
 ID: (LOWERCASE | UPPERCASE)+;

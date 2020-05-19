@@ -9,17 +9,7 @@ namespace CompilerTests
     [TestFixture]
     public class CodeGenVisitorTest
     {
-
-        [Test]
-        public void TryToCompileProgram()
-        {
-            AstNode astRoot = GetFromTestString();
-
-            var visitor = new CodeGenVisitor();
-
-            astRoot.Accept(visitor);
-            visitor.WriteToFile();
-        }
+        
 
         private AstNode GetFromTestString()
         {

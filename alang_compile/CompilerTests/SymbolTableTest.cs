@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using core_compile;
 using core_compile.AbstractSyntaxTree;
 using core_compile.SymbolTableClasses;
 using core_compile.Visitors;
@@ -29,7 +30,7 @@ namespace CompilerTests
 
             var visitor = new SymbolTableVisitor();
 
-            Assert.Throws<SymbolExistException>(() => ast.Accept(visitor));
+            Assert.Throws<AlangExeption>(() => ast.Accept(visitor));
         }
 
         [Test]
@@ -71,7 +72,7 @@ namespace CompilerTests
 
             var visitor = new SymbolTableVisitor();
 
-            Assert.Throws<SymbolExistException>(() => ast.Accept(visitor));
+            Assert.Throws<AlangExeption>(() => ast.Accept(visitor));
         }
 
         [Test]

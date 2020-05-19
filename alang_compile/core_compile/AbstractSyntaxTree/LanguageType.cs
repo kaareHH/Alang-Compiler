@@ -4,20 +4,20 @@ namespace core_compile.AbstractSyntaxTree
 {
     public enum LanguageType
     {
-        [Description("int")]
         Pin,
-        [Description("int")]
         Int,
-        [Description("void")]
         Void,
-        [Description("time_t")]
         Time,
-        [Description("null")]
         Null
     }
     
     public static class StringExtension
     {
+
+        public static string ToLower(this LanguageType me)
+        {
+            return me.ToString().ToLower();
+        }
         public static  string ToEnumString(this LanguageType me)
         {
             switch (me)

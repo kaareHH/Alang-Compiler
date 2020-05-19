@@ -94,6 +94,23 @@ namespace core_compile.AbstractSyntaxTree
                 return children;
             }
         }
+        
+        public int NumberOfSiblings
+        {
+            get
+            {
+                int siblings = 1;
+
+                var node = this;
+                while (node.RightSibling != null)
+                {
+                    siblings++;
+                    node = node.RightSibling;
+                }
+
+                return siblings;
+            }
+        }
 
 
 
