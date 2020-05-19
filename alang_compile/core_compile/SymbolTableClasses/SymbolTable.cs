@@ -91,7 +91,7 @@ namespace core_compile.SymbolTableClasses
         public void Insert(string name, LanguageType type, AstNode node)
         {
             if (currentTable.Contains(name))
-                throw new SymbolExistException();
+                throw new AlangExeption(node, $"Name {name} already declared in scope.");
             
             var newsymbol = new Symbol(name, type, node);
             currentTable.Table.Add(name, newsymbol);

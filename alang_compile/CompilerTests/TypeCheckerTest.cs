@@ -60,7 +60,7 @@ namespace CompilerTests
         [Test]
         public void FunctionParams_ShouldThrowFunctionCalledWithWrongTypeException()
         {
-            ThrowsExceptionOfType<FunctionCalledWithWrongTypeException>(@"
+            ThrowsExceptionOfType<AlangExeption>(@"
             function takeint -> int heltal | void
             endfunction
             function try -> | void
@@ -73,7 +73,7 @@ namespace CompilerTests
         [Test]
         public void FunctionParams_ThrowsTooFewArgumentsException()
         {
-            ThrowsExceptionOfType<TooFewArgumentsException>(@"
+            ThrowsExceptionOfType<AlangExeption>(@"
             function takeint -> int heltal | void
             endfunction
             function try -> | void
@@ -84,7 +84,7 @@ namespace CompilerTests
         [Test]
         public void TooManyArgumentsInFunction_ShouldThrowTooManyArgumentsException()
         {
-            ThrowsExceptionOfType<TooManyArgumentsException>(@"
+            ThrowsExceptionOfType<AlangExeption>(@"
             function takeint -> int heltal | void
             endfunction
             function try -> | void
@@ -117,7 +117,7 @@ namespace CompilerTests
         [Test]
         public void IfNode_ConditionWShouldThrowException()
         {
-            ThrowsExceptionOfType<TypeDoNotMatchConditionException>(@"
+            ThrowsExceptionOfType<AlangExeption>(@"
             function try -> | void
                 pin cond = P2;
                 if cond then
@@ -141,7 +141,7 @@ namespace CompilerTests
         [Test]
         public void WhileNode_ConditionWShouldThrowException()
         {
-            ThrowsExceptionOfType<TypeDoNotMatchConditionException>(@"
+            ThrowsExceptionOfType<AlangExeption>(@"
             function try -> | void
                 pin cond = P2;
                 while cond do
@@ -152,7 +152,7 @@ namespace CompilerTests
         [Test]
         public void WhileNode_ConditionWShouldNotThrowException()
         {
-            ThrowsExceptionOfType<InvalidExpressionException>(@"
+            ThrowsExceptionOfType<AlangExeption>(@"
             function try -> | void
                 time cond = 01:00:00;
                 int condTwo = 2;
@@ -175,7 +175,7 @@ namespace CompilerTests
         [Test]
         public void OutputNode_ThrowsOutputNotPinException()
         {
-            ThrowsExceptionOfType<OutputNotPinException>(@"
+            ThrowsExceptionOfType<AlangExeption>(@"
             int global = 10;
             function try -> | void
                 ON -> global;

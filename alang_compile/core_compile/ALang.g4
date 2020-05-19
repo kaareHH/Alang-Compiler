@@ -13,6 +13,7 @@ commands            : dcl commands
                     
 dcl                 : TYPE ID '=' primaryExpression ';'
                     | TYPE ID ';'
+                    | functioncall ';'
                     ;
 
 function            : 'function' ID '->' params '|' TYPE stmts 'endfunction'
@@ -69,15 +70,15 @@ outputstmt:          'ON' '->' ID ';'
 returnstmt          : 'return' primaryExpression ';'
                     ;
                     
-functioncall        : ID '->' inputparams ';'
-                    | ID '->' ';'
+functioncall        : ID '->' inputparams 
+                    | ID '->'
                     ;
                     
 inputparams         : value
                     | value ',' inputparams
                     ;
 
-value: ID | INTEGERS | PIN | TIME;
+value: ID | INTEGERS | PIN | TIME | functioncall;
 
 //TERMINALS
 ENDIF: 'endif';

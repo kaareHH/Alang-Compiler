@@ -100,7 +100,14 @@ namespace core_compile.Visitors
             emit(" ");
             emit(node.Identifier);
             emit("=");
-            node.RightHandSide.Accept(this);
+            if (node.RightHandSide != null)
+            {
+                node.RightHandSide.Accept(this);
+            }
+            else
+            {
+                emit("0");
+            }
             emit(";");
 
             if(node.Type == LanguageType.Pin)
@@ -123,7 +130,17 @@ namespace core_compile.Visitors
         {
             emit(node.Name);
             emit("(");
-            node.AcceptChildren(this);
+            if (node.GetChildren() is AstNode child)
+            {
+                child.Accept(this);
+                while (child.RightSibling != null)
+                {
+                    emit(",");
+                    child.RightSibling.Accept(this);
+                    child = child.RightSibling;
+                }
+
+            }
             emit(");");
             
         }

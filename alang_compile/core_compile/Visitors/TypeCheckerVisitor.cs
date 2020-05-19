@@ -17,7 +17,6 @@ namespace core_compile.Visitors
 
         public LanguageType Visit(CompilationNode node)
         {
-            // System.Console.WriteLine("Visiting compilationNode" + node.SymbolTable);
             CurrentSymbolTable = node.SymbolTable;
             node.AcceptChildren(this);
             return LanguageType.Void;
@@ -25,14 +24,17 @@ namespace core_compile.Visitors
 
         public LanguageType Visit(DeclarationNode node)
         {
-            // System.Console.WriteLine("Visiting dclNode");
-            var exprType = node.RightHandSide.Accept(this);
-            if (exprType != node.Type)
+            if (node.RightHandSide != null)
             {
-                throw new AlangExeption(node, "declareType " + node.Type + " cannot be used with type" + exprType);
+                var exprType = node.RightHandSide.Accept(this);
+                if (exprType != node.Type)
+                {
+                    throw new AlangExeption(node, $"declared type {node.Type.ToLower()} cannot be used with type {exprType.ToLower()}");
+                }
             }
+                
 
-            return exprType;
+            return node.Type;
         }
 
         public LanguageType Visit(AssignmentNode node) 
@@ -40,7 +42,8 @@ namespace core_compile.Visitors
             var symbol = CurrentSymbolTable.Get(node.Identifier, CurrentSymbolTable);
             var type = symbol.Type;
             if (type != node.Expression.Accept(this))
-                throw new AlangExeption(node, "cannot assign type of " + node.Expression.Accept(this) + " to variable of type " + type);
+                throw new AlangExeption(node,
+                    $"cannot assign type of {node.Expression.Accept(this).ToLower()} to type {type.ToLower()} on declared variable {node.Identifier}");
             return LanguageType.Null;
         }
 
@@ -48,10 +51,9 @@ namespace core_compile.Visitors
         {
             var leftType = node.Left.Accept(this);
             var rightType = node.Right.Accept(this);
-            
             if (leftType == rightType)
                 return leftType;
-            throw new InvalidExpressionException(node.Operator,leftType, rightType);
+            throw new AlangExeption(node, $"cannot apply expression on type {leftType.ToLower()} and {rightType.ToLower()}");
         }
 
         public LanguageType Visit(FunctionCallNode node)
@@ -62,20 +64,20 @@ namespace core_compile.Visitors
             while (child != null)
             {
                 if (paramchildren == null)
-                    throw new TooFewArgumentsException(child);
+                    throw new AlangExeption(node, $"Too few arguments, in {functionNode.Identifier}. Should have been {functionNode.Params.NumberOfSiblings} number of argument, but was {node.NumberOfChildren}");
                 var ShouldBeType = child.Accept(this);
                 var actualtype = paramchildren.Accept(this);
 
                 if (ShouldBeType != actualtype)
-                    throw new FunctionCalledWithWrongTypeException(ShouldBeType, actualtype);
+                    throw new AlangExeption(node, $"Argument at {paramchildren.Start} is type {actualtype.ToLower()}, but should be {ShouldBeType.ToLower()}");
                 
                 child = child.RightSibling;
                 paramchildren = paramchildren.RightSibling;
             }
 
             if (paramchildren != null)
-                throw new TooManyArgumentsException(paramchildren);
-            return LanguageType.Null;
+                throw new AlangExeption(node, $"Too many arguments, in {functionNode.Identifier}. Should have been {functionNode.Params.NumberOfSiblings} number of argument, but was {node.NumberOfChildren}");
+            return functionNode.Type;
         }
 
         public LanguageType Visit(FunctionNode node)
@@ -105,7 +107,7 @@ namespace core_compile.Visitors
         {
             var condtype = node.Condition.Accept(this);
             if (condtype != LanguageType.Int && condtype != LanguageType.Time)
-                throw new TypeDoNotMatchConditionException(condtype);
+                throw new AlangExeption(node, $"Condition in if statement is {condtype.ToLower()}, and should be either int or time");
             node.AcceptChildren(this);
             node.AcceptSiblings(node.Alternate, this);
             return LanguageType.Null;
@@ -130,7 +132,7 @@ namespace core_compile.Visitors
         {
             var idNode = CurrentSymbolTable.Get(node.Identifier, CurrentSymbolTable);
             if (idNode.Type != LanguageType.Pin)
-                throw new OutputNotPinException(node);
+                throw new AlangExeption(node, $"{idNode.Type.ToLower()} is used in output statement, but should be pin");
             return LanguageType.Null;
         }
 
@@ -158,7 +160,8 @@ namespace core_compile.Visitors
         {
             var condtype = node.Condition.Accept(this);
             if (condtype != LanguageType.Int && condtype != LanguageType.Time)
-                throw new TypeDoNotMatchConditionException(condtype);
+                throw new AlangExeption(node, $"Condition in while statement is {condtype.ToLower()}, and should be either int or time");
+
             node.AcceptChildren( this);
             return LanguageType.Null;
         }
@@ -170,14 +173,16 @@ namespace core_compile.Visitors
             {
                 if (iterator is FunctionNode func)
                 {
-                    if (func.Type != node.Value.Accept(this))
-                        throw new AlangExeption(node, "Not equal types");
+                    var languageType = node.Value.Accept(this);
+                    if (func.Type != languageType)
+                        throw new AlangExeption(node, $"Type {languageType.ToLower()} do not match function type, {func.Identifier}'s return type is {func.Type.ToLower()}");
                     else
                         return LanguageType.Null;
                 }
                 iterator = iterator.Parent;
             }
-            throw new Exception("Return not in function");
+
+            return LanguageType.Null;
         }
 
         public LanguageType Visit(AstNode node)

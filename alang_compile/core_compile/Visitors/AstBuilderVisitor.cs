@@ -40,11 +40,20 @@ namespace core_compile.Visitors
 
         public override AstNode VisitDcl(ALangParser.DclContext context)
         {
-            var node = new DeclarationNode(context);
-            node.RightHandSide = context.primaryExpression().Accept(this);
-            node.Identifier = context.ID().GetText();
-            node.Type = Type.GetType(context);
-             
+            AstNode node;
+            if (context.functioncall() != null)
+                node = context.functioncall().Accept(this);
+            else
+            {
+                var dclNode = new DeclarationNode(context);
+                if (context.primaryExpression() != null)
+                    dclNode.RightHandSide = context.primaryExpression().Accept(this);
+                dclNode.Identifier = context.ID().GetText();
+                dclNode.Type = Type.GetType(context);
+
+                node = dclNode;
+            }
+            
             return node;
         }
 
@@ -296,6 +305,10 @@ namespace core_compile.Visitors
                 var node = new TimeNode(context);
                 node.Value = Time.TimeFromString(context.TIME().GetText());
                 visitValue = node;
+            }
+            else if (context.functioncall() != null)
+            {
+                visitValue = context.functioncall().Accept(this);
             }
             else
                 visitValue = null;

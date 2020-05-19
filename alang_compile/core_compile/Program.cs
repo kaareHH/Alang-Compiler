@@ -21,7 +21,6 @@ namespace core_compile
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write("Path: ");
             Console.ForegroundColor = ConsoleColor.Green;
-            //Console.WriteLine(Path.GetFullPath(s));
             
             Console.ResetColor();
             Console.WriteLine("done");
@@ -50,11 +49,12 @@ namespace core_compile
             }
             catch (AlangExeption ex)
             {
-                Console.WriteLine($"line {ex.Node.Start} {ex.Message}");
+                Console.WriteLine($"[{ex.Node.Start}]: {ex.Message}. Ends at [{ex.Node.Stop}]");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
         }
 
@@ -65,47 +65,7 @@ namespace core_compile
             using var file = new StreamWriter(newFileFullPath);
             file.Write(program);
         }
-
-        // private static void CompileCCode(string filePath)
-        // {
-        //
-        //     // TODO kig på om useren har gcc
-        //     Process gccProcress = new Process
-        //     {
-        //         StartInfo =
-        //         {
-        //             FileName = @"/usr/bin/gcc",
-        //             Arguments = filePath,
-        //             UseShellExecute = false,
-        //             RedirectStandardOutput = true,
-        //             WindowStyle = ProcessWindowStyle.Hidden,
-        //             CreateNoWindow = true
-        //         }
-        //     };
-        //     gccProcress.Start();
-        //     var output = gccProcress.StandardOutput.ReadToEnd(); //The output result
-        //     gccProcress.WaitForExit();
-        // }
-        //
-        // private static void RunCode()
-        // {
-        //     Process gccProcress = new Process
-        //     {
-        //         StartInfo =
-        //         {
-        //             FileName = @"a.out",
-        //             UseShellExecute = false,
-        //             RedirectStandardOutput = true,
-        //             WindowStyle = ProcessWindowStyle.Hidden,
-        //             CreateNoWindow = true
-        //         }
-        //     };
-        //     gccProcress.Start();
-        //     var output = gccProcress.StandardOutput.ReadToEnd(); //The output result
-        //     Console.WriteLine(output);
-        //     gccProcress.WaitForExit();
-        // }
-        //
+        
         private static bool ReadFromFile(string fileName, out string text)
         {
             text = "";
