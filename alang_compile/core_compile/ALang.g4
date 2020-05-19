@@ -108,7 +108,7 @@ ASSIGNOPERATOR: '=';
 //OPALL: ADDOP | MULOP | BOOLOP | PREDOP;
 ADDOP: ('+' | '-');
 MULOP: ('*' | '/' | '%');
-BOOLOP: '&&' | '||' | '^';
+BOOLOP: '&&' | '||';
 PREDOP: '==' | '>=' | '<=' | '>' | '<' | '!=';
 
 // DATA TYPES
