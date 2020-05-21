@@ -46,13 +46,13 @@ public partial class ALangParser : Parser {
 		RULE_start = 0, RULE_commands = 1, RULE_dcl = 2, RULE_function = 3, RULE_imports = 4, 
 		RULE_primaryExpression = 5, RULE_predicateExpression = 6, RULE_additiveExpression = 7, 
 		RULE_multiExpression = 8, RULE_primary = 9, RULE_params = 10, RULE_param = 11, 
-		RULE_stmts = 12, RULE_assignstmt = 13, RULE_ifstmt = 14, RULE_repeatstmt = 15, 
+		RULE_stmts = 12, RULE_assignstmt = 13, RULE_ifstmt = 14, RULE_whilestmt = 15, 
 		RULE_outputstmt = 16, RULE_returnstmt = 17, RULE_functioncall = 18, RULE_inputparams = 19, 
 		RULE_value = 20;
 	public static readonly string[] ruleNames = {
 		"start", "commands", "dcl", "function", "imports", "primaryExpression", 
 		"predicateExpression", "additiveExpression", "multiExpression", "primary", 
-		"params", "param", "stmts", "assignstmt", "ifstmt", "repeatstmt", "outputstmt", 
+		"params", "param", "stmts", "assignstmt", "ifstmt", "whilestmt", "outputstmt", 
 		"returnstmt", "functioncall", "inputparams", "value"
 	};
 
@@ -891,8 +891,8 @@ public partial class ALangParser : Parser {
 		public IfstmtContext ifstmt() {
 			return GetRuleContext<IfstmtContext>(0);
 		}
-		public RepeatstmtContext repeatstmt() {
-			return GetRuleContext<RepeatstmtContext>(0);
+		public WhilestmtContext whilestmt() {
+			return GetRuleContext<WhilestmtContext>(0);
 		}
 		public OutputstmtContext outputstmt() {
 			return GetRuleContext<OutputstmtContext>(0);
@@ -951,7 +951,7 @@ public partial class ALangParser : Parser {
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 143; repeatstmt();
+				State = 143; whilestmt();
 				State = 144; stmts();
 				}
 				break;
@@ -1129,37 +1129,37 @@ public partial class ALangParser : Parser {
 		return _localctx;
 	}
 
-	public partial class RepeatstmtContext : ParserRuleContext {
+	public partial class WhilestmtContext : ParserRuleContext {
 		public PrimaryExpressionContext primaryExpression() {
 			return GetRuleContext<PrimaryExpressionContext>(0);
 		}
 		public StmtsContext stmts() {
 			return GetRuleContext<StmtsContext>(0);
 		}
-		public RepeatstmtContext(ParserRuleContext parent, int invokingState)
+		public WhilestmtContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_repeatstmt; } }
+		public override int RuleIndex { get { return RULE_whilestmt; } }
 		public override void EnterRule(IParseTreeListener listener) {
 			IALangListener typedListener = listener as IALangListener;
-			if (typedListener != null) typedListener.EnterRepeatstmt(this);
+			if (typedListener != null) typedListener.EnterWhilestmt(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
 			IALangListener typedListener = listener as IALangListener;
-			if (typedListener != null) typedListener.ExitRepeatstmt(this);
+			if (typedListener != null) typedListener.ExitWhilestmt(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IALangVisitor<TResult> typedVisitor = visitor as IALangVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitRepeatstmt(this);
+			if (typedVisitor != null) return typedVisitor.VisitWhilestmt(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public RepeatstmtContext repeatstmt() {
-		RepeatstmtContext _localctx = new RepeatstmtContext(Context, State);
-		EnterRule(_localctx, 30, RULE_repeatstmt);
+	public WhilestmtContext whilestmt() {
+		WhilestmtContext _localctx = new WhilestmtContext(Context, State);
+		EnterRule(_localctx, 30, RULE_whilestmt);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{

@@ -185,7 +185,7 @@ public partial class ALangBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitIfstmt([NotNull] ALangParser.IfstmtContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
+	/// Visit a parse tree produced by <see cref="ALangParser.whilestmt"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -193,7 +193,7 @@ public partial class ALangBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitRepeatstmt([NotNull] ALangParser.RepeatstmtContext context) { return VisitChildren(context); }
+	public virtual Result VisitWhilestmt([NotNull] ALangParser.WhilestmtContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ALangParser.outputstmt"/>.
 	/// <para>

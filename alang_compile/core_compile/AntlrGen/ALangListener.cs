@@ -182,15 +182,15 @@ public interface IALangListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitIfstmt([NotNull] ALangParser.IfstmtContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
+	/// Enter a parse tree produced by <see cref="ALangParser.whilestmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterRepeatstmt([NotNull] ALangParser.RepeatstmtContext context);
+	void EnterWhilestmt([NotNull] ALangParser.WhilestmtContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
+	/// Exit a parse tree produced by <see cref="ALangParser.whilestmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitRepeatstmt([NotNull] ALangParser.RepeatstmtContext context);
+	void ExitWhilestmt([NotNull] ALangParser.WhilestmtContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.outputstmt"/>.
 	/// </summary>

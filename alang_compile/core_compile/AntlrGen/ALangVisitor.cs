@@ -123,11 +123,11 @@ public interface IALangVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitIfstmt([NotNull] ALangParser.IfstmtContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
+	/// Visit a parse tree produced by <see cref="ALangParser.whilestmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitRepeatstmt([NotNull] ALangParser.RepeatstmtContext context);
+	Result VisitWhilestmt([NotNull] ALangParser.WhilestmtContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ALangParser.outputstmt"/>.
 	/// </summary>

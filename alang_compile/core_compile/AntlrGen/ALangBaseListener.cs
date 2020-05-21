@@ -216,17 +216,17 @@ public partial class ALangBaseListener : IALangListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitIfstmt([NotNull] ALangParser.IfstmtContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
+	/// Enter a parse tree produced by <see cref="ALangParser.whilestmt"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterRepeatstmt([NotNull] ALangParser.RepeatstmtContext context) { }
+	public virtual void EnterWhilestmt([NotNull] ALangParser.WhilestmtContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="ALangParser.repeatstmt"/>.
+	/// Exit a parse tree produced by <see cref="ALangParser.whilestmt"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitRepeatstmt([NotNull] ALangParser.RepeatstmtContext context) { }
+	public virtual void ExitWhilestmt([NotNull] ALangParser.WhilestmtContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ALangParser.outputstmt"/>.
 	/// <para>The default implementation does nothing.</para>

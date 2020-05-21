@@ -45,7 +45,7 @@ param               : TYPE ID
 
 stmts               : dcl stmts
                     | ifstmt stmts
-                    | repeatstmt stmts
+                    | whilestmt stmts
                     | outputstmt stmts
                     | returnstmt stmts
                     | functioncall stmts
@@ -61,7 +61,7 @@ ifstmt              : 'if' primaryExpression 'then' stmts 'endif'
                     | 'if' primaryExpression 'then' stmts 'else' stmts 'endif'
                     ;            
                     
-repeatstmt:         'while' primaryExpression 'do' stmts 'endwhile';
+whilestmt:         'while' primaryExpression 'do' stmts 'endwhile';
 
 outputstmt:          'ON' '->' ID ';'
                     |'OFF' '->' ID ';'
@@ -129,7 +129,7 @@ fragment LOWERCASE: [a-z];
 
 ALANGFILENAME: ([a-zA-Z0-9])+ '.alang'
              ;
-
+    
  // SKIPS
  WHITESPACE :   [ \t]+ -> skip;
  NEWLINE :   (   '\r' '\n'? |   '\n') -> skip;

@@ -88,7 +88,7 @@ param
 stmts
 assignstmt
 ifstmt
-repeatstmt
+whilestmt
 outputstmt
 returnstmt
 functioncall

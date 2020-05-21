@@ -123,8 +123,8 @@ namespace core_compile.Visitors
                 return context.functioncall().Accept(this);
             if (context.outputstmt() != null)
                 return context.outputstmt().Accept(this);
-            if (context.repeatstmt() != null)
-                return context.repeatstmt().Accept(this);
+            if (context.whilestmt() != null)
+                return context.whilestmt().Accept(this);
             if (context.assignstmt() != null)
                 return context.assignstmt().Accept(this);
             if (context.returnstmt() != null)
@@ -182,14 +182,14 @@ namespace core_compile.Visitors
             return node;
         }
 
-        public override AstNode VisitRepeatstmt(ALangParser.RepeatstmtContext context)
+        public override AstNode VisitWhilestmt(ALangParser.WhilestmtContext context)
         {
-            var repeatNode = new WhileNode(context);
+            var whileNode = new WhileNode(context);
             if (context.primaryExpression() != null)
-                repeatNode.Condition = context.primaryExpression().Accept(this);
+                whileNode.Condition = context.primaryExpression().Accept(this);
             if (context.stmts().children != null)
-                repeatNode.AdoptChildren(context.stmts().Accept(this));
-            return repeatNode;
+                whileNode.AdoptChildren(context.stmts().Accept(this));
+            return whileNode;
         }
 
         public override AstNode VisitPrimaryExpression(ALangParser.PrimaryExpressionContext context)
