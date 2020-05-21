@@ -190,6 +190,3 @@ ALANGFILENAME       : ([a-zA-Z0-9])+ '.alang'
                     
  LINECOMMENT        : '#' ~[\r\n]* -> skip 
                     ;
-                    
- //NEWLINE          : ('\r'? '\n' | '\r')+ -> skip 
-                    ;
