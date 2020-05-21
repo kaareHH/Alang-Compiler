@@ -41,6 +41,8 @@ namespace core_compile.Visitors
         {
             var symbol = CurrentSymbolTable.Get(node.Identifier, CurrentSymbolTable);
             var type = symbol.Type;
+            if (type == LanguageType.Pin)
+                throw new AlangExeption(node, "Pins in alang are constants, and cannot be reassign at runtime");
             if (type != node.Expression.Accept(this))
                 throw new AlangExeption(node,
                     $"cannot assign type of {node.Expression.Accept(this).ToLower()} to type {type.ToLower()} on declared variable {node.Identifier}");
