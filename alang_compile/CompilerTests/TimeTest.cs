@@ -29,7 +29,7 @@ namespace CompilerTests
         }
         
         [Test]
-        public void FiveHoursTwoMinutesOneSecond_ShouldReturn18121()
+        public void FiveHoursTwoMinutesOneSecond_ShouldReturn18121000()
         {
             var time = new Time(){Hours = 5, Min = 2, Sec = 1};
             Assert.That(time.ToMillis(), Is.EqualTo(Hour * 5 + Min * 2 + Sec * 1));
