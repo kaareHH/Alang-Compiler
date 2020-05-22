@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using AntlrGen;
 using core_compile.AbstractSyntaxTree;
+using core_compile.SymbolTableClasses;
 using core_compile.Visitors;
 
 namespace core_compile
@@ -51,10 +52,13 @@ namespace core_compile
             {
                 Console.WriteLine($"[{ex.Node.Start}]: {ex.Message}. Ends at [{ex.Node.Stop}]");
             }
+            catch (SymbolExistException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
             }
         }
 
